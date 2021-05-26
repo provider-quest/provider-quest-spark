@@ -1,0 +1,24 @@
+md`# Lotus JS Client - Mainnet - Miner Power Scanner`
+
+md`This demo connects to a node running Lotus Filecoin implementation on the calibration net.`
+
+md`If the connection is working, the following should retrieve the version and the block delay from a public API endpoint using the [Lotus JS Client](https://github.com/filecoin-shipyard/js-lotus-client) libraries.`
+
+await client.version()
+
+
+md`# Setting up Lotus JS Client
+
+The following three stanzas import the library from npm.`
+
+// LotusRPC = (await import('@filecoin-shipyard/lotus-client-rpc')).LotusRPC
+
+// LotusRPC = require("@filecoin-shipyard/lotus-client-rpc")
+LotusRPC = require("https://cdn.jsdelivr.net/npm/@filecoin-shipyard/lotus-client-rpc/")
+
+// BrowserProvider = (await import('@filecoin-shipyard/lotus-client-provider-browser')).BrowserProvider
+
+// schema = (await import('@filecoin-shipyard/lotus-client-schema')).mainnet.fullNode
+
+md`Here is the list of methods from the schema file. Currently just a subset of the available methods in the Lotus JSON-RPC API, but any method can be added.`
+

@@ -1,0 +1,15 @@
+{
+  "name": "miner-power",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Jim Pick (@jimpick)",
+  "license": "MIT/Apache-2 (Permissive License Stack)",
+  "dependencies": {
+    "@filecoin-shipyard/lotus-client-rpc": "^0.2.1"
+  }
+}
