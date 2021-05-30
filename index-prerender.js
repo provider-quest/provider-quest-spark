@@ -23,7 +23,8 @@ async function run () {
       minerPower.records && minerPower.records.length
     )
     if (minerPower.state === 'done') {
-      const jsonFile = fs.createWriteStream(`tmp/power-${selectedEpoch}.json`)
+      const jsonFilename = `power-${selectedEpoch}.json`
+      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
       for (const record of minerPower.records) {
         const { height, ...rest } = record
         await jsonFile.write(
@@ -35,6 +36,14 @@ async function run () {
           }) + '\n'
         )
       }
+      jsonFile.on('finish', () => {
+        fs.rename(`tmp/${jsonFilename}`, `input/${jsonFilename}`, err => {
+          if (err) {
+            console.error('Error', err)
+            process.exit(1)
+          }
+        })
+      })
       jsonFile.end()
       break
     }

@@ -52,7 +52,8 @@ if __name__ == "__main__":
     minerPower = spark \
         .readStream \
         .schema(schema) \
-        .json('input')
+        .json('input') \
+        .withWatermark("timestamp", "10 minutes")
 
     # Generate running word count
     # wordCounts = words.groupBy('word').count()
@@ -64,18 +65,26 @@ if __name__ == "__main__":
     #    df.coalesce(1).write.csv('output/word_counts', mode='overwrite')
     #    pass
 
-    #query = wordCounts\
+    #query = minerPower\
     #    .writeStream\
     #    .outputMode('complete')\
     #    .foreachBatch(output_counts)\
     #    .start()
 
-    # Start running the query that prints the running counts to the console
-    query2 = numberOfRecords\
-        .writeStream\
-        .outputMode('complete')\
-        .format('console')\
+    query = minerPower \
+        .writeStream \
+        .format("json") \
+        .option("path", "output/json") \
+        .option("checkpointLocation", "checkpoint/json") \
+        .partitionBy("miner") \
         .start()
 
-    #query.awaitTermination()
+    # Start running the query that prints the running counts to the console
+    query2 = numberOfRecords \
+        .writeStream \
+        .outputMode('complete') \
+        .format('console') \
+        .start()
+
+    query.awaitTermination()
     query2.awaitTermination()
