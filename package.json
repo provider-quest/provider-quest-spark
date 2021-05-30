@@ -1,5 +1,5 @@
 {
-  "name": "miner-power",
+  "name": "filecoin-spark-miner-power",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

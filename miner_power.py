@@ -30,8 +30,7 @@ r"""
 import sys
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import explode
-from pyspark.sql.functions import split
+from pyspark.sql.functions import window
 from pyspark.sql.types import StructType
 
 if __name__ == "__main__":
@@ -60,6 +59,11 @@ if __name__ == "__main__":
 
     numberOfRecords = minerPower.groupBy().count()
 
+    averagePowerHourly = minerPower.groupBy(
+            minerPower.miner,
+            window(minerPower.timestamp, '1 hour')
+    ).avg("rawBytePower", "qualityAdjPower")
+
     # Start running the query that prints the running counts to the console
     #def output_counts(df, epoch_id):
     #    df.coalesce(1).write.csv('output/word_counts', mode='overwrite')
@@ -86,5 +90,25 @@ if __name__ == "__main__":
         .format('console') \
         .start()
 
+    query3 = averagePowerHourly \
+        .writeStream \
+        .format("json") \
+        .option("path", "output/json_avg_power_hourly") \
+        .option("checkpointLocation", "checkpoint/json_avg_power_hourly") \
+        .partitionBy("miner") \
+        .start()
+
+    query4 = minerPower \
+        .writeStream \
+        .format("parquet") \
+        .option("mode", "append") \
+        .option("path", "output/parquet") \
+        .option("checkpointLocation", "checkpoint/parquet") \
+        .partitionBy("miner") \
+        .start()
+
+
     query.awaitTermination()
     query2.awaitTermination()
+    query3.awaitTermination()
+    query4.awaitTermination()
