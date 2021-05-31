@@ -1,7 +1,9 @@
 input
+input.old*
 output
 checkpoint
 *.swp
 node_modules
 yarn.lock
 tmp
+dist

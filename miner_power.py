@@ -30,6 +30,7 @@ r"""
 import sys
 
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import date_format
 from pyspark.sql.functions import window
 from pyspark.sql.types import StructType
 
@@ -50,9 +51,14 @@ if __name__ == "__main__":
     # Create DataFrame representing the stream of input lines from connection to host:port
     minerPower = spark \
         .readStream \
+        .option('cleanSource', 'archive') \
+        .option('sourceArchiveDir', 'archive') \
         .schema(schema) \
         .json('input') \
         .withWatermark("timestamp", "10 minutes")
+
+    minerPower = minerPower.withColumn(
+        "date", minerPower.timestamp.astype('date'))
 
     # Generate running word count
     # wordCounts = words.groupBy('word').count()
@@ -60,27 +66,35 @@ if __name__ == "__main__":
     numberOfRecords = minerPower.groupBy().count()
 
     averagePowerHourly = minerPower.groupBy(
-            minerPower.miner,
-            window(minerPower.timestamp, '1 hour')
+        minerPower.miner,
+        minerPower.date,
+        window(minerPower.timestamp, '1 hour')
+    ).avg("rawBytePower", "qualityAdjPower")
+
+    averagePowerDaily = minerPower.groupBy(
+        minerPower.miner,
+        minerPower.date,
+        window(minerPower.timestamp, '1 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
     # Start running the query that prints the running counts to the console
-    #def output_counts(df, epoch_id):
+    # def output_counts(df, epoch_id):
     #    df.coalesce(1).write.csv('output/word_counts', mode='overwrite')
     #    pass
 
-    #query = minerPower\
+    # query = minerPower\
     #    .writeStream\
     #    .outputMode('complete')\
     #    .foreachBatch(output_counts)\
     #    .start()
 
     query = minerPower \
+        .repartition(1) \
         .writeStream \
         .format("json") \
         .option("path", "output/json") \
         .option("checkpointLocation", "checkpoint/json") \
-        .partitionBy("miner") \
+        .partitionBy("date", "miner") \
         .start()
 
     # Start running the query that prints the running counts to the console
@@ -95,18 +109,16 @@ if __name__ == "__main__":
         .format("json") \
         .option("path", "output/json_avg_power_hourly") \
         .option("checkpointLocation", "checkpoint/json_avg_power_hourly") \
-        .partitionBy("miner") \
+        .partitionBy("date", "miner") \
         .start()
 
-    query4 = minerPower \
+    query4 = averagePowerDaily \
         .writeStream \
-        .format("parquet") \
-        .option("mode", "append") \
-        .option("path", "output/parquet") \
-        .option("checkpointLocation", "checkpoint/parquet") \
-        .partitionBy("miner") \
+        .format("json") \
+        .option("path", "output/json_avg_power_daily") \
+        .option("checkpointLocation", "checkpoint/json_avg_power_daily") \
+        .partitionBy("date", "miner") \
         .start()
-
 
     query.awaitTermination()
     query2.awaitTermination()
