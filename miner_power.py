@@ -20,8 +20,7 @@ r"""
  Usage: structured_network_wordcount.py <hostname> <port>
    <hostname> and <port> describe the TCP server that Structured Streaming
    would connect to receive data.
-
- To run this on your local machine, you need to first run a Netcat server
+To run this on your local machine, you need to first run a Netcat server
     `$ nc -lk 9999`
  and then run the example
     `$ bin/spark-submit examples/src/main/python/sql/streaming/structured_network_wordcount.py

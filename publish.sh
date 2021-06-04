@@ -1,8 +1,5 @@
 #! /bin/sh
 
-rm -rf dist
-mkdir dist
-
 # Latest daily power average
 mkdir -p dist/miner-power-daily-average-latest
 LAST=$(ls -d output/json_avg_power_daily/date\=* | sort | tail -1)
@@ -16,3 +13,4 @@ COUNT=0
   # {"window":{"start":"2021-05-30T00:00:00.000Z","end":"2021-05-31T00:00:00.000Z"},"avg(rawBytePower)":0.0,"avg(qualityAdjPower)":0.0}
   cat $(ls $m/*.json) | head -1 | jq "{ miner: \"$MINER\", rawBytePower: .[\"avg(rawBytePower)\"], qualityAdjPower: .[\"avg(qualityAdjPower)\"] }"
 done) | jq -s "{ date: \"$DATE\", records: . }" > dist/miner-power-daily-average-latest/miner-power-daily-average-latest.json
+(cd dist/miner-power-daily-average-latest; head miner-power-daily-average-latest.json; hub bucket push)
