@@ -51,11 +51,12 @@ if __name__ == "__main__":
     # Create DataFrame representing the stream of input lines from connection to host:port
     minerPower = spark \
         .readStream \
-        .option('cleanSource', 'archive') \
-        .option('sourceArchiveDir', 'archive-staging') \
         .schema(schema) \
         .json('input-staging') \
-        .withWatermark("timestamp", "10 minutes")
+        .withWatermark("timestamp", "1 second")
+
+        #.option('cleanSource', 'archive') \
+        #.option('sourceArchiveDir', 'archive-staging') \
 
     minerPower = minerPower.withColumn(
         "date", minerPower.timestamp.astype('date'))
@@ -80,7 +81,8 @@ if __name__ == "__main__":
     averagePowerMultiDay = minerPower.groupBy(
         minerPower.miner,
         minerPower.date,
-        window(minerPower.timestamp, '2 day', '2 day')
+        # window(minerPower.timestamp, '2 day', '2 day')
+        window(minerPower.timestamp, '2 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
     # Start running the query that prints the running counts to the console
@@ -95,23 +97,27 @@ if __name__ == "__main__":
     #    .start()
 
     query = minerPower \
-        .repartition(1) \
         .writeStream \
+        .queryName("json") \
         .format("json") \
         .option("path", "output-staging/json") \
         .option("checkpointLocation", "checkpoint-staging/json") \
         .partitionBy("date", "miner") \
         .start()
 
+    # .repartition(1) \
+
     # Start running the query that prints the running counts to the console
     query2 = numberOfRecords \
         .writeStream \
+        .queryName("counter") \
         .outputMode('complete') \
         .format('console') \
         .start()
 
     query3 = averagePowerHourly \
         .writeStream \
+        .queryName("json_avg_power_hourly") \
         .format("json") \
         .option("path", "output-staging/json_avg_power_hourly") \
         .option("checkpointLocation", "checkpoint-staging/json_avg_power_hourly") \
@@ -120,6 +126,7 @@ if __name__ == "__main__":
 
     query4 = averagePowerDaily \
         .writeStream \
+        .queryName("json_avg_power_daily") \
         .format("json") \
         .option("path", "output-staging/json_avg_power_daily") \
         .option("checkpointLocation", "checkpoint-staging/json_avg_power_daily") \
@@ -128,6 +135,7 @@ if __name__ == "__main__":
 
     query5 = averagePowerMultiDay \
         .writeStream \
+        .queryName("json_avg_power_multiday") \
         .format("json") \
         .option("path", "output-staging/json_avg_power_multiday") \
         .option("checkpointLocation", "checkpoint-staging/json_avg_power_multiday") \
@@ -135,11 +143,11 @@ if __name__ == "__main__":
         .start()
 
     while True:
-        print("json", query.lastProgress)
+        #print("json", query.lastProgress)
         print("total", query2.lastProgress)
-        print("json_avg_power_hourly", query3.lastProgress)
-        print("json_avg_power_daily", query4.lastProgress)
-        print("json_avg_power_multiday", query5.lastProgress)
+        #print("json_avg_power_hourly", query3.lastProgress)
+        #print("json_avg_power_daily", query4.lastProgress)
+        #print("json_avg_power_multiday", query5.lastProgress)
         print()
         time.sleep(60)
 

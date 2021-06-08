@@ -1,12 +1,15 @@
 input
 input-staging
-input.old*
+input*
 output
 output-staging
+output*
 archive
 archive-staging
+archive*
 checkpoint
 checkpoint-staging
+checkpoint*
 *.swp
 node_modules
 yarn.lock

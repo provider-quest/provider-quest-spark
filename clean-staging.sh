@@ -1,3 +1,3 @@
 #! /bin/bash
 
-rm -rf input-staging output-stagin checkpoint-stagin archive-staging
+rm -rf input-staging output-staging checkpoint-staging archive-staging
