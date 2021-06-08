@@ -1,4 +1,12 @@
 #! /bin/bash
 
-#mkdir -p input; for f in `ls tmp2/power-* | sort | tail -100`; do echo $f; cp $f input; sleep 20; done
+mkdir -p input
+COUNT=0
+#for f in `ls estuary-archive/miner-power/power-*.json | sort | tail -150`; do
+for f in `ls estuary-archive/miner-power/power-*.json | sort | tail -32`; do
+#for f in `ls estuary-archive/miner-power/power-*.json | sort | tail -10`; do
+  echo $((COUNT++)) $f
+  cp $f input
+  sleep 30
+done
 

@@ -27,6 +27,7 @@ To run this on your local machine, you need to first run a Netcat server
     localhost 9999`
 """
 import sys
+import time
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import date_format
@@ -76,6 +77,12 @@ if __name__ == "__main__":
         window(minerPower.timestamp, '1 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
+    averagePowerMultiDay = minerPower.groupBy(
+        minerPower.miner,
+        minerPower.date,
+        window(minerPower.timestamp, '2 day', '2 day')
+    ).avg("rawBytePower", "qualityAdjPower")
+
     # Start running the query that prints the running counts to the console
     # def output_counts(df, epoch_id):
     #    df.coalesce(1).write.csv('output/word_counts', mode='overwrite')
@@ -119,7 +126,20 @@ if __name__ == "__main__":
         .partitionBy("date", "miner") \
         .start()
 
+    query5 = averagePowerMultiDay \
+        .writeStream \
+        .format("json") \
+        .option("path", "output/json_avg_power_multiday") \
+        .option("checkpointLocation", "checkpoint/json_avg_power_multiday") \
+        .partitionBy("date", "miner") \
+        .start()
+
+    #while True:
+    #    print("spark.streams.active", spark.streams.active)
+    #    time.sleep(10)
+
     query.awaitTermination()
     query2.awaitTermination()
     query3.awaitTermination()
     query4.awaitTermination()
+    query5.awaitTermination()
