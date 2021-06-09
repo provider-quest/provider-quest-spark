@@ -66,23 +66,22 @@ if __name__ == "__main__":
 
     numberOfRecords = minerPower.groupBy().count()
 
-    averagePowerHourly = minerPower.groupBy(
-        minerPower.miner,
-        minerPower.date,
-        window(minerPower.timestamp, '1 hour')
-    ).avg("rawBytePower", "qualityAdjPower")
+    #averagePowerHourly = minerPower.groupBy(
+    #    minerPower.miner,
+    #    minerPower.date,
+    #    window(minerPower.timestamp, '1 hour')
+    #).avg("rawBytePower", "qualityAdjPower")
 
-    averagePowerDaily = minerPower.groupBy(
-        minerPower.miner,
-        minerPower.date,
-        window(minerPower.timestamp, '1 day')
-    ).avg("rawBytePower", "qualityAdjPower")
+    #averagePowerDaily = minerPower.groupBy(
+    #    minerPower.miner,
+    #    minerPower.date,
+    #    window(minerPower.timestamp, '1 day')
+    #).avg("rawBytePower", "qualityAdjPower")
 
     averagePowerMultiDay = minerPower.groupBy(
         minerPower.miner,
-        minerPower.date,
-        # window(minerPower.timestamp, '2 day', '2 day')
-        window(minerPower.timestamp, '2 day')
+        window(minerPower.timestamp, '2 day', '2 day')
+        #window(minerPower.timestamp, '2 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
     # Start running the query that prints the running counts to the console
@@ -96,14 +95,14 @@ if __name__ == "__main__":
     #    .foreachBatch(output_counts)\
     #    .start()
 
-    query = minerPower \
-        .writeStream \
-        .queryName("json") \
-        .format("json") \
-        .option("path", "output-staging/json") \
-        .option("checkpointLocation", "checkpoint-staging/json") \
-        .partitionBy("date", "miner") \
-        .start()
+    #query = minerPower \
+    #    .writeStream \
+    #    .queryName("json") \
+    #    .format("json") \
+    #    .option("path", "output-staging/json") \
+    #    .option("checkpointLocation", "checkpoint-staging/json") \
+    #    .partitionBy("date", "miner") \
+    #    .start()
 
     # .repartition(1) \
 
@@ -115,23 +114,23 @@ if __name__ == "__main__":
         .format('console') \
         .start()
 
-    query3 = averagePowerHourly \
-        .writeStream \
-        .queryName("json_avg_power_hourly") \
-        .format("json") \
-        .option("path", "output-staging/json_avg_power_hourly") \
-        .option("checkpointLocation", "checkpoint-staging/json_avg_power_hourly") \
-        .partitionBy("date", "miner") \
-        .start()
+    #query3 = averagePowerHourly \
+    #    .writeStream \
+    #    .queryName("json_avg_power_hourly") \
+    #    .format("json") \
+    #    .option("path", "output-staging/json_avg_power_hourly") \
+    #    .option("checkpointLocation", "checkpoint-staging/json_avg_power_hourly") \
+    #    .partitionBy("date", "miner") \
+    #    .start()
 
-    query4 = averagePowerDaily \
-        .writeStream \
-        .queryName("json_avg_power_daily") \
-        .format("json") \
-        .option("path", "output-staging/json_avg_power_daily") \
-        .option("checkpointLocation", "checkpoint-staging/json_avg_power_daily") \
-        .partitionBy("date", "miner") \
-        .start()
+    #query4 = averagePowerDaily \
+    #    .writeStream \
+    #    .queryName("json_avg_power_daily") \
+    #    .format("json") \
+    #    .option("path", "output-staging/json_avg_power_daily") \
+    #    .option("checkpointLocation", "checkpoint-staging/json_avg_power_daily") \
+    #    .partitionBy("date", "miner") \
+    #    .start()
 
     query5 = averagePowerMultiDay \
         .writeStream \
@@ -139,7 +138,7 @@ if __name__ == "__main__":
         .format("json") \
         .option("path", "output-staging/json_avg_power_multiday") \
         .option("checkpointLocation", "checkpoint-staging/json_avg_power_multiday") \
-        .partitionBy("date", "miner") \
+        .partitionBy("window", "miner") \
         .start()
 
     while True:
