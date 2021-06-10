@@ -52,7 +52,7 @@ if __name__ == "__main__":
     minerPower = spark \
         .readStream \
         .schema(schema) \
-        .json('input') \
+        .json('input/miner-power') \
         .withWatermark("timestamp", "10 minutes")
 
     #    .option('cleanSource', 'archive') \
@@ -60,9 +60,6 @@ if __name__ == "__main__":
 
     minerPower = minerPower.withColumn(
         "date", minerPower.timestamp.astype('date'))
-
-    # Generate running word count
-    # wordCounts = words.groupBy('word').count()
 
     numberOfRecords = minerPower.groupBy().count()
 
@@ -83,23 +80,12 @@ if __name__ == "__main__":
         window(minerPower.timestamp, '2 day', '2 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
-    # Start running the query that prints the running counts to the console
-    # def output_counts(df, epoch_id):
-    #    df.coalesce(1).write.csv('output/word_counts', mode='overwrite')
-    #    pass
-
-    # query = minerPower\
-    #    .writeStream\
-    #    .outputMode('complete')\
-    #    .foreachBatch(output_counts)\
-    #    .start()
-
     query = minerPower \
         .writeStream \
-        .queryName("json") \
+        .queryName("miner_power_json") \
         .format("json") \
-        .option("path", "output/json") \
-        .option("checkpointLocation", "checkpoint/json") \
+        .option("path", "output/miner_power/json") \
+        .option("checkpointLocation", "checkpoint/miner_power/json") \
         .partitionBy("date", "miner") \
         .start()
     
@@ -108,35 +94,35 @@ if __name__ == "__main__":
     # Start running the query that prints the running counts to the console
     query2 = numberOfRecords \
         .writeStream \
-        .queryName("counter") \
+        .queryName("miner_power_counter") \
         .outputMode('complete') \
         .format('console') \
         .start()
 
     query3 = averagePowerHourly \
         .writeStream \
-        .queryName("json_avg_power_hourly") \
+        .queryName("miner_power_avg_hourly_json") \
         .format("json") \
-        .option("path", "output/json_avg_power_hourly") \
-        .option("checkpointLocation", "checkpoint/json_avg_power_hourly") \
+        .option("path", "output/miner_power/json_avg_hourly") \
+        .option("checkpointLocation", "checkpoint/miner_power/json_avg_hourly") \
         .partitionBy("date", "miner") \
         .start()
 
     query4 = averagePowerDaily \
         .writeStream \
-        .queryName("json_avg_power_daily") \
+        .queryName("miner_power_avg_daily_json") \
         .format("json") \
-        .option("path", "output/json_avg_power_daily") \
-        .option("checkpointLocation", "checkpoint/json_avg_power_daily") \
+        .option("path", "output/miner_power/json_avg_daily") \
+        .option("checkpointLocation", "checkpoint/miner_power/json_avg_daily") \
         .partitionBy("date", "miner") \
         .start()
 
     query5 = averagePowerMultiDay \
         .writeStream \
-        .queryName("json_avg_power_multiday") \
+        .queryName("miner_power_avg_multiday_json") \
         .format("json") \
-        .option("path", "output/json_avg_power_multiday") \
-        .option("checkpointLocation", "checkpoint/json_avg_power_multiday") \
+        .option("path", "output/miner_power/json_avg_multiday") \
+        .option("checkpointLocation", "checkpoint/miner_power/json_avg_multiday") \
         .partitionBy("window", "miner") \
         .start()
 

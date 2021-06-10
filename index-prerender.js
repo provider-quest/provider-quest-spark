@@ -37,7 +37,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/${jsonFilename}`, err => {
+        fs.rename(`tmp/${jsonFilename}`, `input/miner-power/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
