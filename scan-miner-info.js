@@ -3,29 +3,33 @@ const { formatWithOptions } = require('util')
 const { load } = require('@alex.garcia/observable-prerender')
 
 async function run () {
+  let jsonFilename
   const notebook = await load(
-    '@jimpick/lotus-js-client-space-race-miner-power-scanner',
-    ['minerPower', 'selectedDate']
+    '@jimpick/lotus-js-client-mainnet-miner-info-scanner',
+    ['minerInfo', 'selectedDate']
     // { headless: false }
   )
   const selectedEpoch = await notebook.value('selectedEpoch')
   const selectedDate = await notebook.value('selectedDate')
   console.log('Date:', selectedDate)
   const tipSet = await notebook.value('tipSet')
+  let count = 0
   while (true) {
-    const minerPower = await notebook.value('minerPower')
-    console.log(
-      'State: ',
-      minerPower.state,
-      ' Elapsed: ',
-      minerPower.elapsed,
-      ' Records: ',
-      minerPower.records && minerPower.records.length
-    )
-    if (minerPower.state === 'done') {
-      const jsonFilename = `power-${selectedEpoch}.json`
+    const minerInfo = await notebook.value('minerInfo')
+    if (count++ % 100 === 0) {
+      console.log(
+        'State: ',
+        minerInfo.state,
+        ' Elapsed: ',
+        minerInfo.elapsed,
+        ' Records: ',
+        minerInfo.records && minerInfo.records.length
+      )
+    }
+    if (minerInfo.state === 'done') {
+      jsonFilename = `info-${selectedEpoch}.json`
       const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
-      for (const record of minerPower.records) {
+      for (const record of minerInfo.records) {
         const { height, ...rest } = record
         await jsonFile.write(
           JSON.stringify({
@@ -37,7 +41,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/miner-power/${jsonFilename}`, err => {
+        fs.rename(`tmp/${jsonFilename}`, `input/miner-info/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
@@ -48,6 +52,7 @@ async function run () {
       break
     }
   }
+  console.log('Filename:', jsonFilename)
   console.log('Epoch:', selectedEpoch)
   console.log('Date:', selectedDate)
   console.log('TipSet:', tipSet)
