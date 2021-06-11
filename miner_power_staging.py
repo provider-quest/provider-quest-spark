@@ -32,7 +32,7 @@ import time
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import date_format
 from pyspark.sql.functions import window
-from pyspark.sql.types import StructType
+from pyspark.sql.types import StructType, ArrayType, StringType
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         .appName("MinerPowerStaging")\
         .getOrCreate()
 
-    schema = StructType() \
+    schemaPower = StructType() \
         .add("epoch", "long") \
         .add("timestamp", "timestamp") \
         .add("tipSet", "string") \
@@ -48,20 +48,43 @@ if __name__ == "__main__":
         .add("rawBytePower", "double") \
         .add("qualityAdjPower", "double")
 
-    # Create DataFrame representing the stream of input lines from connection to host:port
     minerPower = spark \
         .readStream \
-        .schema(schema) \
+        .schema(schemaPower) \
         .json('input-staging/miner-power') \
-        .withWatermark("timestamp", "1 second")
-
-        #.option('cleanSource', 'archive') \
-        #.option('sourceArchiveDir', 'archive-staging') \
+        .withWatermark("timestamp", "1 hour")
 
     minerPower = minerPower.withColumn(
         "date", minerPower.timestamp.astype('date'))
 
-    numberOfRecords = minerPower.groupBy().count()
+    schemaInfo = StructType() \
+        .add("epoch", "long") \
+        .add("timestamp", "timestamp") \
+        .add("tipSet", "string") \
+        .add("miner", "string") \
+        .add("owner", "string") \
+        .add("worker", "string") \
+        .add("newWorker", "string") \
+        .add("controlAddresses", ArrayType(StringType())) \
+        .add("peerId", "string") \
+        .add("multiaddrs", ArrayType(StringType())) \
+        .add("multiaddrsDecoded", ArrayType(StringType())) \
+        .add("windowPoStProofType", "short") \
+        .add("sectorSize", "long") \
+        .add("windowPoStPartitionSectors", "long") \
+        .add("consensusFaultElapsed", "long")
+
+    minerInfo = spark \
+        .readStream \
+        .schema(schemaInfo) \
+        .json('input-staging/miner-info') \
+        .withWatermark("timestamp", "1 hour")
+
+    minerInfo = minerInfo.withColumn(
+        "date", minerInfo.timestamp.astype('date'))
+
+    numberOfPowerRecords = minerPower.groupBy().count()
+    numberOfInfoRecords = minerInfo.groupBy().count()
 
     averagePowerHourly = minerPower.groupBy(
         minerPower.miner,
@@ -80,51 +103,65 @@ if __name__ == "__main__":
         window(minerPower.timestamp, '2 day', '2 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
-    query = minerPower \
+    #query = minerPower \
+    #    .writeStream \
+    #    .queryName("miner_power_json") \
+    #    .format("json") \
+    #    .option("path", "output-staging/miner_power/json") \
+    #    .option("checkpointLocation", "checkpoint-staging/miner_power/json") \
+    #    .partitionBy("date", "miner") \
+    #    .start()
+
+    queryArchiveMinerInfo = minerInfo \
         .writeStream \
-        .queryName("miner_power_json") \
+        .queryName("miner_info_json") \
         .format("json") \
-        .option("path", "output-staging/miner_power/json") \
-        .option("checkpointLocation", "checkpoint-staging/miner_power/json") \
+        .option("path", "output-staging/miner_info/json") \
+        .option("checkpointLocation", "checkpoint-staging/miner_info/json") \
         .partitionBy("date", "miner") \
         .start()
 
-    # .repartition(1) \
-
     # Start running the query that prints the running counts to the console
-    query2 = numberOfRecords \
+    #query2 = numberOfRecords \
+    #    .writeStream \
+    #    .queryName("miner_power_counter") \
+    #    .outputMode('complete') \
+    #    .format('console') \
+    #    .start()
+
+    queryInfoCount = numberOfInfoRecords \
         .writeStream \
-        .queryName("miner_power_counter") \
+        .queryName("miner_info_counter") \
         .outputMode('complete') \
         .format('console') \
         .start()
 
-    query3 = averagePowerHourly \
-        .writeStream \
-        .queryName("miner_power_avg_hourly_json") \
-        .format("json") \
-        .option("path", "output-staging/miner_power/json_avg_hourly") \
-        .option("checkpointLocation", "checkpoint-staging/miner_power/json_avg_hourly") \
-        .partitionBy("date", "miner") \
-        .start()
+    #query3 = averagePowerHourly \
+    #    .writeStream \
+    #    .queryName("miner_power_avg_hourly_json") \
+    #    .format("json") \
+    #    .option("path", "output-staging/miner_power/json_avg_hourly") \
+    #    .option("checkpointLocation", "checkpoint-staging/miner_power/json_avg_hourly") \
+    #    .partitionBy("date", "miner") \
+    #    .start()
 
-    query4 = averagePowerDaily \
-        .writeStream \
-        .queryName("miner_power_avg_daily_json") \
-        .format("json") \
-        .option("path", "output-staging/miner_power/json_avg_daily") \
-        .option("checkpointLocation", "checkpoint-staging/miner_power/json_avg_daily") \
-        .partitionBy("date", "miner") \
-        .start()
+    #query4 = averagePowerDaily \
+    #    .writeStream \
+    #    .queryName("miner_power_avg_daily_json") \
+    #    .format("json") \
+    #    .option("path", "output-staging/miner_power/json_avg_daily") \
+    #    .option("checkpointLocation", "checkpoint-staging/miner_power/json_avg_daily") \
+    #    .partitionBy("date", "miner") \
+    #    .start()
 
-    query5 = averagePowerMultiDay \
-        .writeStream \
-        .queryName("miner_power_avg_multiday_json") \
-        .format("json") \
-        .option("path", "output-staging/miner_power/json_avg_multiday") \
-        .option("checkpointLocation", "checkpoint-staging/miner_power/json_avg_multiday") \
-        .partitionBy("window", "miner") \
-        .start()
+    #query5 = averagePowerMultiDay \
+    #    .writeStream \
+    #    .queryName("miner_power_avg_multiday_json") \
+    #    .format("json") \
+    #    .option("path", "output-staging/miner_power/json_avg_multiday") \
+    #    .option("checkpointLocation", "checkpoint-staging/miner_power/json_avg_multiday") \
+    #    .partitionBy("window", "miner") \
+    #    .start()
 
     while True:
         #print("json", query.lastProgress)
