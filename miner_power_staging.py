@@ -32,6 +32,7 @@ import time
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import date_format
 from pyspark.sql.functions import window
+from pyspark.sql.functions import last
 from pyspark.sql.types import StructType, ArrayType, StringType
 
 if __name__ == "__main__":
@@ -103,7 +104,11 @@ if __name__ == "__main__":
         window(minerPower.timestamp, '2 day', '2 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
-    #query = minerPower \
+    latestMinerInfoSubset = minerInfo \
+        .groupBy('miner') \
+        .agg(last('sectorSize'), last('peerId'), last('multiaddrsDecoded'))
+
+    # query = minerPower \
     #    .writeStream \
     #    .queryName("miner_power_json") \
     #    .format("json") \
@@ -121,8 +126,53 @@ if __name__ == "__main__":
         .partitionBy("date", "miner") \
         .start()
 
+    # queryLatestMinerInfoSubset = latestMinerInfoSubset \
+    #    .writeStream \
+    #    .queryName("miner_info_subset_latest_json") \
+    #    .outputMode('complete') \
+    #    .format("console") \
+    #    .start()
+
+    def output_latest_miner_info_subset(df, epoch_id):
+        df.coalesce(1).write.json(
+            'output-staging/miner_info/json_latest_subset', mode='overwrite')
+
+    queryLatestMinerInfoSubset = latestMinerInfoSubset \
+        .writeStream \
+        .queryName("miner_info_subset_latest_json") \
+        .outputMode('complete') \
+        .foreachBatch(output_latest_miner_info_subset) \
+        .start()
+
+    #def output_latest_miner_info_subset_changes(df, epoch_id):
+    #    df.coalesce(1).write.json(
+    #        'output-staging/miner_info/json_latest_subset_changes/' + epoch_id + '/', mode='overwrite')
+
+    #queryLatestMinerInfoSubsetChanges = latestMinerInfoSubset \
+    #    .writeStream \
+    #    .queryName("miner_info_subset_latest_json_changes") \
+    #    .outputMode('update') \
+    #    .format("console") \
+    #    .start()
+
+    #    .foreachBatch(output_latest_miner_info_subset_changes) \
+
+    #def output_latest_miner_info_subset2(df, epoch_id):
+    #    df.coalesce(1).write.json(
+    #        'output-staging/miner_info/json_latest_subset2', mode='overwrite')
+
+    #queryLatestMinerInfoSubset = latestMinerInfoSubset \
+    #    .writeStream \
+    #    .queryName("miner_info_subset2_latest_json") \
+    #    .outputMode('complete') \
+    #    .foreachBatch(output_latest_miner_info_subset2) \
+    #    .start()
+
+    #    .option("path", "output-staging/miner_info/json_peerids") \
+    #    .option("checkpointLocation", "checkpoint-staging/miner_info/json_peerids") \
+
     # Start running the query that prints the running counts to the console
-    #query2 = numberOfRecords \
+    # query2 = numberOfRecords \
     #    .writeStream \
     #    .queryName("miner_power_counter") \
     #    .outputMode('complete') \
@@ -136,7 +186,7 @@ if __name__ == "__main__":
         .format('console') \
         .start()
 
-    #query3 = averagePowerHourly \
+    # query3 = averagePowerHourly \
     #    .writeStream \
     #    .queryName("miner_power_avg_hourly_json") \
     #    .format("json") \
@@ -145,7 +195,7 @@ if __name__ == "__main__":
     #    .partitionBy("date", "miner") \
     #    .start()
 
-    #query4 = averagePowerDaily \
+    # query4 = averagePowerDaily \
     #    .writeStream \
     #    .queryName("miner_power_avg_daily_json") \
     #    .format("json") \
@@ -154,7 +204,7 @@ if __name__ == "__main__":
     #    .partitionBy("date", "miner") \
     #    .start()
 
-    #query5 = averagePowerMultiDay \
+    # query5 = averagePowerMultiDay \
     #    .writeStream \
     #    .queryName("miner_power_avg_multiday_json") \
     #    .format("json") \
@@ -169,11 +219,11 @@ if __name__ == "__main__":
         #print("json_avg_power_hourly", query3.lastProgress)
         #print("json_avg_power_daily", query4.lastProgress)
         #print("json_avg_power_multiday", query5.lastProgress)
-        #print()
+        # print()
         time.sleep(60)
 
-    #query.awaitTermination()
-    #query2.awaitTermination()
-    #query3.awaitTermination()
-    #query4.awaitTermination()
-    #query5.awaitTermination()
+    # query.awaitTermination()
+    # query2.awaitTermination()
+    # query3.awaitTermination()
+    # query4.awaitTermination()
+    # query5.awaitTermination()
