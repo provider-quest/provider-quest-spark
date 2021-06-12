@@ -32,7 +32,8 @@ import time
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import date_format
 from pyspark.sql.functions import window
-from pyspark.sql.types import StructType
+from pyspark.sql.functions import last
+from pyspark.sql.types import StructType, ArrayType, StringType
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -40,7 +41,7 @@ if __name__ == "__main__":
         .appName("MinerPower")\
         .getOrCreate()
 
-    schema = StructType() \
+    schemaPower = StructType() \
         .add("epoch", "long") \
         .add("timestamp", "timestamp") \
         .add("tipSet", "string") \
@@ -48,20 +49,43 @@ if __name__ == "__main__":
         .add("rawBytePower", "double") \
         .add("qualityAdjPower", "double")
 
-    # Create DataFrame representing the stream of input lines from connection to host:port
     minerPower = spark \
         .readStream \
-        .schema(schema) \
+        .schema(schemaPower) \
         .json('input/miner-power') \
-        .withWatermark("timestamp", "10 minutes")
-
-    #    .option('cleanSource', 'archive') \
-    #    .option('sourceArchiveDir', 'archive') \
+        .withWatermark("timestamp", "1 hour")
 
     minerPower = minerPower.withColumn(
         "date", minerPower.timestamp.astype('date'))
 
-    numberOfRecords = minerPower.groupBy().count()
+    schemaInfo = StructType() \
+        .add("epoch", "long") \
+        .add("timestamp", "timestamp") \
+        .add("tipSet", "string") \
+        .add("miner", "string") \
+        .add("owner", "string") \
+        .add("worker", "string") \
+        .add("newWorker", "string") \
+        .add("controlAddresses", ArrayType(StringType())) \
+        .add("peerId", "string") \
+        .add("multiaddrs", ArrayType(StringType())) \
+        .add("multiaddrsDecoded", ArrayType(StringType())) \
+        .add("windowPoStProofType", "short") \
+        .add("sectorSize", "long") \
+        .add("windowPoStPartitionSectors", "long") \
+        .add("consensusFaultElapsed", "long")
+
+    minerInfo = spark \
+        .readStream \
+        .schema(schemaInfo) \
+        .json('input/miner-info') \
+        .withWatermark("timestamp", "1 hour")
+
+    minerInfo = minerInfo.withColumn(
+        "date", minerInfo.timestamp.astype('date'))
+
+    numberOfPowerRecords = minerPower.groupBy().count()
+    numberOfInfoRecords = minerInfo.groupBy().count()
 
     averagePowerHourly = minerPower.groupBy(
         minerPower.miner,
@@ -80,7 +104,18 @@ if __name__ == "__main__":
         window(minerPower.timestamp, '2 day', '2 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
-    query = minerPower \
+    latestMinerInfoSubset = minerInfo \
+        .groupBy('miner') \
+        .agg(last('sectorSize'), last('peerId'), last('multiaddrsDecoded'))
+
+    queryPowerCounter = numberOfPowerRecords \
+        .writeStream \
+        .queryName("miner_power_counter") \
+        .outputMode('complete') \
+        .format('console') \
+        .start()
+
+    queryPowerArchive = minerPower \
         .writeStream \
         .queryName("miner_power_json") \
         .format("json") \
@@ -88,18 +123,8 @@ if __name__ == "__main__":
         .option("checkpointLocation", "checkpoint/miner_power/json") \
         .partitionBy("date", "miner") \
         .start()
-    
-    # .repartition(1) \
 
-    # Start running the query that prints the running counts to the console
-    query2 = numberOfRecords \
-        .writeStream \
-        .queryName("miner_power_counter") \
-        .outputMode('complete') \
-        .format('console') \
-        .start()
-
-    query3 = averagePowerHourly \
+    queryPowerAvgHourly = averagePowerHourly \
         .writeStream \
         .queryName("miner_power_avg_hourly_json") \
         .format("json") \
@@ -108,7 +133,7 @@ if __name__ == "__main__":
         .partitionBy("date", "miner") \
         .start()
 
-    query4 = averagePowerDaily \
+    queryPowerAvgDaily = averagePowerDaily \
         .writeStream \
         .queryName("miner_power_avg_daily_json") \
         .format("json") \
@@ -117,7 +142,7 @@ if __name__ == "__main__":
         .partitionBy("date", "miner") \
         .start()
 
-    query5 = averagePowerMultiDay \
+    queryPowerAvgMultiday = averagePowerMultiDay \
         .writeStream \
         .queryName("miner_power_avg_multiday_json") \
         .format("json") \
@@ -126,17 +151,36 @@ if __name__ == "__main__":
         .partitionBy("window", "miner") \
         .start()
 
-    while True:
-        #print("json", query.lastProgress)
-        #print("total", query2.lastProgress)
-        #print("json_avg_power_hourly", query3.lastProgress)
-        #print("json_avg_power_daily", query4.lastProgress)
-        #print("json_avg_power_multiday", query5.lastProgress)
-        #print()
-        time.sleep(60)
+    queryInfoCounter = numberOfInfoRecords \
+        .writeStream \
+        .queryName("miner_info_counter") \
+        .outputMode('complete') \
+        .format('console') \
+        .start()
 
-    #query.awaitTermination()
-    #query2.awaitTermination()
-    #query3.awaitTermination()
-    #query4.awaitTermination()
-    #query5.awaitTermination()
+    queryMinerInfoArchive = minerInfo \
+        .writeStream \
+        .queryName("miner_info_json") \
+        .format("json") \
+        .option("path", "output/miner_info/json") \
+        .option("checkpointLocation", "checkpoint/miner_info/json") \
+        .partitionBy("date", "miner") \
+        .start()
+
+    def output_latest_miner_info_subset(df, epoch_id):
+        df.coalesce(1).write.json(
+            'output/miner_info/json_latest_subset', mode='overwrite')
+
+    queryMinerInfoSubsetLatest = latestMinerInfoSubset \
+        .writeStream \
+        .queryName("miner_info_subset_latest_json") \
+        .outputMode('complete') \
+        .foreachBatch(output_latest_miner_info_subset) \
+        .start()
+
+    while True:
+        for stream in spark.streams.active:
+            if stream.status['message'] != "Waiting for data to arrive" and \
+                    stream.status['message'].find("Getting offsets") == -1:
+                print(stream.name, stream.status['message'])
+        time.sleep(1)
