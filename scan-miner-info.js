@@ -5,7 +5,7 @@ const { load } = require('@alex.garcia/observable-prerender')
 async function run () {
   let jsonFilename
   const notebook = await load(
-    '@jimpick/lotus-js-client-mainnet-miner-info-scanner',
+    '@jimpick/miner-report-miner-info-scanner',
     ['minerInfo', 'selectedDate']
     // { headless: false }
   )
