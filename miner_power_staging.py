@@ -214,16 +214,7 @@ if __name__ == "__main__":
     #    .start()
 
     while True:
-        #print("json", query.lastProgress)
-        #print("total", query2.lastProgress)
-        #print("json_avg_power_hourly", query3.lastProgress)
-        #print("json_avg_power_daily", query4.lastProgress)
-        #print("json_avg_power_multiday", query5.lastProgress)
-        # print()
-        time.sleep(60)
-
-    # query.awaitTermination()
-    # query2.awaitTermination()
-    # query3.awaitTermination()
-    # query4.awaitTermination()
-    # query5.awaitTermination()
+        for stream in spark.streams.active:
+            if stream.status['message'] != "Waiting for data to arrive":
+                print(stream.name, stream.status['message'])
+        time.sleep(1)
