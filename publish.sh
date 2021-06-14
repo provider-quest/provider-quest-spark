@@ -18,3 +18,4 @@ done) | jq -s "{ date: \"$DATE\", miners: map({ key: .miner, value: { qualityAdj
 (cd dist/miner-power-daily-average-latest; head miner-power-daily-average-latest.json; hub bucket push -y)
 
 ./publish-multiday.sh
+./publish-info-subset.sh
