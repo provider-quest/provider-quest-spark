@@ -18,7 +18,7 @@ async function run () {
     const minerInfo = await notebook.value('minerInfo')
     if (count++ % 100 === 0) {
       console.log(
-        'State: ',
+        'Miner Info => State: ',
         minerInfo.state,
         ' Elapsed: ',
         minerInfo.elapsed,

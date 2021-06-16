@@ -5,43 +5,40 @@ const { load } = require('@alex.garcia/observable-prerender')
 async function run () {
   let jsonFilename
   const notebook = await load(
-    '@jimpick/miner-report-miner-power-scanner',
-    ['minerPower', 'selectedDate']
+    '@jimpick/miner-report-storage-ask-scanner',
+    ['asks', 'selectedDate']
     // { headless: false }
   )
   const selectedEpoch = await notebook.value('selectedEpoch')
   const selectedDate = await notebook.value('selectedDate')
   console.log('Date:', selectedDate)
-  const tipSet = await notebook.value('tipSet')
   let count = 0
   while (true) {
-    const minerPower = await notebook.value('minerPower')
+    const asks = await notebook.value('asks')
     if (count++ % 100 === 0) {
       console.log(
-        'Miner Power => State: ',
-        minerPower.state,
+        'Asks => State: ',
+        asks.state,
         ' Elapsed: ',
-        minerPower.elapsed,
+        asks.elapsed,
         ' Records: ',
-        minerPower.records && minerPower.records.length
+        asks.records && asks.records.length
       )
     }
-    if (minerPower.state === 'done') {
-      jsonFilename = `power-${selectedEpoch}.json`
+    if (asks.state === 'done') {
+      jsonFilename = `asks-${selectedEpoch}.json`
       const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
-      for (const record of minerPower.records) {
-        const { height, ...rest } = record
+      for (const record of asks.records) {
         await jsonFile.write(
           JSON.stringify({
             timestamp: selectedDate,
             epoch: selectedEpoch,
-            tipSet,
-            ...rest
+            ...record
           }) + '\n'
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/miner-power/${jsonFilename}`, err => {
+        fs.rename(`tmp/${jsonFilename}`, `input/asks/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
@@ -55,7 +52,6 @@ async function run () {
   console.log('Filename:', jsonFilename)
   console.log('Epoch:', selectedEpoch)
   console.log('Date:', selectedDate)
-  console.log('TipSet:', tipSet)
   await notebook.browser.close()
 }
 run()
