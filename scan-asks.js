@@ -22,7 +22,7 @@ async function run () {
         ' Elapsed: ',
         asks.elapsed,
         ' Records: ',
-        asks.records && asks.records.length
+        asks.recordsLength
       )
     }
     if (asks.state === 'done') {

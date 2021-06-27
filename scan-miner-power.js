@@ -23,7 +23,7 @@ async function run () {
         ' Elapsed: ',
         minerPower.elapsed,
         ' Records: ',
-        minerPower.records && minerPower.records.length
+        minerPower.recordsLength
       )
     }
     if (minerPower.state === 'done') {

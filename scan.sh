@@ -2,22 +2,56 @@
 
 export TZ=UTC
 while true; do
+
   echo '>> Miner Power'
   node scan-miner-power.js
+
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
   echo
   sleep 60
+
   echo '>> Miner Info'
   node scan-miner-info.js
+
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
   echo
   sleep 60
+
   echo '>> Asks'
   node scan-asks.js
+
   echo
-  echo 'Sleeping 2h' $(TZ=America/Vancouver date)
+  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
   echo
-  sleep 7200
+  sleep 60
+
+  echo '>> Deals (1 of 3)'
+  node scan-deals.js
+  echo '>> (finished) Deals (1 of 3)'
+
+  echo
+  echo 'Sleeping 20m' $(TZ=America/Vancouver date)
+  echo
+  sleep $((20 * 60))
+
+  echo '>> Deals (2 of 3)'
+  node scan-deals.js
+  echo '>> (finished) Deals (2 of 3)'
+
+  echo
+  echo 'Sleeping 20m' $(TZ=America/Vancouver date)
+  echo
+  sleep $((20 * 60))
+
+  echo '>> Deals (3 of 3)'
+  node scan-deals.js
+  echo '>> (finished) Deals (3 of 3)'
+
+  echo
+  echo 'Sleeping 20m' $(TZ=America/Vancouver date)
+  echo
+  sleep $((20 * 60))
+
 done

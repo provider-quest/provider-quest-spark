@@ -16,3 +16,4 @@ yarn.lock
 tmp
 dist
 estuary-archive
+local-state
