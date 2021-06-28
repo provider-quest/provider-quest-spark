@@ -53,7 +53,7 @@ async function run () {
     
     if (deals.state === 'done') {
       lastHeight = deals.lastHeight
-      if (deals.deals.length > 0) {
+      if (deals.deals.length > 0 && lastHeight) {
         jsonFilename = `deals-${lastHeight}.json`
         const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
         for (const deal of deals.deals) {
@@ -75,7 +75,9 @@ async function run () {
   }
   console.log('Filename:', jsonFilename)
   console.log('Last Epoch:', lastHeight)
-  fs.writeFileSync('local-state/deals/last-height', `${lastHeight}`)
+  if (lastHeight) {
+    fs.writeFileSync('local-state/deals/last-height', `${lastHeight}`)
+  }
   await notebook.browser.close()
 }
 run()
