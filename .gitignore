@@ -17,3 +17,4 @@ tmp
 dist
 estuary-archive
 local-state
+__pycache__
