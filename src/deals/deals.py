@@ -57,6 +57,9 @@ def process_deals(spark, suffix):
     dealsPairs = deals \
         .withColumn("clientProvider", concat_ws('-', deals.client, deals.provider))
 
+    dealsPairsHourly = dealsPairs \
+        .withColumn("hour", hour(deals.messageTime))
+
     numberOfDealsRecords = deals.groupBy().count()
 
     dealsHourlyAggr = deals.groupBy(
@@ -260,6 +263,28 @@ def process_deals(spark, suffix):
         max(dealsPairs.lifetimeValue)
     )
 
+    dealsHourlyAggrByPairsVerified = dealsPairsHourly.groupBy(
+        dealsPairsHourly.date,
+        dealsPairsHourly.hour,
+        window(dealsPairsHourly.messageTime, '1 day'),
+        dealsPairsHourly.clientProvider,
+        dealsPairsHourly.verifiedDeal
+    ).agg(
+        expr("count(*) as count"),
+        sum(dealsPairs.pieceSizeDouble),
+        avg(dealsPairs.pieceSizeDouble),
+        min(dealsPairs.pieceSizeDouble),
+        max(dealsPairs.pieceSizeDouble),
+        avg(dealsPairs.storagePricePerEpochDouble),
+        min(dealsPairs.storagePricePerEpochDouble),
+        max(dealsPairs.storagePricePerEpochDouble),
+        approx_count_distinct(dealsPairs.label),
+        sum(dealsPairs.lifetimeValue),
+        avg(dealsPairs.lifetimeValue),
+        min(dealsPairs.lifetimeValue),
+        max(dealsPairs.lifetimeValue)
+    )
+
     queryArchiveDealsByProvider = deals \
         .writeStream \
         .queryName("deals_by_provider_json") \
@@ -375,4 +400,13 @@ def process_deals(spark, suffix):
         .option("path", outputDir + "/deals_aggr_daily_by_pairs_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_pairs_verified/json") \
         .partitionBy("date") \
+        .start()
+
+    queryAggrDealsHourlyByPairsVerified = dealsHourlyAggrByPairsVerified \
+        .writeStream \
+        .queryName("deals_aggr_hourly_by_pairs_verified_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_aggr_hourly_by_pairs_verified/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_aggr_hourly_by_pairs_verified/json") \
+        .partitionBy("date", "hour") \
         .start()
