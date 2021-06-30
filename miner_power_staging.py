@@ -268,6 +268,46 @@ if __name__ == "__main__":
         max(deals.lifetimeValue)
     )
 
+    dealsDailyAggrByProvider = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 day'),
+        deals.provider
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue)
+    )
+
+    dealsDailyAggrByClient = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 day'),
+        deals.client
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue)
+    )
+
     # query = minerPower \
     #    .writeStream \
     #    .queryName("miner_power_json") \
@@ -454,6 +494,24 @@ if __name__ == "__main__":
         .option("path", "output-staging/deals_aggr_daily_by_verified/json") \
         .option("checkpointLocation", "checkpoint-staging/deals_aggr_daily_by_verified/json") \
         .partitionBy("date") \
+        .start()
+
+    queryAggrDealsDailyByProvider = dealsDailyAggrByProvider \
+        .writeStream \
+        .queryName("deals_aggr_daily_by_provider_json") \
+        .format("json") \
+        .option("path", "output-staging/deals_aggr_daily_by_provider/json") \
+        .option("checkpointLocation", "checkpoint-staging/deals_aggr_daily_by_provider/json") \
+        .partitionBy("date", "provider") \
+        .start()
+
+    queryAggrDealsDailyByClient = dealsDailyAggrByClient \
+        .writeStream \
+        .queryName("deals_aggr_daily_by_client_json") \
+        .format("json") \
+        .option("path", "output-staging/deals_aggr_daily_by_client/json") \
+        .option("checkpointLocation", "checkpoint-staging/deals_aggr_daily_by_client/json") \
+        .partitionBy("date", "client") \
         .start()
 
     while True:
