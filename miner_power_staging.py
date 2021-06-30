@@ -34,7 +34,7 @@ from pyspark.sql.functions import window
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import avg
 from pyspark.sql.functions import min, max, sum, approx_count_distinct
-from pyspark.sql.functions import date_trunc
+from pyspark.sql.functions import hour
 from pyspark.sql.types import StructType, ArrayType, StringType
 
 if __name__ == "__main__":
@@ -148,7 +148,7 @@ if __name__ == "__main__":
                          "pieceSize / 1e18 / 1024 / 1024 / 1024"))
 
     dealsHourly = deals \
-        .withColumn("hour", date_trunc('hour', deals.messageTime))
+        .withColumn("hour", hour(deals.messageTime))
 
     #numberOfPowerRecords = minerPower.groupBy().count()
     #numberOfInfoRecords = minerInfo.groupBy().count()
@@ -209,9 +209,49 @@ if __name__ == "__main__":
         max(deals.lifetimeValue)
     )
 
+    dealsHourlyAggrByVerified = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 hour'),
+        deals.verifiedDeal
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue)
+    )
+
     dealsDailyAggr = deals.groupBy(
         deals.date,
         window(deals.messageTime, '1 day')
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue)
+    )
+
+    dealsDailyAggrByVerified = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 day'),
+        deals.verifiedDeal
     ).agg(
         expr("count(*) as count"),
         sum(deals.pieceSizeDouble),
@@ -386,7 +426,16 @@ if __name__ == "__main__":
         .format("json") \
         .option("path", "output-staging/deals_aggr_hourly/json") \
         .option("checkpointLocation", "checkpoint-staging/deals_aggr_hourly/json") \
-        .partitionBy("date", "window") \
+        .partitionBy("date") \
+        .start()
+
+    queryAggrDealsHourlyByVerified = dealsHourlyAggrByVerified \
+        .writeStream \
+        .queryName("deals_aggr_hourly_by_verified_json") \
+        .format("json") \
+        .option("path", "output-staging/deals_aggr_hourly_by_verified/json") \
+        .option("checkpointLocation", "checkpoint-staging/deals_aggr_hourly_by_verified/json") \
+        .partitionBy("date") \
         .start()
 
     queryAggrDealsDaily = dealsDailyAggr \
@@ -395,6 +444,15 @@ if __name__ == "__main__":
         .format("json") \
         .option("path", "output-staging/deals_aggr_daily/json") \
         .option("checkpointLocation", "checkpoint-staging/deals_aggr_daily/json") \
+        .partitionBy("date") \
+        .start()
+
+    queryAggrDealsDailyByVerified = dealsDailyAggrByVerified \
+        .writeStream \
+        .queryName("deals_aggr_daily_by_verified_json") \
+        .format("json") \
+        .option("path", "output-staging/deals_aggr_daily_by_verified/json") \
+        .option("checkpointLocation", "checkpoint-staging/deals_aggr_daily_by_verified/json") \
         .partitionBy("date") \
         .start()
 
