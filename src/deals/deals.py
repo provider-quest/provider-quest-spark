@@ -10,7 +10,7 @@ from pyspark.sql.functions import concat_ws
 from pyspark.sql.types import StructType, ArrayType, StringType
 
 
-def process_deals(spark, suffix):
+def process_deals(spark, suffix=""):
 
     inputDir = 'input' + suffix
     outputDir = 'output' + suffix
@@ -266,7 +266,7 @@ def process_deals(spark, suffix):
     dealsHourlyAggrByPairsVerified = dealsPairsHourly.groupBy(
         dealsPairsHourly.date,
         dealsPairsHourly.hour,
-        window(dealsPairsHourly.messageTime, '1 day'),
+        window(dealsPairsHourly.messageTime, '1 hour'),
         dealsPairsHourly.clientProvider,
         dealsPairsHourly.verifiedDeal
     ).agg(
