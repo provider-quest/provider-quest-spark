@@ -1,0 +1,16 @@
+
+all: daily-totals
+
+clean: clean-daily-totals
+
+daily-totals: dist/deals/daily-totals.json
+
+dist/deals/daily-totals.json: $(wildcard output/deals_aggr_daily/json/date=*/part-*.json)
+	cat output/deals_aggr_daily/json/date=*/part-*.json | \
+		jq -s 'sort_by(.window.start)' > \
+		dist/deals/daily-totals.json
+
+clean-daily-totals:
+	rm -f dist/deals/daily-totals.json
+
+
