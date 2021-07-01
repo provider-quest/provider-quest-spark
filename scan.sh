@@ -36,6 +36,14 @@ while true; do
   echo
   sleep $((20 * 60))
 
+  echo '>> Publishing deals'
+  ./publish-deals.sh
+
+  echo
+  echo 'Sleeping 15s' $(TZ=America/Vancouver date)
+  echo
+  sleep 15
+
   echo '>> Deals (2 of 3)'
   node scan-deals.js
   echo '>> (finished) Deals (2 of 3)'
@@ -45,6 +53,14 @@ while true; do
   echo
   sleep $((20 * 60))
 
+  echo '>> Publishing deals'
+  ./publish-deals.sh
+
+  echo
+  echo 'Sleeping 15s' $(TZ=America/Vancouver date)
+  echo
+  sleep 15
+
   echo '>> Deals (3 of 3)'
   node scan-deals.js
   echo '>> (finished) Deals (3 of 3)'
@@ -53,5 +69,14 @@ while true; do
   echo 'Sleeping 20m' $(TZ=America/Vancouver date)
   echo
   sleep $((20 * 60))
+
+  echo '>> Publishing everything'
+  ./publish.sh
+
+  echo
+  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
+  echo
+  sleep 60
+
 
 done
