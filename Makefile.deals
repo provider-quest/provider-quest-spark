@@ -1,7 +1,9 @@
 
-all: daily-totals
+all: daily-totals hourly-totals
 
-clean: clean-daily-totals
+clean: clean-daily-totals clean-hourly-totals
+
+# daily-totals
 
 daily-totals: dist/deals/daily-totals.json
 
@@ -12,5 +14,26 @@ dist/deals/daily-totals.json: $(wildcard output/deals_aggr_daily/json/date=*/par
 
 clean-daily-totals:
 	rm -f dist/deals/daily-totals.json
+
+# hourly-totals
+
+HOURLY_TOTALS_DATES_DIRS := $(wildcard output/deals_aggr_hourly/json/date=*)
+HOURLY_TOTALS_DATES := $(subst date=,,$(notdir $(HOURLY_TOTALS_DATES_DIRS)))
+DIST_HOURLY_TOTALS := $(addsuffix .json,$(addprefix dist/deals/hourly-totals/,$(HOURLY_TOTALS_DATES)))
+
+hourly-totals: $(DIST_HOURLY_TOTALS) dist/deals/hourly-totals/dates.json
+
+dist/deals/hourly-totals/dates.json: $(HOURLY_TOTALS_DATES_DIRS)
+	(for f in $(HOURLY_TOTALS_DATES); do echo \"$$f\"; done) | jq -s > $@
+
+.SECONDEXPANSION:
+
+$(DIST_HOURLY_TOTALS): dist/deals/hourly-totals/%.json: $$(wildcard output/deals_aggr_hourly/json/date=%/part-*.json)
+	@echo $@
+	@mkdir -p dist/deals/hourly-totals
+	@cat $^ | jq -s 'sort_by(.window.start)' > $@
+
+clean-hourly-totals:
+	rm -rf dist/deals/hourly-totals
 
 
