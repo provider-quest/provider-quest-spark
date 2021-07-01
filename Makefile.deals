@@ -24,7 +24,7 @@ DIST_HOURLY_TOTALS := $(addsuffix .json,$(addprefix dist/deals/hourly-totals/,$(
 hourly-totals: $(DIST_HOURLY_TOTALS) dist/deals/hourly-totals/dates.json
 
 dist/deals/hourly-totals/dates.json: $(HOURLY_TOTALS_DATES_DIRS)
-	(for f in $(HOURLY_TOTALS_DATES); do echo \"$$f\"; done) | jq -s > $@
+	(for f in $(HOURLY_TOTALS_DATES); do echo \"$$f\"; done) | jq -s 'sort' > $@
 
 .SECONDEXPANSION:
 
