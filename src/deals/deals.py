@@ -292,6 +292,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_by_provider/json") \
         .option("checkpointLocation", checkpointDir + "/deals_by_provider/json") \
         .partitionBy("date", "provider") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryArchiveDealsByClient = deals \
@@ -301,6 +302,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_by_client/json") \
         .option("checkpointLocation", checkpointDir + "/deals_by_client/json") \
         .partitionBy("date", "client") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryArchiveDealsHourly = dealsHourly \
@@ -310,6 +312,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_hourly/json") \
         .option("checkpointLocation", checkpointDir + "/deals_hourly/json") \
         .partitionBy("date", "hour") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsHourly = dealsHourlyAggr \
@@ -319,6 +322,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_hourly/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_hourly/json") \
         .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsHourlyByVerified = dealsHourlyAggrByVerified \
@@ -328,6 +332,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_hourly_by_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_hourly_by_verified/json") \
         .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDaily = dealsDailyAggr \
@@ -337,6 +342,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily/json") \
         .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByVerified = dealsDailyAggrByVerified \
@@ -346,6 +352,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_verified/json") \
         .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByProvider = dealsDailyAggrByProvider \
@@ -355,6 +362,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_provider/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_provider/json") \
         .partitionBy("date", "provider") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByClient = dealsDailyAggrByClient \
@@ -364,6 +372,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_client/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_client/json") \
         .partitionBy("date", "client") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByPairs = dealsDailyAggrByPairs \
@@ -373,6 +382,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_pairs/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_pairs/json") \
         .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByProviderVerified = dealsDailyAggrByProviderVerified \
@@ -382,6 +392,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_provider_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_provider_verified/json") \
         .partitionBy("date", "provider") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByClientVerified = dealsDailyAggrByClientVerified \
@@ -391,6 +402,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_client_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_client_verified/json") \
         .partitionBy("date", "client") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsDailyByPairsVerified = dealsDailyAggrByPairsVerified \
@@ -400,6 +412,7 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_pairs_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_pairs_verified/json") \
         .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAggrDealsHourlyByPairsVerified = dealsHourlyAggrByPairsVerified \
@@ -409,4 +422,5 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_hourly_by_pairs_verified/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_hourly_by_pairs_verified/json") \
         .partitionBy("date", "hour") \
+        .trigger(processingTime='1 minute') \
         .start()

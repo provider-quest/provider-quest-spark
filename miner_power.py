@@ -134,6 +134,7 @@ if __name__ == "__main__":
         .queryName("miner_power_counter") \
         .outputMode('complete') \
         .format('console') \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryPowerArchive = minerPower \
@@ -143,6 +144,7 @@ if __name__ == "__main__":
         .option("path", "output/miner_power/json") \
         .option("checkpointLocation", "checkpoint/miner_power/json") \
         .partitionBy("date", "miner") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryPowerAvgHourly = averagePowerHourly \
@@ -152,6 +154,7 @@ if __name__ == "__main__":
         .option("path", "output/miner_power/json_avg_hourly") \
         .option("checkpointLocation", "checkpoint/miner_power/json_avg_hourly") \
         .partitionBy("date", "miner") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryPowerAvgDaily = averagePowerDaily \
@@ -161,6 +164,7 @@ if __name__ == "__main__":
         .option("path", "output/miner_power/json_avg_daily") \
         .option("checkpointLocation", "checkpoint/miner_power/json_avg_daily") \
         .partitionBy("date", "miner") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryPowerAvgMultiday = averagePowerMultiDay \
@@ -170,6 +174,7 @@ if __name__ == "__main__":
         .option("path", "output/miner_power/json_avg_multiday") \
         .option("checkpointLocation", "checkpoint/miner_power/json_avg_multiday") \
         .partitionBy("window", "miner") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryInfoCounter = numberOfInfoRecords \
@@ -177,6 +182,7 @@ if __name__ == "__main__":
         .queryName("miner_info_counter") \
         .outputMode('complete') \
         .format('console') \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryMinerInfoArchive = minerInfo \
@@ -186,6 +192,7 @@ if __name__ == "__main__":
         .option("path", "output/miner_info/json") \
         .option("checkpointLocation", "checkpoint/miner_info/json") \
         .partitionBy("date", "miner") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     def output_latest_miner_info_subset(df, epoch_id):
@@ -197,6 +204,7 @@ if __name__ == "__main__":
         .queryName("miner_info_subset_latest_json") \
         .outputMode('complete') \
         .foreachBatch(output_latest_miner_info_subset) \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryAsksCounter = numberOfAsksRecords \
@@ -204,6 +212,7 @@ if __name__ == "__main__":
         .queryName("asks_counter") \
         .outputMode('complete') \
         .format('console') \
+        .trigger(processingTime='1 minute') \
         .start()
 
     queryArchiveAsks = asks \
@@ -213,6 +222,7 @@ if __name__ == "__main__":
         .option("path", "output/asks/json") \
         .option("checkpointLocation", "checkpoint/asks/json") \
         .partitionBy("date", "miner") \
+        .trigger(processingTime='1 minute') \
         .start()
 
     def output_latest_asks_subset(df, epoch_id):
@@ -224,6 +234,7 @@ if __name__ == "__main__":
         .queryName("asks_subset_latest_json") \
         .outputMode('complete') \
         .foreachBatch(output_latest_asks_subset) \
+        .trigger(processingTime='1 minute') \
         .start()
 
     deals.process_deals(spark)
