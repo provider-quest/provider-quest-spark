@@ -33,7 +33,7 @@ if __name__ == "__main__":
         .readStream \
         .schema(schemaPower) \
         .json('input/miner-power') \
-        .withWatermark("timestamp", "1 hour")
+        .withWatermark("timestamp", "1 minute")
 
     minerPower = minerPower.withColumn(
         "date", minerPower.timestamp.astype('date'))
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         .readStream \
         .schema(schemaInfo) \
         .json('input/miner-info') \
-        .withWatermark("timestamp", "1 hour")
+        .withWatermark("timestamp", "1 minute")
 
     minerInfo = minerInfo.withColumn(
         "date", minerInfo.timestamp.astype('date'))
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         .readStream \
         .schema(schemaAsks) \
         .json('input/asks') \
-        .withWatermark("timestamp", "1 hour")
+        .withWatermark("timestamp", "1 minute")
 
     asks = asks \
         .withColumn("date", asks.timestamp.astype('date')) \

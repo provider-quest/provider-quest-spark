@@ -1,9 +1,18 @@
 
-all: daily-totals hourly-totals
+all: daily-totals \
+	daily-totals-verified \
+	hourly-totals \
+	hourly-totals-verified
 
-clean: clean-daily-totals clean-hourly-totals
+clean: clean-daily-totals \
+	clean-daily-totals-verified \
+	clean-hourly-totals \
+	clean-hourly-totals-verified
 
+
+#
 # daily-totals
+#
 
 daily-totals: dist/deals/daily-totals.json
 
@@ -15,7 +24,25 @@ dist/deals/daily-totals.json: $(wildcard output/deals_aggr_daily/json/date=*/par
 clean-daily-totals:
 	rm -f dist/deals/daily-totals.json
 
+
+#
+# daily-totals-verified
+#
+
+daily-totals-verified: dist/deals/daily-totals-verified.json
+
+dist/deals/daily-totals-verified.json: $(wildcard output/deals_aggr_daily_by_verified/json/date=*/part-*.json)
+	cat output/deals_aggr_daily_by_verified/json/date=*/part-*.json | \
+		jq -s 'sort_by(.window.start)' > \
+		dist/deals/daily-totals-verified.json
+
+clean-daily-totals-verified:
+	rm -f dist/deals/daily-totals-verified.json
+
+
+#
 # hourly-totals
+#
 
 HOURLY_TOTALS_DATES_DIRS := $(wildcard output/deals_aggr_hourly/json/date=*)
 HOURLY_TOTALS_DATES := $(subst date=,,$(notdir $(HOURLY_TOTALS_DATES_DIRS)))
@@ -35,5 +62,28 @@ $(DIST_HOURLY_TOTALS): dist/deals/hourly-totals/%.json: $$(wildcard output/deals
 
 clean-hourly-totals:
 	rm -rf dist/deals/hourly-totals
+
+#
+# hourly-totals-verified
+#
+
+HOURLY_TOTALS_VERIFIED_DATES_DIRS := $(wildcard output/deals_aggr_hourly_by_verified/json/date=*)
+HOURLY_TOTALS_VERIFIED_DATES := $(subst date=,,$(notdir $(HOURLY_TOTALS_VERIFIED_DATES_DIRS)))
+DIST_HOURLY_TOTALS_VERIFIED := $(addsuffix .json,$(addprefix dist/deals/hourly-totals-verified/,$(HOURLY_TOTALS_VERIFIED_DATES)))
+
+hourly-totals-verified: $(DIST_HOURLY_TOTALS_VERIFIED) dist/deals/hourly-totals-verified/dates.json
+
+dist/deals/hourly-totals-verified/dates.json: $(HOURLY_TOTALS_VERIFIED_DATES_DIRS)
+	(for f in $(HOURLY_TOTALS_VERIFIED_DATES); do echo \"$$f\"; done) | jq -s 'sort' > $@
+
+.SECONDEXPANSION:
+
+$(DIST_HOURLY_TOTALS_VERIFIED): dist/deals/hourly-totals-verified/%.json: $$(wildcard output/deals_aggr_hourly_by_verified/json/date=%/part-*.json)
+	@echo $@
+	@mkdir -p dist/deals/hourly-totals-verified
+	@cat $^ | jq -s 'sort_by(.window.start)' > $@
+
+clean-hourly-totals-verified:
+	rm -rf dist/deals/hourly-totals-verified
 
 

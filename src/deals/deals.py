@@ -39,25 +39,20 @@ def process_deals(spark, suffix=""):
         .readStream \
         .schema(schemaDeals) \
         .json(inputDir + '/deals') \
-        .withWatermark("messageTime", "1 hour")
+        .withWatermark("messageTime", "1 minute")
 
     deals = deals \
         .withColumn("date", deals.messageTime.astype('date')) \
+        .withColumn("clientProvider", concat_ws('-', deals.client, deals.provider)) \
         .withColumn("storagePricePerEpochDouble", deals.storagePricePerEpoch.astype('double')) \
         .withColumn("providerCollateralDouble", deals.providerCollateral.astype('double')) \
         .withColumn("clientCollateralDouble", deals.clientCollateral.astype('double')) \
         .withColumn("pieceSizeDouble", deals.pieceSize.astype('double')) \
         .withColumn("lifetimeValue",
                     expr("storagePricePerEpochDouble * (endEpoch - startEpoch) * " +
-                         "pieceSize / 1e18 / 1024 / 1024 / 1024"))
+                         "pieceSize / 1e18 / 1024 / 1024 / 1024")) 
 
     dealsHourly = deals \
-        .withColumn("hour", hour(deals.messageTime))
-
-    dealsPairs = deals \
-        .withColumn("clientProvider", concat_ws('-', deals.client, deals.provider))
-
-    dealsPairsHourly = dealsPairs \
         .withColumn("hour", hour(deals.messageTime))
 
     numberOfDealsRecords = deals.groupBy().count()
@@ -78,7 +73,10 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsHourlyAggrByVerified = deals.groupBy(
@@ -98,7 +96,10 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsDailyAggr = deals.groupBy(
@@ -117,7 +118,10 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsDailyAggrByVerified = deals.groupBy(
@@ -137,7 +141,10 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsDailyAggrByProvider = deals.groupBy(
@@ -157,7 +164,10 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsDailyAggrByClient = deals.groupBy(
@@ -177,27 +187,33 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
-    dealsDailyAggrByPairs = dealsPairs.groupBy(
-        dealsPairs.date,
-        window(dealsPairs.messageTime, '1 day'),
-        dealsPairs.clientProvider
+    dealsDailyAggrByPairs = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 day'),
+        deals.clientProvider
     ).agg(
         expr("count(*) as count"),
-        sum(dealsPairs.pieceSizeDouble),
-        avg(dealsPairs.pieceSizeDouble),
-        min(dealsPairs.pieceSizeDouble),
-        max(dealsPairs.pieceSizeDouble),
-        avg(dealsPairs.storagePricePerEpochDouble),
-        min(dealsPairs.storagePricePerEpochDouble),
-        max(dealsPairs.storagePricePerEpochDouble),
-        approx_count_distinct(dealsPairs.label),
-        sum(dealsPairs.lifetimeValue),
-        avg(dealsPairs.lifetimeValue),
-        min(dealsPairs.lifetimeValue),
-        max(dealsPairs.lifetimeValue)
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsDailyAggrByProviderVerified = deals.groupBy(
@@ -218,7 +234,10 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     dealsDailyAggrByClientVerified = deals.groupBy(
@@ -239,50 +258,81 @@ def process_deals(spark, suffix=""):
         sum(deals.lifetimeValue),
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
-        max(deals.lifetimeValue)
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
-    dealsDailyAggrByPairsVerified = dealsPairs.groupBy(
-        dealsPairs.date,
-        window(dealsPairs.messageTime, '1 day'),
-        dealsPairs.clientProvider,
-        dealsPairs.verifiedDeal
+    dealsDailyAggrByPairsVerified = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 day'),
+        deals.clientProvider,
+        deals.verifiedDeal
     ).agg(
         expr("count(*) as count"),
-        sum(dealsPairs.pieceSizeDouble),
-        avg(dealsPairs.pieceSizeDouble),
-        min(dealsPairs.pieceSizeDouble),
-        max(dealsPairs.pieceSizeDouble),
-        avg(dealsPairs.storagePricePerEpochDouble),
-        min(dealsPairs.storagePricePerEpochDouble),
-        max(dealsPairs.storagePricePerEpochDouble),
-        approx_count_distinct(dealsPairs.label),
-        sum(dealsPairs.lifetimeValue),
-        avg(dealsPairs.lifetimeValue),
-        min(dealsPairs.lifetimeValue),
-        max(dealsPairs.lifetimeValue)
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
-    dealsHourlyAggrByPairsVerified = dealsPairsHourly.groupBy(
-        dealsPairsHourly.date,
-        dealsPairsHourly.hour,
-        window(dealsPairsHourly.messageTime, '1 hour'),
-        dealsPairsHourly.clientProvider,
-        dealsPairsHourly.verifiedDeal
+    dealsHourlyAggrByPairsVerified = dealsHourly.groupBy(
+        dealsHourly.date,
+        dealsHourly.hour,
+        window(dealsHourly.messageTime, '1 hour'),
+        dealsHourly.clientProvider,
+        dealsHourly.verifiedDeal
     ).agg(
         expr("count(*) as count"),
-        sum(dealsPairs.pieceSizeDouble),
-        avg(dealsPairs.pieceSizeDouble),
-        min(dealsPairs.pieceSizeDouble),
-        max(dealsPairs.pieceSizeDouble),
-        avg(dealsPairs.storagePricePerEpochDouble),
-        min(dealsPairs.storagePricePerEpochDouble),
-        max(dealsPairs.storagePricePerEpochDouble),
-        approx_count_distinct(dealsPairs.label),
-        sum(dealsPairs.lifetimeValue),
-        avg(dealsPairs.lifetimeValue),
-        min(dealsPairs.lifetimeValue),
-        max(dealsPairs.lifetimeValue)
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
+    )
+
+    dealsMultidayAggrByProvider = deals.groupBy(
+        window(deals.messageTime, '2 days', '2 days'),
+        deals.provider
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
     )
 
     queryArchiveDealsByProvider = deals \
@@ -424,3 +474,14 @@ def process_deals(spark, suffix=""):
         .partitionBy("date", "hour") \
         .trigger(processingTime='1 minute') \
         .start()
+ 
+    queryAggrDealsMultidayByProvider = dealsMultidayAggrByProvider \
+        .writeStream \
+        .queryName("deals_aggr_multiday_by_provider_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_aggr_multiday_by_provider/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_aggr_multiday_by_provider/json") \
+        .partitionBy("window", "provider") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
