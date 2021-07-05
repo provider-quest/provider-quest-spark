@@ -17,7 +17,8 @@ COUNT=0
 done) | jq -s "{ date: \"$DATE\", miners: map({ key: .miner, value: { qualityAdjPower: .qualityAdjPower, rawBytePower: .rawBytePower } }) | from_entries }" > dist/miner-power-daily-average-latest/miner-power-daily-average-latest.json
 (cd dist/miner-power-daily-average-latest; head miner-power-daily-average-latest.json; hub bucket push -y)
 
-./publish-multiday.sh
+./publish-power-multiday.sh
 ./publish-info-subset.sh
 ./publish-asks-subset.sh
 ./publish-deals.sh
+./publish-deals-multiday.sh

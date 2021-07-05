@@ -3,6 +3,7 @@ import time
 
 from pyspark.sql.functions import window
 from pyspark.sql.functions import expr
+from pyspark.sql.functions import last
 from pyspark.sql.functions import avg
 from pyspark.sql.functions import min, max, sum, approx_count_distinct
 from pyspark.sql.functions import hour
@@ -330,9 +331,7 @@ def process_deals(spark, suffix=""):
         avg(deals.lifetimeValue),
         min(deals.lifetimeValue),
         max(deals.lifetimeValue),
-        approx_count_distinct(deals.provider),
-        approx_count_distinct(deals.client),
-        approx_count_distinct(deals.clientProvider)
+        approx_count_distinct(deals.client)
     )
 
     queryArchiveDealsByProvider = deals \
@@ -481,7 +480,59 @@ def process_deals(spark, suffix=""):
         .format("json") \
         .option("path", outputDir + "/deals_aggr_multiday_by_provider/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_multiday_by_provider/json") \
-        .partitionBy("window", "provider") \
+        .partitionBy("window") \
         .trigger(processingTime='1 minute') \
         .start()
+
+    dealsDailyByDealId = deals.groupBy(
+        deals.date,
+        window(deals.messageTime, '1 day'),
+        deals.dealId
+    ).agg(
+        last(deals.pieceCid).alias('pieceCid'),
+        last(deals.pieceSize).alias('pieceSize'),
+        last(deals.provider).alias('provider'),
+        last(deals.label).alias('label'),
+        last(deals.startEpoch).alias('startEpoch'),
+        last(deals.startTime).alias('startTime'),
+        last(deals.endEpoch).alias('endEpoch'),
+        last(deals.endTime).alias('endTime')
+    )
+
+    def output_sample_deals_by_piece_size(df, batchId):
+        df.coalesce(1).write.json(
+            'output/deals/sample_by_piece_size_json/' + batchId, mode='overwrite')
+
+    querySampleDealsByPieceSize = dealsDailyByDealId \
+        .writeStream \
+        .queryName("deals_sample_by_piece_size_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_sample_by_piece_size/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_sample_by_piece_size/json") \
+        .partitionBy("pieceSize", "date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+    querySampleDealsByProviderPieceSize = dealsDailyByDealId \
+        .writeStream \
+        .queryName("deals_sample_by_provider_piece_size_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_sample_by_provider_piece_size/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_sample_by_provider_piece_size/json") \
+        .partitionBy("provider", "pieceSize", "date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+    querySampleDealsByLabelProvider = dealsDailyByDealId \
+        .writeStream \
+        .queryName("deals_sample_by_label_provider_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_sample_by_label_provider/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_sample_by_label_provider/json") \
+        .partitionBy("label", "provider", "date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+#        .foreachBatch(output_sample_deals_by_piece_size) \
+#        .option("path", outputDir + "/deals_sample_by_piece_size/json") \
 
