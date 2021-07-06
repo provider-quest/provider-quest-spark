@@ -12,6 +12,10 @@ The following scripts live here:
   aggregations and mapping
 * scripts to publish aggregrated data to Textile Buckets for syndication
 
+## Documentation
+
+* https://observablehq.com/@jimpick/miner-report-documentation?collection=@jimpick/miner-report
+
 ## License
 
 Dual-licensed under [MIT](https://github.com/filecoin-project/lotus/blob/master/LICENSE-MIT) + [Apache 2.0](https://github.com/filecoin-project/lotus/blob/master/LICENSE-APACHE)
