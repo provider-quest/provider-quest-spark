@@ -14,6 +14,7 @@ else:
     sys.path.insert(0, './src')
 
 from deals import deals
+from client_names import client_names
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -237,7 +238,9 @@ if __name__ == "__main__":
         .trigger(processingTime='1 minute') \
         .start()
 
-    deals.process_deals(spark)
+    names = client_names.process_client_names(spark)
+
+    deals.process_deals(spark, names)
 
     while True:
         for stream in spark.streams.active:

@@ -10,6 +10,7 @@ else:
     sys.path.insert(0, './src')
 
 from deals import deals
+from client_names import client_names
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -17,7 +18,11 @@ if __name__ == "__main__":
         .appName("MinerPowerStaging")\
         .getOrCreate()
 
-    deals.process_deals(spark, '-staging')
+    suffix = '-staging'
+
+    names = client_names.process_client_names(spark, suffix)
+
+    deals.process_deals(spark, names, suffix)
 
     while True:
         for stream in spark.streams.active:

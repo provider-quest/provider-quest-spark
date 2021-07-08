@@ -11,7 +11,7 @@ from pyspark.sql.functions import concat_ws
 from pyspark.sql.types import StructType, ArrayType, StringType
 
 
-def process_deals(spark, suffix=""):
+def process_deals(spark, client_names, suffix=""):
 
     inputDir = 'input' + suffix
     outputDir = 'output' + suffix
@@ -56,7 +56,11 @@ def process_deals(spark, suffix=""):
     dealsHourly = deals \
         .withColumn("hour", hour(deals.messageTime))
 
-    numberOfDealsRecords = deals.groupBy().count()
+    dealsWithClientNames = deals.join(client_names, client_names.address == deals.client)
+
+    dealsWithClientNamesHourly = dealsWithClientNames \
+        .withColumn("hour", hour(deals.messageTime))
+
 
     dealsHourlyAggr = deals.groupBy(
         deals.date,
@@ -192,6 +196,53 @@ def process_deals(spark, suffix=""):
         approx_count_distinct(deals.provider),
         approx_count_distinct(deals.client),
         approx_count_distinct(deals.clientProvider)
+    )
+
+    dealsDailyAggrByClientName = dealsWithClientNames.groupBy(
+        dealsWithClientNames.date,
+        window(dealsWithClientNames.messageTime, '1 day'),
+        dealsWithClientNames.clientName
+    ).agg(
+        expr("count(*) as count"),
+        sum(dealsWithClientNames.pieceSizeDouble),
+        avg(dealsWithClientNames.pieceSizeDouble),
+        min(dealsWithClientNames.pieceSizeDouble),
+        max(dealsWithClientNames.pieceSizeDouble),
+        avg(dealsWithClientNames.storagePricePerEpochDouble),
+        min(dealsWithClientNames.storagePricePerEpochDouble),
+        max(dealsWithClientNames.storagePricePerEpochDouble),
+        approx_count_distinct(dealsWithClientNames.label),
+        sum(dealsWithClientNames.lifetimeValue),
+        avg(dealsWithClientNames.lifetimeValue),
+        min(dealsWithClientNames.lifetimeValue),
+        max(dealsWithClientNames.lifetimeValue),
+        approx_count_distinct(dealsWithClientNames.provider),
+        approx_count_distinct(dealsWithClientNames.client),
+        approx_count_distinct(dealsWithClientNames.clientProvider)
+    )
+
+    dealsHourlyAggrByClientName = dealsWithClientNamesHourly.groupBy(
+        dealsWithClientNames.date,
+        dealsWithClientNamesHourly.hour,
+        window(dealsWithClientNames.messageTime, '1 day'),
+        dealsWithClientNames.clientName
+    ).agg(
+        expr("count(*) as count"),
+        sum(dealsWithClientNames.pieceSizeDouble),
+        avg(dealsWithClientNames.pieceSizeDouble),
+        min(dealsWithClientNames.pieceSizeDouble),
+        max(dealsWithClientNames.pieceSizeDouble),
+        avg(dealsWithClientNames.storagePricePerEpochDouble),
+        min(dealsWithClientNames.storagePricePerEpochDouble),
+        max(dealsWithClientNames.storagePricePerEpochDouble),
+        approx_count_distinct(dealsWithClientNames.label),
+        sum(dealsWithClientNames.lifetimeValue),
+        avg(dealsWithClientNames.lifetimeValue),
+        min(dealsWithClientNames.lifetimeValue),
+        max(dealsWithClientNames.lifetimeValue),
+        approx_count_distinct(dealsWithClientNames.provider),
+        approx_count_distinct(dealsWithClientNames.client),
+        approx_count_distinct(dealsWithClientNames.clientProvider)
     )
 
     dealsDailyAggrByPairs = deals.groupBy(
@@ -364,6 +415,16 @@ def process_deals(spark, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    queryArchiveDealsByClientName = dealsWithClientNames \
+        .writeStream \
+        .queryName("deals_by_client_name_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_by_client_name/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_by_client_name/json") \
+        .partitionBy("date", "clientName") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
     queryAggrDealsHourly = dealsHourlyAggr \
         .writeStream \
         .queryName("deals_aggr_hourly_json") \
@@ -421,6 +482,26 @@ def process_deals(spark, suffix=""):
         .option("path", outputDir + "/deals_aggr_daily_by_client/json") \
         .option("checkpointLocation", checkpointDir + "/deals_aggr_daily_by_client/json") \
         .partitionBy("date", "client") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+    queryAggrDealsByClientNameDaily = dealsDailyAggrByClientName \
+        .writeStream \
+        .queryName("deals_aggr_by_client_name_daily_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_aggr_by_client_name_daily/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_aggr_by_client_name_daily/json") \
+        .partitionBy("clientName", "date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+    queryAggrDealsByClientNameHourly = dealsHourlyAggrByClientName \
+        .writeStream \
+        .queryName("deals_aggr_by_client_name_hourly_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals_aggr_by_client_name_hourly/json") \
+        .option("checkpointLocation", checkpointDir + "/deals_aggr_by_client_name_hourly/json") \
+        .partitionBy("clientName", "date") \
         .trigger(processingTime='1 minute') \
         .start()
 
