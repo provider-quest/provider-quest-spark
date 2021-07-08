@@ -224,7 +224,7 @@ def process_deals(spark, client_names, suffix=""):
     dealsHourlyAggrByClientName = dealsWithClientNamesHourly.groupBy(
         dealsWithClientNames.date,
         dealsWithClientNamesHourly.hour,
-        window(dealsWithClientNames.messageTime, '1 day'),
+        window(dealsWithClientNames.messageTime, '1 hour'),
         dealsWithClientNames.clientName
     ).agg(
         expr("count(*) as count"),
