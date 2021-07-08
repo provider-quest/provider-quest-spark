@@ -2,12 +2,14 @@
 all: daily-totals \
 	daily-totals-verified \
 	hourly-totals \
-	hourly-totals-verified
+	hourly-totals-verified \
+	named-clients-daily-totals
 
 clean: clean-daily-totals \
 	clean-daily-totals-verified \
 	clean-hourly-totals \
-	clean-hourly-totals-verified
+	clean-hourly-totals-verified \
+	clean-named-clients-daily-totals
 
 
 #
@@ -86,4 +88,27 @@ $(DIST_HOURLY_TOTALS_VERIFIED): dist/deals/hourly-totals-verified/%.json: $$(wil
 clean-hourly-totals-verified:
 	rm -rf dist/deals/hourly-totals-verified
 
+#
+# named clients: daily-totals
+#
+
+NAMED_CLIENTS_DAILY_TOTALS_DIRS := $(wildcard output/deals_aggr_by_client_name_daily/json/clientName=*)
+NAMED_CLIENTS_NAMES := $(subst clientName=,,$(notdir $(NAMED_CLIENTS_DAILY_TOTALS_DIRS)))
+
+DIST_NAMED_CLIENTS_DAILY_TOTALS := $(addsuffix /daily-totals.json,$(addprefix dist/deals/named-clients/,$(NAMED_CLIENTS_NAMES)))
+
+named-clients-daily-totals: $(DIST_NAMED_CLIENTS_DAILY_TOTALS) dist/deals/named-clients/named-clients.json
+
+dist/deals/named-clients/named-clients.json: $(NAMED_CLIENTS_DAILY_TOTALS_DIRS)
+	(for f in $(NAMED_CLIENTS_NAMES); do echo \"$$f\"; done) | jq -s 'sort' > $@
+
+.SECONDEXPANSION:
+
+$(DIST_NAMED_CLIENTS_DAILY_TOTALS): dist/deals/named-clients/%/daily-totals.json: $$(wildcard output/deals_aggr_by_client_name_daily/json/clientName=%/date*/part-*.json)
+	@echo $@
+	@mkdir -p $(dir $@)
+	@cat $^ | jq -s 'sort_by(.window.start)' > $@
+
+clean-named-client-daily-totals:
+	rm -rf dist/deals/named-clients/*/daily-totals.json
 
