@@ -112,3 +112,29 @@ $(DIST_NAMED_CLIENTS_DAILY_TOTALS): dist/deals/named-clients/%/daily-totals.json
 clean-named-client-daily-totals:
 	rm -rf dist/deals/named-clients/*/daily-totals.json
 
+#
+# named clients: hourly-totals
+#
+
+NAMED_CLIENTS_HOURLY_NAME_DIRS := $(wildcard output/deals_aggr_by_client_name_hourly/json/clientName=*)
+NAMED_CLIENTS_HOURLY_NAMES := $(subst clientName=,,$(notdir $(NAMED_CLIENTS_HOURLY_NAME_DIRS)))
+
+
+DIST_NAMED_CLIENTS_DATES_JSON := $(addsuffix /hourly/dates.json,$(addprefix dist/deals/named-clients/,$(NAMED_CLIENTS_HOURLY_NAMES)))
+
+named-clients-hourly-totals: $(DIST_NAMED_CLIENTS_DATES_JSON)
+
+.SECONDEXPANSION:
+
+$(DIST_NAMED_CLIENTS_DATES_JSON): dist/deals/named-clients/%/hourly/dates.json: $$(wildcard output/deals_aggr_by_client_name_hourly/json/clientName=%/date*/part-*.json)
+	@echo FIXME: Make $@
+	make -f Makefile.deals-named-clients named-clients-hourly-totals-worker NAMED_CLIENT=`echo $@ | sed 's,dist/deals/named-clients/\([^/]*\)/hourly/dates.json,\1,'`
+
+#
+# Clean
+# 
+
+clean-named-client-hourly-totals:
+	rm -rf dist/deals/named-clients/*/hourly
+
+
