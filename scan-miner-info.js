@@ -41,7 +41,7 @@ async function run () {
             const match = maddr.match(/^\/dns[46]\/([^\/]+)/)
             if (match) {
               const dnsHost = match[1]
-              console.log('Resolving', dnsHost)
+              console.log('DNS Lookup', dnsHost)
               dnsLookups ||= {}
               dnsLookups[dnsHost] = await dnsLookup(
                 dnsHost,
