@@ -21,6 +21,10 @@ async function run () {
     const dhtAddrs = await notebook.value('minerDhtAddrs')
     if (dhtAddrs.state === 'paused') {
       await notebook.redefine('start', 1)
+      if (process.argv[2] === '--fail-only') {
+        await notebook.redefine('maxElapsed', 5 * 60 * 1000)
+        await notebook.redefine('subsetToScan', 'Fail only')
+      }
       await delay(1000)
       continue
     }

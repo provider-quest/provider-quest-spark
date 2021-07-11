@@ -58,9 +58,18 @@ while true; do
   echo '>> (finished) Deals (2 of 3)'
 
   echo
-  echo 'Sleeping 20m' $(TZ=America/Vancouver date)
+  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
   echo
-  sleep $((20 * 60))
+  sleep 60
+
+  echo '>> DHT Addrs (Fail only)'
+  node scan-dht-peers.sh --fail-only
+  echo '>> (finished) DHT Addrs (Fail only)'
+
+  echo
+  echo 'Sleeping 15m' $(TZ=America/Vancouver date)
+  echo
+  sleep $((15 * 60))
 
   echo '>> Publishing deals'
   ./publish-deals.sh
