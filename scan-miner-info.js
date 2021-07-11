@@ -1,6 +1,10 @@
+const dns = require('dns')
 const fs = require('fs')
+const util = require('util')
 const { formatWithOptions } = require('util')
 const { load } = require('@alex.garcia/observable-prerender')
+
+const dnsLookup = util.promisify(dns.lookup)
 
 async function run () {
   let jsonFilename
@@ -30,13 +34,30 @@ async function run () {
       jsonFilename = `info-${selectedEpoch}.json`
       const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
       for (const record of minerInfo.records) {
-        const { height, ...rest } = record
+        const { height, multiaddrsDecoded, ...rest } = record
+        let dnsLookups
+        if (multiaddrsDecoded) {
+          for (const maddr of multiaddrsDecoded) {
+            const match = maddr.match(/^\/dns[46]\/([^\/]+)/)
+            if (match) {
+              const dnsHost = match[1]
+              console.log('Resolving', dnsHost)
+              dnsLookups ||= {}
+              dnsLookups[dnsHost] = await dnsLookup(
+                dnsHost,
+                { all: true, verbatim: true }
+              )
+            }
+          }
+        }
         await jsonFile.write(
           JSON.stringify({
             timestamp: selectedDate,
             epoch: selectedEpoch,
             tipSet,
-            ...rest
+            ...rest,
+            multiaddrsDecoded,
+            dnsLookups
           }) + '\n'
         )
       }

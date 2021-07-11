@@ -10,8 +10,8 @@ async function run () {
   let jsonFilename
   const notebook = await load(
     '@jimpick/miner-report-dht-miner-peer-scanner',
-    ['minerDhtAddrs', 'currentEpochDate'],
-    { headless: false }
+    ['minerDhtAddrs', 'currentEpochDate']
+    // { headless: false }
   )
   const currentEpoch = await notebook.value('currentEpoch')
   const currentEpochDate = await notebook.value('currentEpochDate')
