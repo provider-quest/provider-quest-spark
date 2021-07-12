@@ -13,6 +13,7 @@ if os.path.exists('src.zip'):
 else:
     sys.path.insert(0, './src')
 
+from miner_power import miner_power
 from deals import deals
 from client_names import client_names
 
@@ -22,22 +23,22 @@ if __name__ == "__main__":
         .appName("MinerPower")\
         .getOrCreate()
 
-    schemaPower = StructType() \
-        .add("epoch", "long") \
-        .add("timestamp", "timestamp") \
-        .add("tipSet", "string") \
-        .add("miner", "string") \
-        .add("rawBytePower", "double") \
-        .add("qualityAdjPower", "double")
+    #schemaPower = StructType() \
+    #    .add("epoch", "long") \
+    #    .add("timestamp", "timestamp") \
+    #    .add("tipSet", "string") \
+    #    .add("miner", "string") \
+    #    .add("rawBytePower", "double") \
+    #    .add("qualityAdjPower", "double")
 
-    minerPower = spark \
-        .readStream \
-        .schema(schemaPower) \
-        .json('input/miner-power') \
-        .withWatermark("timestamp", "1 minute")
+    #minerPower = spark \
+    #    .readStream \
+    #    .schema(schemaPower) \
+    #    .json('input/miner-power') \
+    #    .withWatermark("timestamp", "1 minute")
 
-    minerPower = minerPower.withColumn(
-        "date", minerPower.timestamp.astype('date'))
+    #minerPower = minerPower.withColumn(
+    #    "date", minerPower.timestamp.astype('date'))
 
     schemaInfo = StructType() \
         .add("epoch", "long") \
@@ -91,26 +92,26 @@ if __name__ == "__main__":
         .withColumn("priceDouble", asks.price.astype('double')) \
         .withColumn("verifiedPriceDouble", asks.verifiedPrice.astype('double'))
 
-    numberOfPowerRecords = minerPower.groupBy().count()
+    #numberOfPowerRecords = minerPower.groupBy().count()
     numberOfInfoRecords = minerInfo.groupBy().count()
     numberOfAsksRecords = asks.groupBy().count()
 
-    averagePowerHourly = minerPower.groupBy(
-        minerPower.miner,
-        minerPower.date,
-        window(minerPower.timestamp, '1 hour')
-    ).avg("rawBytePower", "qualityAdjPower")
+    #averagePowerHourly = minerPower.groupBy(
+    #    minerPower.miner,
+    #    minerPower.date,
+    #    window(minerPower.timestamp, '1 hour')
+    #).avg("rawBytePower", "qualityAdjPower")
 
-    averagePowerDaily = minerPower.groupBy(
-        minerPower.miner,
-        minerPower.date,
-        window(minerPower.timestamp, '1 day')
-    ).avg("rawBytePower", "qualityAdjPower")
+    #averagePowerDaily = minerPower.groupBy(
+    #    minerPower.miner,
+    #    minerPower.date,
+    #    window(minerPower.timestamp, '1 day')
+    #).avg("rawBytePower", "qualityAdjPower")
 
-    averagePowerMultiDay = minerPower.groupBy(
-        minerPower.miner,
-        window(minerPower.timestamp, '2 day', '2 day')
-    ).avg("rawBytePower", "qualityAdjPower")
+    #averagePowerMultiDay = minerPower.groupBy(
+    #    minerPower.miner,
+    #    window(minerPower.timestamp, '2 day', '2 day')
+    #).avg("rawBytePower", "qualityAdjPower")
 
     latestMinerInfoSubset = minerInfo \
         .groupBy('miner') \
@@ -130,53 +131,53 @@ if __name__ == "__main__":
             last('seqNo'),
             last('error'))
 
-    queryPowerCounter = numberOfPowerRecords \
-        .writeStream \
-        .queryName("miner_power_counter") \
-        .outputMode('complete') \
-        .format('console') \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryPowerCounter = numberOfPowerRecords \
+    #    .writeStream \
+    #    .queryName("miner_power_counter") \
+    #    .outputMode('complete') \
+    #    .format('console') \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    queryPowerArchive = minerPower \
-        .writeStream \
-        .queryName("miner_power_json") \
-        .format("json") \
-        .option("path", "output/miner_power/json") \
-        .option("checkpointLocation", "checkpoint/miner_power/json") \
-        .partitionBy("date", "miner") \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryPowerArchive = minerPower \
+    #    .writeStream \
+    #    .queryName("miner_power_json") \
+    #    .format("json") \
+    #    .option("path", "output/miner_power/json") \
+    #    .option("checkpointLocation", "checkpoint/miner_power/json") \
+    #    .partitionBy("date", "miner") \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    queryPowerAvgHourly = averagePowerHourly \
-        .writeStream \
-        .queryName("miner_power_avg_hourly_json") \
-        .format("json") \
-        .option("path", "output/miner_power/json_avg_hourly") \
-        .option("checkpointLocation", "checkpoint/miner_power/json_avg_hourly") \
-        .partitionBy("date", "miner") \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryPowerAvgHourly = averagePowerHourly \
+    #    .writeStream \
+    #    .queryName("miner_power_avg_hourly_json") \
+    #    .format("json") \
+    #    .option("path", "output/miner_power/json_avg_hourly") \
+    #    .option("checkpointLocation", "checkpoint/miner_power/json_avg_hourly") \
+    #    .partitionBy("date", "miner") \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    queryPowerAvgDaily = averagePowerDaily \
-        .writeStream \
-        .queryName("miner_power_avg_daily_json") \
-        .format("json") \
-        .option("path", "output/miner_power/json_avg_daily") \
-        .option("checkpointLocation", "checkpoint/miner_power/json_avg_daily") \
-        .partitionBy("date", "miner") \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryPowerAvgDaily = averagePowerDaily \
+    #    .writeStream \
+    #    .queryName("miner_power_avg_daily_json") \
+    #    .format("json") \
+    #    .option("path", "output/miner_power/json_avg_daily") \
+    #    .option("checkpointLocation", "checkpoint/miner_power/json_avg_daily") \
+    #    .partitionBy("date", "miner") \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    queryPowerAvgMultiday = averagePowerMultiDay \
-        .writeStream \
-        .queryName("miner_power_avg_multiday_json") \
-        .format("json") \
-        .option("path", "output/miner_power/json_avg_multiday") \
-        .option("checkpointLocation", "checkpoint/miner_power/json_avg_multiday") \
-        .partitionBy("window", "miner") \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryPowerAvgMultiday = averagePowerMultiDay \
+    #    .writeStream \
+    #    .queryName("miner_power_avg_multiday_json") \
+    #    .format("json") \
+    #    .option("path", "output/miner_power/json_avg_multiday") \
+    #    .option("checkpointLocation", "checkpoint/miner_power/json_avg_multiday") \
+    #    .partitionBy("window", "miner") \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
     queryInfoCounter = numberOfInfoRecords \
         .writeStream \
@@ -237,6 +238,8 @@ if __name__ == "__main__":
         .foreachBatch(output_latest_asks_subset) \
         .trigger(processingTime='1 minute') \
         .start()
+
+    miner_power.process_miner_power(spark)
 
     names = client_names.process_client_names(spark)
 
