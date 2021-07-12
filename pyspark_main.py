@@ -14,6 +14,7 @@ else:
     sys.path.insert(0, './src')
 
 from miner_power import miner_power
+from miner_info import miner_info
 from deals import deals
 from client_names import client_names
 
@@ -40,31 +41,31 @@ if __name__ == "__main__":
     #minerPower = minerPower.withColumn(
     #    "date", minerPower.timestamp.astype('date'))
 
-    schemaInfo = StructType() \
-        .add("epoch", "long") \
-        .add("timestamp", "timestamp") \
-        .add("tipSet", "string") \
-        .add("miner", "string") \
-        .add("owner", "string") \
-        .add("worker", "string") \
-        .add("newWorker", "string") \
-        .add("controlAddresses", ArrayType(StringType())) \
-        .add("peerId", "string") \
-        .add("multiaddrs", ArrayType(StringType())) \
-        .add("multiaddrsDecoded", ArrayType(StringType())) \
-        .add("windowPoStProofType", "short") \
-        .add("sectorSize", "long") \
-        .add("windowPoStPartitionSectors", "long") \
-        .add("consensusFaultElapsed", "long")
+    #schemaInfo = StructType() \
+    #    .add("epoch", "long") \
+    #    .add("timestamp", "timestamp") \
+    #    .add("tipSet", "string") \
+    #    .add("miner", "string") \
+    #    .add("owner", "string") \
+    #    .add("worker", "string") \
+    #    .add("newWorker", "string") \
+    #    .add("controlAddresses", ArrayType(StringType())) \
+    #    .add("peerId", "string") \
+    #    .add("multiaddrs", ArrayType(StringType())) \
+    #    .add("multiaddrsDecoded", ArrayType(StringType())) \
+    #    .add("windowPoStProofType", "short") \
+    #    .add("sectorSize", "long") \
+    #    .add("windowPoStPartitionSectors", "long") \
+    #    .add("consensusFaultElapsed", "long")
 
-    minerInfo = spark \
-        .readStream \
-        .schema(schemaInfo) \
-        .json('input/miner-info') \
-        .withWatermark("timestamp", "1 minute")
+    #minerInfo = spark \
+    #    .readStream \
+    #    .schema(schemaInfo) \
+    #    .json('input/miner-info') \
+    #    .withWatermark("timestamp", "1 minute")
 
-    minerInfo = minerInfo.withColumn(
-        "date", minerInfo.timestamp.astype('date'))
+    #minerInfo = minerInfo.withColumn(
+    #    "date", minerInfo.timestamp.astype('date'))
 
     schemaAsks = StructType() \
         .add("epoch", "long") \
@@ -93,7 +94,7 @@ if __name__ == "__main__":
         .withColumn("verifiedPriceDouble", asks.verifiedPrice.astype('double'))
 
     #numberOfPowerRecords = minerPower.groupBy().count()
-    numberOfInfoRecords = minerInfo.groupBy().count()
+    #numberOfInfoRecords = minerInfo.groupBy().count()
     numberOfAsksRecords = asks.groupBy().count()
 
     #averagePowerHourly = minerPower.groupBy(
@@ -113,9 +114,9 @@ if __name__ == "__main__":
     #    window(minerPower.timestamp, '2 day', '2 day')
     #).avg("rawBytePower", "qualityAdjPower")
 
-    latestMinerInfoSubset = minerInfo \
-        .groupBy('miner') \
-        .agg(last('sectorSize'), last('peerId'), last('multiaddrsDecoded'))
+    #latestMinerInfoSubset = minerInfo \
+    #    .groupBy('miner') \
+    #    .agg(last('sectorSize'), last('peerId'), last('multiaddrsDecoded'))
 
     latestAsksSubset = asks \
         .groupBy('miner') \
@@ -179,35 +180,35 @@ if __name__ == "__main__":
     #    .trigger(processingTime='1 minute') \
     #    .start()
 
-    queryInfoCounter = numberOfInfoRecords \
-        .writeStream \
-        .queryName("miner_info_counter") \
-        .outputMode('complete') \
-        .format('console') \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryInfoCounter = numberOfInfoRecords \
+    #    .writeStream \
+    #    .queryName("miner_info_counter") \
+    #    .outputMode('complete') \
+    #    .format('console') \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    queryMinerInfoArchive = minerInfo \
-        .writeStream \
-        .queryName("miner_info_json") \
-        .format("json") \
-        .option("path", "output/miner_info/json") \
-        .option("checkpointLocation", "checkpoint/miner_info/json") \
-        .partitionBy("date", "miner") \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryMinerInfoArchive = minerInfo \
+    #    .writeStream \
+    #    .queryName("miner_info_json") \
+    #    .format("json") \
+    #    .option("path", "output/miner_info/json") \
+    #    .option("checkpointLocation", "checkpoint/miner_info/json") \
+    #    .partitionBy("date", "miner") \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    def output_latest_miner_info_subset(df, epoch_id):
-        df.coalesce(1).write.json(
-            'output/miner_info/json_latest_subset', mode='overwrite')
+    #def output_latest_miner_info_subset(df, epoch_id):
+    #    df.coalesce(1).write.json(
+    #        'output/miner_info/json_latest_subset', mode='overwrite')
 
-    queryMinerInfoSubsetLatest = latestMinerInfoSubset \
-        .writeStream \
-        .queryName("miner_info_subset_latest_json") \
-        .outputMode('complete') \
-        .foreachBatch(output_latest_miner_info_subset) \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryMinerInfoSubsetLatest = latestMinerInfoSubset \
+    #    .writeStream \
+    #    .queryName("miner_info_subset_latest_json") \
+    #    .outputMode('complete') \
+    #    .foreachBatch(output_latest_miner_info_subset) \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
     queryAsksCounter = numberOfAsksRecords \
         .writeStream \
@@ -240,6 +241,8 @@ if __name__ == "__main__":
         .start()
 
     miner_power.process_miner_power(spark)
+
+    miner_info.process_miner_info(spark)
 
     names = client_names.process_client_names(spark)
 

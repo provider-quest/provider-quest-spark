@@ -10,6 +10,7 @@ else:
     sys.path.insert(0, './src')
 
 from miner_power import miner_power
+from miner_info import miner_info
 from deals import deals
 from client_names import client_names
 
@@ -22,6 +23,8 @@ if __name__ == "__main__":
     suffix = '-staging'
 
     miner_power.process_miner_power(spark, suffix)
+
+    miner_info.process_miner_info(spark, suffix)
 
     #names = client_names.process_client_names(spark, suffix)
 
