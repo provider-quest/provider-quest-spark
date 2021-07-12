@@ -37,7 +37,7 @@ while true; do
   sleep 60
 
   echo '>> DHT Addrs (No fail)'
-  node scan-dht-peers.sh
+  node scan-dht-addrs.sh
   echo '>> (finished) DHT Addrs (No fail)'
 
   echo
@@ -63,7 +63,7 @@ while true; do
   sleep 60
 
   echo '>> DHT Addrs (Fail only)'
-  node scan-dht-peers.sh --fail-only
+  node scan-dht-addrs.sh --fail-only
   echo '>> (finished) DHT Addrs (Fail only)'
 
   echo
