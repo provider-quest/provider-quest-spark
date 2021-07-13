@@ -17,6 +17,7 @@ from miner_power import miner_power
 from miner_info import miner_info
 from deals import deals
 from client_names import client_names
+from asks import asks
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -67,35 +68,35 @@ if __name__ == "__main__":
     #minerInfo = minerInfo.withColumn(
     #    "date", minerInfo.timestamp.astype('date'))
 
-    schemaAsks = StructType() \
-        .add("epoch", "long") \
-        .add("timestamp", "timestamp") \
-        .add("miner", "string") \
-        .add("seqNo", "integer") \
-        .add("askTimestamp", "long") \
-        .add("price", "string") \
-        .add("verifiedPrice", "string") \
-        .add("minPieceSize", "long") \
-        .add("maxPieceSize", "long") \
-        .add("expiry", "long") \
-        .add("error", "string") \
-        .add("startTime", "timestamp") \
-        .add("endTime", "timestamp")
+    #schemaAsks = StructType() \
+    #    .add("epoch", "long") \
+    #    .add("timestamp", "timestamp") \
+    #    .add("miner", "string") \
+    #    .add("seqNo", "integer") \
+    #    .add("askTimestamp", "long") \
+    #    .add("price", "string") \
+    #    .add("verifiedPrice", "string") \
+    #    .add("minPieceSize", "long") \
+    #    .add("maxPieceSize", "long") \
+    #    .add("expiry", "long") \
+    #    .add("error", "string") \
+    #    .add("startTime", "timestamp") \
+    #    .add("endTime", "timestamp")
 
-    asks = spark \
-        .readStream \
-        .schema(schemaAsks) \
-        .json('input/asks') \
-        .withWatermark("timestamp", "1 minute")
+    #asks = spark \
+    #    .readStream \
+    #    .schema(schemaAsks) \
+    #    .json('input/asks') \
+    #    .withWatermark("timestamp", "1 minute")
 
-    asks = asks \
-        .withColumn("date", asks.timestamp.astype('date')) \
-        .withColumn("priceDouble", asks.price.astype('double')) \
-        .withColumn("verifiedPriceDouble", asks.verifiedPrice.astype('double'))
+    #asks = asks \
+    #    .withColumn("date", asks.timestamp.astype('date')) \
+    #    .withColumn("priceDouble", asks.price.astype('double')) \
+    #    .withColumn("verifiedPriceDouble", asks.verifiedPrice.astype('double'))
 
     #numberOfPowerRecords = minerPower.groupBy().count()
     #numberOfInfoRecords = minerInfo.groupBy().count()
-    numberOfAsksRecords = asks.groupBy().count()
+    #numberOfAsksRecords = asks.groupBy().count()
 
     #averagePowerHourly = minerPower.groupBy(
     #    minerPower.miner,
@@ -118,19 +119,19 @@ if __name__ == "__main__":
     #    .groupBy('miner') \
     #    .agg(last('sectorSize'), last('peerId'), last('multiaddrsDecoded'))
 
-    latestAsksSubset = asks \
-        .groupBy('miner') \
-        .agg(
-            last('price'),
-            last('verifiedPrice'),
-            last('priceDouble'),
-            last('verifiedPriceDouble'),
-            last('minPieceSize'),
-            last('maxPieceSize'),
-            last('askTimestamp'),
-            last('expiry'),
-            last('seqNo'),
-            last('error'))
+    #latestAsksSubset = asks \
+    #    .groupBy('miner') \
+    #    .agg(
+    #        last('price'),
+    #        last('verifiedPrice'),
+    #        last('priceDouble'),
+    #        last('verifiedPriceDouble'),
+    #        last('minPieceSize'),
+    #        last('maxPieceSize'),
+    #        last('askTimestamp'),
+    #        last('expiry'),
+    #        last('seqNo'),
+    #        last('error'))
 
     #queryPowerCounter = numberOfPowerRecords \
     #    .writeStream \
@@ -210,35 +211,35 @@ if __name__ == "__main__":
     #    .trigger(processingTime='1 minute') \
     #    .start()
 
-    queryAsksCounter = numberOfAsksRecords \
-        .writeStream \
-        .queryName("asks_counter") \
-        .outputMode('complete') \
-        .format('console') \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryAsksCounter = numberOfAsksRecords \
+    #    .writeStream \
+    #    .queryName("asks_counter") \
+    #    .outputMode('complete') \
+    #    .format('console') \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    queryArchiveAsks = asks \
-        .writeStream \
-        .queryName("asks_json") \
-        .format("json") \
-        .option("path", "output/asks/json") \
-        .option("checkpointLocation", "checkpoint/asks/json") \
-        .partitionBy("date", "miner") \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryArchiveAsks = asks \
+    #    .writeStream \
+    #    .queryName("asks_json") \
+    #    .format("json") \
+    #    .option("path", "output/asks/json") \
+    #    .option("checkpointLocation", "checkpoint/asks/json") \
+    #    .partitionBy("date", "miner") \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
-    def output_latest_asks_subset(df, epoch_id):
-        df.coalesce(1).write.json(
-            'output/asks/json_latest_subset', mode='overwrite')
+    #def output_latest_asks_subset(df, epoch_id):
+    #    df.coalesce(1).write.json(
+    #        'output/asks/json_latest_subset', mode='overwrite')
 
-    queryLatestAsksSubset = latestAsksSubset \
-        .writeStream \
-        .queryName("asks_subset_latest_json") \
-        .outputMode('complete') \
-        .foreachBatch(output_latest_asks_subset) \
-        .trigger(processingTime='1 minute') \
-        .start()
+    #queryLatestAsksSubset = latestAsksSubset \
+    #    .writeStream \
+    #    .queryName("asks_subset_latest_json") \
+    #    .outputMode('complete') \
+    #    .foreachBatch(output_latest_asks_subset) \
+    #    .trigger(processingTime='1 minute') \
+    #    .start()
 
     miner_power.process_miner_power(spark)
 
@@ -247,6 +248,8 @@ if __name__ == "__main__":
     names = client_names.process_client_names(spark)
 
     deals.process_deals(spark, names)
+
+    asks.process_asks(spark)
 
     while True:
         for stream in spark.streams.active:

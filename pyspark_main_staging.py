@@ -13,6 +13,7 @@ from miner_power import miner_power
 from miner_info import miner_info
 from deals import deals
 from client_names import client_names
+from asks import asks
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -22,13 +23,15 @@ if __name__ == "__main__":
 
     suffix = '-staging'
 
-    miner_power.process_miner_power(spark, suffix)
+    #miner_power.process_miner_power(spark, suffix)
 
-    miner_info.process_miner_info(spark, suffix)
+    #miner_info.process_miner_info(spark, suffix)
 
     #names = client_names.process_client_names(spark, suffix)
 
     #deals.process_deals(spark, names, suffix)
+
+    asks.process_asks(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
