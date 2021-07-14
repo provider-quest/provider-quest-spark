@@ -3,7 +3,7 @@ import time
 
 from pyspark.sql.functions import window
 from pyspark.sql.functions import last
-from pyspark.sql.types import StructType, ArrayType, StringType
+from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
 
 def process_miner_info(spark, suffix=""):
@@ -27,7 +27,11 @@ def process_miner_info(spark, suffix=""):
         .add("windowPoStProofType", "short") \
         .add("sectorSize", "long") \
         .add("windowPoStPartitionSectors", "long") \
-        .add("consensusFaultElapsed", "long")
+        .add("consensusFaultElapsed", "long") \
+        .add("dnsLookups", MapType(
+            StringType(),
+            ArrayType(StringType())
+        ))
 
     minerInfo = spark \
         .readStream \
