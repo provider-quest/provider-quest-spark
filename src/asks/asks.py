@@ -43,6 +43,8 @@ def process_asks(spark, suffix=""):
     latestAsksSubset = asks \
         .groupBy('miner') \
         .agg(
+            last('epoch'),
+            last('timestamp'),
             last('price'),
             last('verifiedPrice'),
             last('priceDouble'),

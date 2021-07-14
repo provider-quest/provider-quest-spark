@@ -14,6 +14,7 @@ from miner_info import miner_info
 from deals import deals
 from client_names import client_names
 from asks import asks
+from dht_addrs import dht_addrs
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -31,7 +32,9 @@ if __name__ == "__main__":
 
     #deals.process_deals(spark, names, suffix)
 
-    asks.process_asks(spark, suffix)
+    #asks.process_asks(spark, suffix)
+
+    dht_addrs.process_dht_addrs(spark, suffix)
 
     while True:
         for stream in spark.streams.active:

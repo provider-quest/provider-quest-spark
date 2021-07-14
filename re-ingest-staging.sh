@@ -3,7 +3,8 @@
 mkdir -p input-staging/miner-power \
   input-staging/miner-info \
   input-staging/asks \
-  input-staging/deals
+  input-staging/deals \
+  input-staging/dht-addrs
 COUNT=0
 #FILES=$(node sorted-archive-json-files.js $((1 * 24 * 60 * 2)))
 FILES=$(node sorted-archive-json-files.js $((3 * 24 * 60 * 2)))
@@ -11,9 +12,9 @@ for f in $FILES; do
   echo $COUNT $f
   DEST=$(echo $f | sed 's,estuary-archive/,input-staging/,')
   if [ $((COUNT % 1)) = "0" ]; then
-    cp -v $f $DEST
+    cp -av $f $DEST
   fi
   echo $((COUNT++)) > /dev/null
-  sleep 1
+  sleep 0.1
 done
 

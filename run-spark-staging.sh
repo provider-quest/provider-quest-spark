@@ -6,7 +6,9 @@ mkdir -p input-staging/miner-power \
   input-staging/miner-info \
   input-staging/asks \
   input-staging/deals \
-  archive-staging checkpoint-staging
+  input-staging/dht-addrs \
+  archive-staging \
+  checkpoint-staging
 
 export TZ=UTC
 
