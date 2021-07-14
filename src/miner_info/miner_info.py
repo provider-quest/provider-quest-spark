@@ -46,7 +46,12 @@ def process_miner_info(spark, suffix=""):
 
     latestMinerInfoSubset = minerInfo \
         .groupBy('miner') \
-        .agg(last('sectorSize'), last('peerId'), last('multiaddrsDecoded'))
+        .agg(
+            last('sectorSize'), \
+            last('peerId'), \
+            last('multiaddrsDecoded'), \
+            last('dnsLookups'), \
+        )
 
     queryInfoCounter = numberOfInfoRecords \
         .writeStream \

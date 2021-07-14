@@ -13,9 +13,14 @@ if [ -f output/miner_info/json_latest_subset/_SUCCESS ] ; then
       key: .miner, value: { \
         sectorSize: .[\"last(sectorSize)\"], \
         peerId: .[\"last(peerId)\"], \
-        multiaddrsDecoded: .[\"last(multiaddrsDecoded)\"] \
-        dnsLookups: .[\"last(dnsLookups)\"] \
-      } \
+        multiaddrsDecoded: .[\"last(multiaddrsDecoded)\"], \
+        dnsLookups: \
+          (if .[\"last(dnsLookups)\"] then \
+            .[\"last(dnsLookups)\"] | to_entries | map(.value = [.value | map(fromjson)]) | from_entries \
+          else \
+            null \
+          end) \
+      } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
   }" > dist/miner-info-subset-latest/miner-info-subset-latest.json
 fi
