@@ -39,3 +39,23 @@ def process_dht_addrs(spark, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    latestDhtAddrsSubset = dhtAddrs \
+        .groupBy('miner') \
+        .agg(
+            last('epoch'),
+            last('timestamp'),
+            last('collectedFrom'),
+            last('peerId'),
+            last('multiaddrs'))
+
+    def output_latest_dht_addrs_subset(df, epoch_id):
+        df.coalesce(1).write.json(
+            outputDir + '/dht-addrs/json_latest_subset', mode='overwrite')
+
+    queryLatestDhtAddrsSubset = latestDhtAddrsSubset \
+        .writeStream \
+        .queryName("dht_addrs_subset_latest_json") \
+        .outputMode('complete') \
+        .foreachBatch(output_latest_dht_addrs_subset) \
+        .trigger(processingTime='1 minute') \
+        .start()
