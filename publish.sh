@@ -22,3 +22,4 @@ done) | jq -s "{ date: \"$DATE\", miners: map({ key: .miner, value: { qualityAdj
 ./publish-asks-subset.sh
 ./publish-deals.sh
 ./publish-deals-multiday.sh
+./publish-dht-addrs.sh
