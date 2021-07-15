@@ -5,8 +5,8 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 
 # Latest DHT addrs
 mkdir -p dist/dht-addrs-latest
-if [ -f output/dht-addrs/json_latest_subset/_SUCCESS ] ; then
-  PART=$(ls output/dht-addrs/json_latest_subset/part*.json | head -1)
+if [ -f output/dht_addrs/json_latest_subset/_SUCCESS ] ; then
+  PART=$(ls output/dht_addrs/json_latest_subset/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     miners: map({ \

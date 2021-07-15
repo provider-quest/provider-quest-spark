@@ -37,8 +37,8 @@ def process_dht_addrs(spark, suffix=""):
         .writeStream \
         .queryName("dht_addrs_json") \
         .format("json") \
-        .option("path", outputDir + "/dht-addrs/json") \
-        .option("checkpointLocation", checkpointDir + "/dht-addrs/json") \
+        .option("path", outputDir + "/dht_addrs/json") \
+        .option("checkpointLocation", checkpointDir + "/dht_addrs/json") \
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -55,13 +55,31 @@ def process_dht_addrs(spark, suffix=""):
 
     def output_latest_dht_addrs_subset(df, epoch_id):
         df.coalesce(1).write.json(
-            outputDir + '/dht-addrs/json_latest_subset', mode='overwrite')
+            outputDir + '/dht_addrs/json_latest_subset', mode='overwrite')
 
     queryLatestDhtAddrsSubset = latestDhtAddrsSubset \
         .writeStream \
         .queryName("dht_addrs_subset_latest_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/dht-addrs/json_latest_subset") \
+        .option("checkpointLocation", checkpointDir + "/dht_addrs/json_latest_subset") \
         .foreachBatch(output_latest_dht_addrs_subset) \
         .trigger(processingTime='1 minute') \
         .start()
+
+    countsDaily = dhtAddrs \
+        .groupBy(
+            dhtAddrs.miner,
+            dhtAddrs.date,
+            window(dhtAddrs.timestamp, '1 day')
+        ).count()
+
+    queryCountsDaily = countsDaily \
+        .writeStream \
+        .queryName("dht_addrs_counts_daily_json") \
+        .format("json") \
+        .option("path", outputDir + "/dht_addrs/json_counts_daily") \
+        .option("checkpointLocation", checkpointDir + "/dht_addrs/json_counts_daily") \
+        .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
