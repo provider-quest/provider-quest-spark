@@ -82,6 +82,7 @@ def process_asks(spark, suffix=""):
         .writeStream \
         .queryName("asks_subset_latest_json") \
         .outputMode('complete') \
+        .option("checkpointLocation", checkpointDir + "/asks/json_latest_subset") \
         .foreachBatch(output_latest_asks_subset) \
         .trigger(processingTime='1 minute') \
         .start()

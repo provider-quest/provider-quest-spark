@@ -79,6 +79,7 @@ def process_miner_info(spark, suffix=""):
         .writeStream \
         .queryName("miner_info_subset_latest_json") \
         .outputMode('complete') \
+        .option("checkpointLocation", checkpointDir + "/miner_info/json_latest_subset") \
         .foreachBatch(output_latest_miner_info_subset) \
         .trigger(processingTime='1 minute') \
         .start()

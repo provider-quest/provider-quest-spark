@@ -3,7 +3,7 @@ import time
 
 from pyspark.sql.functions import window
 from pyspark.sql.functions import last
-from pyspark.sql.types import StructType, ArrayType, StringType
+from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
 
 def process_dht_addrs(spark, suffix=""):
@@ -18,7 +18,11 @@ def process_dht_addrs(spark, suffix=""):
         .add("collectedFrom", "string") \
         .add("miner", "string") \
         .add("peerId", "string") \
-        .add("multiaddrs", ArrayType(StringType()))
+        .add("multiaddrs", ArrayType(StringType())) \
+        .add("dnsLookups", MapType(
+            StringType(),
+            ArrayType(StringType())
+        ))
 
     dhtAddrs = spark \
         .readStream \
@@ -46,7 +50,8 @@ def process_dht_addrs(spark, suffix=""):
             last('timestamp'),
             last('collectedFrom'),
             last('peerId'),
-            last('multiaddrs'))
+            last('multiaddrs'),
+            last('dnsLookups'))
 
     def output_latest_dht_addrs_subset(df, epoch_id):
         df.coalesce(1).write.json(
@@ -56,6 +61,7 @@ def process_dht_addrs(spark, suffix=""):
         .writeStream \
         .queryName("dht_addrs_subset_latest_json") \
         .outputMode('complete') \
+        .option("checkpointLocation", checkpointDir + "/dht-addrs/json_latest_subset") \
         .foreachBatch(output_latest_dht_addrs_subset) \
         .trigger(processingTime='1 minute') \
         .start()

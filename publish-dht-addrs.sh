@@ -15,7 +15,13 @@ if [ -f output/dht-addrs/json_latest_subset/_SUCCESS ] ; then
         timestamp: .[\"last(timestamp)\"], \
         collectedFrom: .[\"last(collectedFrom)\"], \
         peerId: .[\"last(peerId)\"], \
-        multiaddrs: .[\"last(multiaddrs)\"] \
+        multiaddrs: .[\"last(multiaddrs)\"], \
+        dnsLookups: \
+          (if .[\"last(dnsLookups)\"] then \
+            .[\"last(dnsLookups)\"] | to_entries | map(.value = [.value | map(fromjson)]) | from_entries \
+          else \
+            null \
+          end) \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
   }" > dist/dht-addrs-latest/dht-addrs-latest.json
