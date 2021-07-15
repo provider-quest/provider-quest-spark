@@ -62,9 +62,9 @@ while true; do
   echo
   sleep 60
 
-  echo '>> DHT Addrs (Fail only)'
-  node scan-dht-addrs.sh --fail-only
-  echo '>> (finished) DHT Addrs (Fail only)'
+  echo '>> DHT Addrs (No recents)'
+  node scan-dht-addrs.sh --no-recents
+  echo '>> (finished) DHT Addrs (No recents)'
 
   echo
   echo 'Sleeping 5m' $(TZ=America/Vancouver date)
