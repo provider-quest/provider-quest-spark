@@ -83,3 +83,19 @@ def process_dht_addrs(spark, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    countsMultiday = dhtAddrs \
+        .groupBy(
+            dhtAddrs.miner,
+            window(dhtAddrs.timestamp, '2 day', '2 day')
+        ).count()
+
+    queryCountsMultiday = countsMultiday \
+        .writeStream \
+        .queryName("dht_addrs_counts_multiday_json") \
+        .format("json") \
+        .option("path", outputDir + "/dht_addrs/json_counts_multiday") \
+        .option("checkpointLocation", checkpointDir + "/dht_addrs/json_counts_multiday") \
+        .partitionBy("window") \
+        .trigger(processingTime='1 minute') \
+        .start()
+

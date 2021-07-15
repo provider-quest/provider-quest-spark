@@ -7,7 +7,7 @@ mkdir -p input-staging/miner-power \
   input-staging/dht-addrs
 COUNT=0
 #FILES=$(node sorted-archive-json-files.js $((1 * 24 * 60 * 2)))
-FILES=$(node sorted-archive-json-files.js $((3 * 24 * 60 * 2)))
+FILES=$(node sorted-archive-json-files.js $((8 * 24 * 60 * 2)))
 for f in $FILES; do
   echo $COUNT $f
   DEST=$(echo $f | sed 's,estuary-archive/,input-staging/,')
