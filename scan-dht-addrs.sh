@@ -1,8 +1,12 @@
+const dns = require('dns')
 const fs = require('fs')
+const util = require('util')
 const { formatWithOptions } = require('util')
 const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
+
+const dnsLookup = util.promisify(dns.lookup)
 
 fs.mkdirSync('input/dht-addrs', { recursive: true })
 
@@ -32,7 +36,7 @@ async function run () {
     }
     if (count++ % 100 === 0) {
       console.log(
-        'DHT Miners => State:',
+        `dht-addrs${process.argv[2] ? ' ' + process.argv[2] : ''} => State:`,
         dhtAddrs.state,
         dhtAddrs.elapsed ? `Elapsed: ${dateFns.formatDistance(dhtAddrs.elapsed * 1000, 0)}` : '',
         'Scanned:',
@@ -47,12 +51,29 @@ async function run () {
       jsonFilename = `dht-addrs-${currentEpoch}.json`
       const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
       for (const record of dhtAddrs.records) {
+        const { multiaddrs } = record
+        let dnsLookups
+        if (multiaddrs) {
+          for (const maddr of multiaddrs) {
+            const match = maddr.match(/^\/dns[46]\/([^\/]+)/)
+            if (match) {
+              const dnsHost = match[1]
+              console.log('DNS Lookup', dnsHost)
+              dnsLookups ||= {}
+              dnsLookups[dnsHost] = await dnsLookup(
+                dnsHost,
+                { all: true, verbatim: true }
+              )
+            }
+          }
+        }
         await jsonFile.write(
           JSON.stringify({
             timestamp: currentEpochDate,
             epoch: currentEpoch,
             collectedFrom: 'jim-ovh-1',
-            ...record
+            ...record,
+            dnsLookups
           }) + '\n'
         )
       }
