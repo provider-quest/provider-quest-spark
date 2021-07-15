@@ -67,9 +67,9 @@ while true; do
   echo '>> (finished) DHT Addrs (Fail only)'
 
   echo
-  echo 'Sleeping 15m' $(TZ=America/Vancouver date)
+  echo 'Sleeping 5m' $(TZ=America/Vancouver date)
   echo
-  sleep $((15 * 60))
+  sleep $((5 * 60))
 
   echo '>> Publishing deals'
   ./publish-deals.sh

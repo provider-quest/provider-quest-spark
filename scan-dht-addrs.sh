@@ -26,10 +26,10 @@ async function run () {
     if (dhtAddrs.state === 'paused') {
       await notebook.redefine('start', 1)
       if (process.argv[2] === '--fail-only') {
-        await notebook.redefine('maxElapsed', 5 * 60 * 1000)
+        await notebook.redefine('maxElapsed', 10 * 60 * 1000)
         await notebook.redefine('subsetToScan', 'Fail only')
       } else {
-        await notebook.redefine('maxElapsed', 15 * 60 * 1000)
+        await notebook.redefine('maxElapsed', 20 * 60 * 1000)
       }
       await delay(1000)
       continue
