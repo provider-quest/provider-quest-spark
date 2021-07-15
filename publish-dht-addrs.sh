@@ -42,5 +42,19 @@ cat output/dht_addrs/json_counts_daily/date\=$DATEDAILY/part-*.json |
     }) | from_entries \
   }" > dist/dht-addrs-latest/dht-addrs-counts-daily.json
 
+# Multiday counts
+LASTMULTIDAY=$(ls -d output/dht_addrs/json_counts_multiday/window\=* | sort | tail -1)
+echo $LASTMULTIDAY
+DATEMULTIDAY=$(echo $LASTMULTIDAY | sed 's,^.*window=%7B\([^ ]*\).*,\1,')
+echo $DATEMULTIDAY
+cat $LASTMULTIDAY/part-*.json |
+  jq -s "{ \
+    date: \"$DATEMULTIDAY\", \
+    miners: map({ \
+      key: .miner, \
+      value: .count \
+    }) | from_entries \
+  }" > dist/dht-addrs-latest/dht-addrs-counts-multiday.json
+
 (cd dist/dht-addrs-latest; head dht-addrs-latest.json; hub bucket push -y)
 
