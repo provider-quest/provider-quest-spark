@@ -11,6 +11,8 @@ if [ -f output/miner_info/json_latest_subset/_SUCCESS ] ; then
     date: \"$DATE\", \
     miners: map({ \
       key: .miner, value: { \
+        epoch: .[\"last(epoch)\"], \
+        timestamp: .[\"last(timestamp)\"], \
         sectorSize: .[\"last(sectorSize)\"], \
         peerId: .[\"last(peerId)\"], \
         multiaddrsDecoded: .[\"last(multiaddrsDecoded)\"], \

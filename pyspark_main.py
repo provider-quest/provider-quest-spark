@@ -41,8 +41,8 @@ if __name__ == "__main__":
     while True:
         for stream in spark.streams.active:
             message = stream.status['message']
-            if stream.status['message'] != "Waiting for data to arrive" and \
-                    stream.status['message'] != "Waiting for next trigger" and \
+            if message != "Waiting for data to arrive" and \
+                    message != "Waiting for next trigger" and \
                     message.find("Getting offsets") == -1:
                 print(stream.name, message)
         time.sleep(10)

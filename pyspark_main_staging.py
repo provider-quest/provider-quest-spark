@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     #miner_power.process_miner_power(spark, suffix)
 
-    #miner_info.process_miner_info(spark, suffix)
+    miner_info.process_miner_info(spark, suffix)
 
     #names = client_names.process_client_names(spark, suffix)
 
@@ -38,8 +38,9 @@ if __name__ == "__main__":
 
     while True:
         for stream in spark.streams.active:
-            if stream.status['message'] != "Waiting for data to arrive" and \
-                    stream.status['message'] != "Waiting for next trigger" and \
+            message = stream.status['message']
+            if message != "Waiting for data to arrive" and \
+                    message != "Waiting for next trigger" and \
                     message.find("Getting offsets") == -1:
-                print(stream.name, stream.status['message'])
+                print(stream.name, message)
         time.sleep(1)
