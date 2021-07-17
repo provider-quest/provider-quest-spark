@@ -41,3 +41,30 @@ def process_multiaddrs_ips(spark, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    latestMultiaddrsIpsSubset = multiaddrsIps \
+        .groupBy(
+          'miner',
+          'maddr',
+          'peerId',
+          'ip'
+        ).agg(
+          last('epoch'),
+          last('timestamp'),
+          last('chain'),
+          last('dht')
+        )
+
+    def output_latest_multiaddrs_ips_subset(df, epoch_id):
+        df.coalesce(1).write.json(
+            outputDir + '/multiaddrs_ips/json_latest_subset', mode='overwrite')
+
+    queryLatestMultiaddrsIpsSubset = latestMultiaddrsIpsSubset \
+        .writeStream \
+        .queryName("multiaddrs_ips_subset_latest_json") \
+        .outputMode('complete') \
+        .option("checkpointLocation", checkpointDir + "/multiaddrs_ips/json_latest_subset") \
+        .foreachBatch(output_latest_multiaddrs_ips_subset) \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+
