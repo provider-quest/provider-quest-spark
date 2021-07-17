@@ -15,18 +15,19 @@ from deals import deals
 from client_names import client_names
 from asks import asks
 from dht_addrs import dht_addrs
+from multiaddrs_ips import multiaddrs_ips
 
 if __name__ == "__main__":
     spark = SparkSession\
         .builder\
-        .appName("MinerPowerStaging")\
+        .appName("MinerReportStaging")\
         .getOrCreate()
 
     suffix = '-staging'
 
     #miner_power.process_miner_power(spark, suffix)
 
-    miner_info.process_miner_info(spark, suffix)
+    #miner_info.process_miner_info(spark, suffix)
 
     #names = client_names.process_client_names(spark, suffix)
 
@@ -34,7 +35,9 @@ if __name__ == "__main__":
 
     #asks.process_asks(spark, suffix)
 
-    dht_addrs.process_dht_addrs(spark, suffix)
+    #dht_addrs.process_dht_addrs(spark, suffix)
+
+    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
     while True:
         for stream in spark.streams.active:

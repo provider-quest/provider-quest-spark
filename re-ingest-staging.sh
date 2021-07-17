@@ -1,13 +1,15 @@
 #! /bin/bash
 
-mkdir -p input-staging/miner-power \
+mkdir -p \
+  input-staging/miner-power \
   input-staging/miner-info \
   input-staging/asks \
   input-staging/deals \
-  input-staging/dht-addrs
+  input-staging/dht-addrs \
+  input-staging/multiaddrs-ips
 COUNT=0
 #FILES=$(node sorted-archive-json-files.js $((1 * 24 * 60 * 2)))
-FILES=$(node sorted-archive-json-files.js $((8 * 24 * 60 * 2)))
+FILES=$(node sorted-archive-json-files.js $((2 * 24 * 60 * 2)))
 for f in $FILES; do
   echo $COUNT $f
   DEST=$(echo $f | sed 's,estuary-archive/,input-staging/,')

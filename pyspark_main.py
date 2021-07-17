@@ -23,7 +23,7 @@ from dht_addrs import dht_addrs
 if __name__ == "__main__":
     spark = SparkSession\
         .builder\
-        .appName("MinerPower")\
+        .appName("MinerReport")\
         .getOrCreate()
 
     miner_power.process_miner_power(spark)

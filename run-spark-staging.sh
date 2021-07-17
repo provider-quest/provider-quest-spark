@@ -7,6 +7,7 @@ mkdir -p input-staging/miner-power \
   input-staging/asks \
   input-staging/deals \
   input-staging/dht-addrs \
+  input-staging/multiaddrs-ips \
   archive-staging \
   checkpoint-staging
 
