@@ -7,10 +7,11 @@ fs.mkdirSync('input/multiaddrs-ips', { recursive: true })
 async function run () {
   const notebook = await load(
     '@jimpick/miner-report-multiaddr-ip-tool',
-    ['minerMultiaddrIps']
+    ['minerMultiaddrIps', 'deltaMultiaddrsIps']
     // { headless: false }
   )
-  const minerMultiaddrIps = await notebook.value('minerMultiaddrIps')
+  // const minerMultiaddrIps = await notebook.value('minerMultiaddrIps')
+  const minerMultiaddrIps = await notebook.value('deltaMultiaddrsIps')
   await notebook.browser.close()
   let lastEpoch = 0
   for (const record of minerMultiaddrIps) {

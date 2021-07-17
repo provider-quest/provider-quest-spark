@@ -92,6 +92,22 @@ while true; do
   ./publish.sh
 
   echo
+  echo 'Sleeping 15s' $(TZ=America/Vancouver date)
+  echo
+  sleep 15
+
+  echo '>> Multiaddrs + IPs'
+  node scan-multiaddrs-ips.js
+
+  echo
+  echo 'Sleeping 5m' $(TZ=America/Vancouver date)
+  echo
+  sleep $((5 * 60))
+
+  echo '>> Publishing Multiaddrs + IPs'
+  ./publish-multiaddrs-ips.sh
+
+  echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
   echo
   sleep 60
