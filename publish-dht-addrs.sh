@@ -19,7 +19,7 @@ if [ -f output/dht_addrs/json_latest_subset/_SUCCESS ] ; then
         multiaddrs: .[\"last(multiaddrs)\"], \
         dnsLookups: \
           (if .[\"last(dnsLookups)\"] then \
-            .[\"last(dnsLookups)\"] | to_entries | map(.value = [.value | map(fromjson)]) | from_entries \
+            .[\"last(dnsLookups)\"] | to_entries | map(.value = [.value | map(fromjson)][0]) | from_entries \
           else \
             null \
           end) \

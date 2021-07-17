@@ -18,7 +18,7 @@ if [ -f output/miner_info/json_latest_subset/_SUCCESS ] ; then
         multiaddrsDecoded: .[\"last(multiaddrsDecoded)\"], \
         dnsLookups: \
           (if .[\"last(dnsLookups)\"] then \
-            .[\"last(dnsLookups)\"] | to_entries | map(.value = [.value | map(fromjson)]) | from_entries \
+            .[\"last(dnsLookups)\"] | to_entries | map(.value = [.value | map(fromjson)][0]) | from_entries \
           else \
             null \
           end) \
