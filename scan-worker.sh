@@ -5,6 +5,8 @@ while true; do
 
   echo '>> Miner Power'
   node scan-miner-power.js
+  node scan-miner-power.js --newest-not-recent
+  node scan-miner-power.js --all-not-recent
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
