@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     suffix = '-staging'
 
-    #miner_power.process_miner_power(spark, suffix)
+    miner_power.process_miner_power(spark, suffix)
 
     #miner_info.process_miner_info(spark, suffix)
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     #dht_addrs.process_dht_addrs(spark, suffix)
 
-    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
+    #multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
