@@ -23,6 +23,7 @@ while true; do
 
   echo '>> Asks'
   node scan-asks.js
+  node scan-asks.js --no-recents
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)

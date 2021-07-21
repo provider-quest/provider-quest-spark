@@ -23,7 +23,7 @@ async function run () {
     if (minerPower.state === 'paused') {
       await notebook.redefine('start', 1)
       if (process.argv[2] === '--newest-not-recent') {
-        await notebook.redefine('maxElapsed', 1 * 60 * 1000)
+        await notebook.redefine('maxElapsed', 3 * 60 * 1000)
         await notebook.redefine('subsetToScan', 'Newest miners, not recent')
       } else if (process.argv[2] === '--all-not-recent') {
         await notebook.redefine('maxElapsed', 1 * 60 * 1000)
