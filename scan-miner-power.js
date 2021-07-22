@@ -26,7 +26,7 @@ async function run () {
         await notebook.redefine('maxElapsed', 3 * 60 * 1000)
         await notebook.redefine('subsetToScan', 'Newest miners, not recent')
       } else if (process.argv[2] === '--all-not-recent') {
-        await notebook.redefine('maxElapsed', 1 * 60 * 1000)
+        await notebook.redefine('maxElapsed', 3 * 60 * 1000)
         await notebook.redefine('subsetToScan', 'All miners, not recent')
       } else {
         await notebook.redefine('maxElapsed', 5 * 60 * 1000)
