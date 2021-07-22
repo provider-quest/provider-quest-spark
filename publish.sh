@@ -10,3 +10,4 @@ set -e
 ./publish-deals.sh
 ./publish-deals-multiday.sh
 ./publish-dht-addrs.sh
+./publish-ips-geolite2.sh

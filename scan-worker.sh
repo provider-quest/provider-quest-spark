@@ -30,6 +30,14 @@ while true; do
   echo
   sleep 60
 
+  echo '>> IPs => GeoLite2 lookups'
+  node scan-ips-geolite2.js
+
+  echo
+  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
+  echo
+  sleep 60
+
   echo '>> Deals (1 of 3)'
   node scan-deals.js
   echo '>> (finished) Deals (1 of 3)'
