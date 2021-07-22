@@ -41,3 +41,32 @@ def process_ips_geolite2(spark, suffix=""):
         .partitionBy("ip", "date") \
         .trigger(processingTime='1 minute') \
         .start()
+
+    latestIpsGeoLite2 = ipsGeoLite2 \
+        .groupBy(
+          'ip'
+        ).agg(
+          last('epoch'),
+          last('timestamp'),
+          last('continent'),
+          last('country'),
+          last('subdiv1'),
+          last('city'),
+          last('long'),
+          last('lat'),
+          last('geolite2')
+        )
+
+    def output_latest_ips_geolite2(df, epoch_id):
+        df.coalesce(1).write.json(
+            outputDir + '/ips_geolite2/json_latest', mode='overwrite')
+
+    queryLatestIpsGeoLite2 = latestIpsGeoLite2 \
+        .writeStream \
+        .queryName("ips_geolite2_latest_json") \
+        .outputMode('complete') \
+        .option("checkpointLocation", checkpointDir + "/ips_geolite2/json_latest") \
+        .foreachBatch(output_latest_ips_geolite2) \
+        .trigger(processingTime='1 minute') \
+        .start()
+

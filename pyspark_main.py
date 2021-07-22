@@ -20,6 +20,7 @@ from client_names import client_names
 from asks import asks
 from dht_addrs import dht_addrs
 from multiaddrs_ips import multiaddrs_ips
+from ips_geolite2 import ips_geolite2
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -40,6 +41,8 @@ if __name__ == "__main__":
     dht_addrs.process_dht_addrs(spark)
 
     multiaddrs_ips.process_multiaddrs_ips(spark)
+
+    ips_geolite2.process_ips_geolite2(spark)
 
     while True:
         for stream in spark.streams.active:
