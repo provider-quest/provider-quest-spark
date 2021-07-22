@@ -9,6 +9,7 @@ mkdir -p \
   input/deals \
   input/dht-addrs \
   input/multiaddrs-ips \
+  input/ips-geolite2 \
   archive \
   checkpoint
 

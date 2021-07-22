@@ -16,6 +16,7 @@ from client_names import client_names
 from asks import asks
 from dht_addrs import dht_addrs
 from multiaddrs_ips import multiaddrs_ips
+from ips_geolite2 import ips_geolite2
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -25,7 +26,7 @@ if __name__ == "__main__":
 
     suffix = '-staging'
 
-    miner_power.process_miner_power(spark, suffix)
+    #miner_power.process_miner_power(spark, suffix)
 
     #miner_info.process_miner_info(spark, suffix)
 
@@ -38,6 +39,8 @@ if __name__ == "__main__":
     #dht_addrs.process_dht_addrs(spark, suffix)
 
     #multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
+
+    ips_geolite2.process_ips_geolite2(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
