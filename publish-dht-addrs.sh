@@ -50,6 +50,7 @@ echo $DATEMULTIDAY
 cat $LASTMULTIDAY/part-*.json |
   jq -s "{ \
     date: \"$DATEMULTIDAY\", \
+    intervalDays: 7, \
     miners: map({ \
       key: .miner, \
       value: .count \

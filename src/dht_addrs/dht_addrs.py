@@ -86,7 +86,7 @@ def process_dht_addrs(spark, suffix=""):
     countsMultiday = dhtAddrs \
         .groupBy(
             dhtAddrs.miner,
-            window(dhtAddrs.timestamp, '2 day', '2 day')
+            window(dhtAddrs.timestamp, '7 days', '1 day')
         ).count()
 
     queryCountsMultiday = countsMultiday \
