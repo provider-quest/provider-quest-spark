@@ -26,4 +26,4 @@ if [ -f output/dht_addrs/json_latest_subset/_SUCCESS ] ; then
   }" > dist/geoip-lookups/ips-geolite2-latest.json
 fi
 
-#(cd dist/geoip-lookups; head ips-geolite2-latest.json; hub bucket push -y)
+(cd dist/geoip-lookups; head ips-geolite2-latest.json; hub bucket push -y)
