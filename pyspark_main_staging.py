@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     suffix = '-staging'
 
-    #miner_power.process_miner_power(spark, suffix)
+    miner_power.process_miner_power(spark, suffix)
 
     #miner_info.process_miner_info(spark, suffix)
 
@@ -39,11 +39,11 @@ if __name__ == "__main__":
 
     #dht_addrs.process_dht_addrs(spark, suffix)
 
-    multiaddrsIps = multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
+    #multiaddrsIps = multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
-    ipsGeoLite2 = ips_geolite2.process_ips_geolite2(spark, suffix)
+    #ipsGeoLite2 = ips_geolite2.process_ips_geolite2(spark, suffix)
 
-    join_multiaddrs_geolite2.process(multiaddrsIps, ipsGeoLite2, suffix)
+    #join_multiaddrs_geolite2.process(multiaddrsIps, ipsGeoLite2, suffix)
 
     while True:
         for stream in spark.streams.active:

@@ -366,7 +366,7 @@ def process_deals(spark, client_names, suffix=""):
     )
 
     dealsMultidayAggrByProvider = deals.groupBy(
-        window(deals.messageTime, '2 days', '2 days'),
+        window(deals.messageTime, '7 days', '1 day'),
         deals.provider
     ).agg(
         expr("count(*) as count"),

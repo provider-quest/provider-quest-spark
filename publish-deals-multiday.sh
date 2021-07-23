@@ -21,7 +21,7 @@ COUNT=0
 cat $LAST/part*.json | jq -s " \
 { \
   date: \"$DATE\", \
-  intervalDays: 6, \
+  intervalDays: 7, \
   providers: map({ \
     key: .provider, \
     value: { \

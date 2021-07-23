@@ -45,7 +45,7 @@ def process_miner_power(spark, suffix=""):
 
     averagePowerMultiDay = minerPower.groupBy(
         minerPower.miner,
-        window(minerPower.timestamp, '2 day', '2 day')
+        window(minerPower.timestamp, '7 day', '1 day')
     ).avg("rawBytePower", "qualityAdjPower")
 
     queryPowerCounter = numberOfPowerRecords \
