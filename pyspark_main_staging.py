@@ -17,6 +17,7 @@ from asks import asks
 from dht_addrs import dht_addrs
 from multiaddrs_ips import multiaddrs_ips
 from ips_geolite2 import ips_geolite2
+from join_multiaddrs_geolite2 import join_multiaddrs_geolite2
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -38,9 +39,11 @@ if __name__ == "__main__":
 
     #dht_addrs.process_dht_addrs(spark, suffix)
 
-    #multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
+    multiaddrsIps = multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
-    ips_geolite2.process_ips_geolite2(spark, suffix)
+    ipsGeoLite2 = ips_geolite2.process_ips_geolite2(spark, suffix)
+
+    join_multiaddrs_geolite2.process(multiaddrsIps, ipsGeoLite2, suffix)
 
     while True:
         for stream in spark.streams.active:

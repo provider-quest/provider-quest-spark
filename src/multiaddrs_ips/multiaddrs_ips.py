@@ -67,4 +67,6 @@ def process_multiaddrs_ips(spark, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    return multiaddrsIps
+
 

@@ -70,3 +70,5 @@ def process_ips_geolite2(spark, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    return ipsGeoLite2
+
