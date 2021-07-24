@@ -111,6 +111,14 @@ while true; do
   node scan-multiaddrs-ips.js
 
   echo
+  echo 'Sleeping 15s' $(TZ=America/Vancouver date)
+  echo
+  sleep 15
+
+  echo '>> Regions and Locations'
+  node scan-miner-regions-locations.js
+
+  echo
   echo 'Sleeping 5m' $(TZ=America/Vancouver date)
   echo
   sleep $((5 * 60))
