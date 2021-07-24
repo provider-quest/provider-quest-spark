@@ -12,6 +12,8 @@ mkdir -p input-staging/miner-power \
   archive-staging \
   checkpoint-staging
 
+rsync -vaP estuary-archive/client-names input-staging
+
 export TZ=UTC
 
 ~/projects-jpimac/spark/spark-3.1.2-bin-hadoop3.2/bin/spark-submit ./pyspark_main_staging.py 2> ~/tmp/spark-staging-stderr.log | tee ~/tmp/spark-staging.log
