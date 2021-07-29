@@ -15,7 +15,7 @@ if [ -f input/miner-regions/$LAST_REGIONS/miner-regions-*.json ] ; then
   cat $JSON | jq -s "{ \
     date: \"$DATE\", \
     epoch: $LAST_REGIONS,
-    minerRegions: [.] \
+    minerRegions: . \
   }" > dist/geoip-lookups/miner-regions-latest.json
 fi
 
@@ -29,7 +29,7 @@ if [ -f input/miner-locations/$LAST_LOCATIONS/miner-locations-*.json ] ; then
   cat $JSON | jq -s "{ \
     date: \"$DATE\", \
     epoch: $LAST_LOCATIONS,
-    minerLocations: [.] \
+    minerLocations: . \
   }" > dist/geoip-lookups/miner-locations-latest.json
 fi
 
