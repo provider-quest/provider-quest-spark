@@ -4,7 +4,7 @@ IFS="$(printf '\n\t')"
 
 # Latest multiday deals average
 mkdir -p dist/deals
-LAST="$(ls -d output/deals_aggr_multiday_by_provider/json/window\=* | sort | tail -1)"
+LAST="$(ls -d output/deals/by_provider/aggr_multiday/json/window\=* | sort | tail -1)"
 echo $LAST
 LAST_ESCAPE=$(echo $LAST | sed 's, ,\\ ,g')
 DATE=$(echo $LAST | sed 's,^.*window=%7B\([^ ]*\).*,\1,')

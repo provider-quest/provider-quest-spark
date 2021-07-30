@@ -15,7 +15,12 @@ else:
 
 from miner_power import miner_power
 from miner_info import miner_info
-from deals import deals
+from deals import deals_source
+from deals import deals_base
+from deals import deals_by_provider
+from deals import deals_by_client
+from deals import deals_by_pairs
+from deals import deals_sample
 from deals import deals_client_names
 from client_names import client_names
 from asks import asks
@@ -29,14 +34,21 @@ if __name__ == "__main__":
         .appName("MinerReport")\
         .getOrCreate()
 
+    suffix = ''
+
     miner_power.process_miner_power(spark)
 
     miner_info.process_miner_info(spark)
 
     names = client_names.process_client_names(spark)
 
-    deals.process_deals(spark, names)
-    #deals_client_names.process_deals(spark, names)
+    deals = deals_source.get(spark, suffix)
+    deals_base.process(deals, suffix)
+    deals_by_provider.process(deals, suffix)
+    deals_by_client.process(deals, suffix)
+    deals_by_pairs.process(deals, suffix)
+    deals_sample.process(deals, suffix)
+    deals_client_names.process(deals, names, suffix)
 
     asks.process_asks(spark)
 
