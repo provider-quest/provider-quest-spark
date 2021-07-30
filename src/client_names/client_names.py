@@ -1,6 +1,6 @@
 from pyspark.sql.types import StructType
 
-def process_client_names(spark, suffix=""):
+def get(spark, suffix=""):
 
     inputDir = 'input' + suffix
 

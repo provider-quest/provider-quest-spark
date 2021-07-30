@@ -24,6 +24,7 @@ from dht_addrs import dht_addrs
 from multiaddrs_ips import multiaddrs_ips
 from ips_geolite2 import ips_geolite2
 from join_multiaddrs_geolite2 import join_multiaddrs_geolite2
+from miner_regions import miner_regions
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -37,7 +38,9 @@ if __name__ == "__main__":
 
     #miner_info.process_miner_info(spark, suffix)
 
-    names = client_names.process_client_names(spark, suffix)
+    names = client_names.get(spark, suffix)
+
+    minerRegions = miner_regions.get_latest(spark, suffix)
 
     deals = deals_source.get(spark, suffix)
     deals_base.process(deals, suffix)

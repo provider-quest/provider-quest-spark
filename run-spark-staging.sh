@@ -13,6 +13,8 @@ mkdir -p input-staging/miner-power \
   checkpoint-staging
 
 rsync -vaP estuary-archive/client-names input-staging
+rsync -vaP estuary-archive/miner-regions input-staging
+rsync -vaP estuary-archive/miner-locations input-staging
 
 export TZ=UTC
 

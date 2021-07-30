@@ -36,11 +36,11 @@ if __name__ == "__main__":
 
     suffix = ''
 
-    miner_power.process_miner_power(spark)
+    miner_power.process_miner_power(spark, suffix)
 
-    miner_info.process_miner_info(spark)
+    miner_info.process_miner_info(spark, suffix)
 
-    names = client_names.process_client_names(spark)
+    names = client_names.get(spark, suffix)
 
     deals = deals_source.get(spark, suffix)
     deals_base.process(deals, suffix)
@@ -50,13 +50,13 @@ if __name__ == "__main__":
     deals_sample.process(deals, suffix)
     deals_client_names.process(deals, names, suffix)
 
-    asks.process_asks(spark)
+    asks.process_asks(spark, suffix)
 
-    dht_addrs.process_dht_addrs(spark)
+    dht_addrs.process_dht_addrs(spark, suffix)
 
-    multiaddrs_ips.process_multiaddrs_ips(spark)
+    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
-    ips_geolite2.process_ips_geolite2(spark)
+    ips_geolite2.process_ips_geolite2(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
