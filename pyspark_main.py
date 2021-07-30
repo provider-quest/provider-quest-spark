@@ -13,7 +13,8 @@ if os.path.exists('src.zip'):
 else:
     sys.path.insert(0, './src')
 
-from miner_power import miner_power
+from miner_power import miner_power_source
+from miner_power import miner_power_base
 from miner_info import miner_info
 from deals import deals_source
 from deals import deals_base
@@ -36,7 +37,8 @@ if __name__ == "__main__":
 
     suffix = ''
 
-    miner_power.process_miner_power(spark, suffix)
+    minerPower = miner_power_source.get(spark, suffix)
+    miner_power_base.process(minerPower, suffix)
 
     miner_info.process_miner_info(spark, suffix)
 

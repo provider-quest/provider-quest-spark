@@ -1,33 +1,10 @@
-import sys
-import time
-
 from pyspark.sql.functions import window
 from pyspark.sql.functions import last
-from pyspark.sql.types import StructType, ArrayType, StringType
 
+def process(minerPower, suffix=""):
 
-def process_miner_power(spark, suffix=""):
-
-    inputDir = 'input' + suffix
     outputDir = 'output' + suffix
     checkpointDir = 'checkpoint' + suffix
-
-    schemaPower = StructType() \
-        .add("epoch", "long") \
-        .add("timestamp", "timestamp") \
-        .add("tipSet", "string") \
-        .add("miner", "string") \
-        .add("rawBytePower", "double") \
-        .add("qualityAdjPower", "double")
-
-    minerPower = spark \
-        .readStream \
-        .schema(schemaPower) \
-        .json(inputDir + '/miner-power') \
-        .withWatermark("timestamp", "1 minute")
-
-    minerPower = minerPower.withColumn(
-        "date", minerPower.timestamp.astype('date'))
 
     numberOfPowerRecords = minerPower.groupBy().count()
 
