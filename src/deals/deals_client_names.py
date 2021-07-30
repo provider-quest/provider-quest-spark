@@ -2,7 +2,6 @@ from pyspark.sql.functions import window
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import avg
 from pyspark.sql.functions import min, max, sum, approx_count_distinct
-from pyspark.sql.functions import hour
 
 
 def process(deals, client_names, suffix=""):
