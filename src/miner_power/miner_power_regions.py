@@ -61,7 +61,8 @@ def process(minerPower, minerRegions, suffix=""):
             sum('avg(splitQualityAdjPower)')
         )
 
-        summedDf.coalesce(1).write.partitionBy('date').json(
+        # summedDf.coalesce(1).write.partitionBy('date').json(
+        summedDf.orderBy('date', 'region').coalesce(1).write.json(
                 outputDir + '/miner_power/by_miner_region/sum_avg_daily/json',
                 mode='overwrite')
 
