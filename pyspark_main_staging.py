@@ -40,20 +40,18 @@ if __name__ == "__main__":
 
     #miner_info.process_miner_info(spark, suffix)
 
-    names = client_names.get(spark, suffix)
+    #names = client_names.get(spark, suffix)
 
     minerRegions = miner_regions.get_latest(spark, suffix)
     miner_power_regions.process(minerPower, minerRegions, suffix)
 
-    deals = deals_source.get(spark, suffix)
-    deals_base.process(deals, suffix)
-    deals_by_provider.process(deals, suffix)
-    deals_by_client.process(deals, suffix)
-    deals_by_pairs.process(deals, suffix)
-    deals_sample.process(deals, suffix)
-    deals_client_names.process(deals, names, suffix)
-
-    #deals.process_deals(spark, names, suffix)
+    #deals = deals_source.get(spark, suffix)
+    #deals_base.process(deals, suffix)
+    #deals_by_provider.process(deals, suffix)
+    #deals_by_client.process(deals, suffix)
+    #deals_by_pairs.process(deals, suffix)
+    #deals_sample.process(deals, suffix)
+    #deals_client_names.process(deals, names, suffix)
 
     #asks.process_asks(spark, suffix)
 

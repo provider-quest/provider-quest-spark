@@ -1,5 +1,6 @@
 from pyspark.sql.functions import window
-from pyspark.sql.functions import last
+from pyspark.sql.functions import count
+from pyspark.sql.functions import sum
 
 def process(minerPower, minerRegions, suffix=""):
 
@@ -28,10 +29,11 @@ def process(minerPower, minerRegions, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
-    # Average Power
+    # Summed Average Power
 
     averagePowerDaily = minerPowerWithRegions.groupBy(
         minerPowerWithRegions.region,
+        minerPowerWithRegions.miner,
         minerPowerWithRegions.date,
         window('timestamp', '1 day')
     ).avg(
@@ -48,3 +50,27 @@ def process(minerPower, minerRegions, suffix=""):
         .partitionBy("date") \
         .trigger(processingTime='1 minute') \
         .start()
+
+    def output_summed(df, epoch_id):
+        summedDf = df.groupBy(
+            'date',
+            'region'
+        ).agg(
+            count('miner'),
+            sum('avg(splitRawBytePower)'),
+            sum('avg(splitQualityAdjPower)')
+        )
+
+        summedDf.coalesce(1).write.partitionBy('date').json(
+                outputDir + '/miner_power/by_miner_region/sum_avg_daily/json',
+                mode='overwrite')
+
+    queryPowerSumAvgDaily = averagePowerDaily \
+        .writeStream \
+        .queryName("miner_power_by_miner_region_sum_avg_daily_json") \
+        .outputMode('complete') \
+        .option("checkpointLocation", checkpointDir + "/miner_power/by_miner_region/sum_avg_daily/json") \
+        .foreachBatch(output_summed) \
+        .trigger(processingTime='1 minute') \
+        .start()
+
