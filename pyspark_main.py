@@ -15,6 +15,7 @@ else:
 
 from miner_power import miner_power_source
 from miner_power import miner_power_base
+from miner_power import miner_power_regions
 from miner_info import miner_info
 from deals import deals_source
 from deals import deals_base
@@ -28,6 +29,7 @@ from asks import asks
 from dht_addrs import dht_addrs
 from multiaddrs_ips import multiaddrs_ips
 from ips_geolite2 import ips_geolite2
+from miner_regions import miner_regions
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -43,6 +45,9 @@ if __name__ == "__main__":
     miner_info.process_miner_info(spark, suffix)
 
     names = client_names.get(spark, suffix)
+
+    minerRegions = miner_regions.get_latest(spark, suffix)
+    miner_power_regions.process(minerPower, minerRegions, suffix)
 
     deals = deals_source.get(spark, suffix)
     deals_base.process(deals, suffix)
