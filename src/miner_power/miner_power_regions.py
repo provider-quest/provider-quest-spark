@@ -1,21 +1,32 @@
 from pyspark.sql.functions import window
 from pyspark.sql.functions import count
 from pyspark.sql.functions import sum
+from pyspark.sql.functions import avg
+from pyspark.sql.functions import when
+
 
 def process(minerPower, minerRegions, suffix=""):
 
     outputDir = 'output' + suffix
     checkpointDir = 'checkpoint' + suffix
 
-    minerPowerWithRegions = minerPower.join( minerRegions, [ 'miner' ])
+    minerPower = minerPower.where(
+        "rawBytePower > 0 OR qualityAdjPower > 0"
+    )
+
+    minerPowerWithRegions = minerPower.join(
+        minerRegions,
+        on='miner',
+        how='leftOuter'
+    ).fillna('none', 'region')
 
     minerPowerWithRegions = minerPowerWithRegions \
-        .withColumn("splitRawBytePower", 
-            minerPowerWithRegions.rawBytePower /
-            minerPowerWithRegions.numRegions) \
-        .withColumn("splitQualityAdjPower", 
-            minerPowerWithRegions.qualityAdjPower /
-            minerPowerWithRegions.numRegions)
+        .withColumn("splitRawBytePower",
+                    minerPowerWithRegions.rawBytePower /
+                    minerPowerWithRegions.numRegions) \
+        .withColumn("splitQualityAdjPower",
+                    minerPowerWithRegions.qualityAdjPower /
+                    minerPowerWithRegions.numRegions)
 
     # Archive
 
@@ -32,14 +43,28 @@ def process(minerPower, minerRegions, suffix=""):
     # Summed Average Power
 
     averagePowerDaily = minerPowerWithRegions.groupBy(
-        minerPowerWithRegions.region,
         minerPowerWithRegions.miner,
         minerPowerWithRegions.date,
+        minerPowerWithRegions.region,
         window('timestamp', '1 day')
-    ).avg(
-        "splitRawBytePower",
-        "splitQualityAdjPower"
+    ).agg(
+        avg("rawBytePower"),
+        avg("qualityAdjPower"),
+        avg("splitRawBytePower"),
+        avg("splitQualityAdjPower")
     )
+
+    averagePowerDaily = averagePowerDaily \
+        .withColumn('rawBytePower', when(
+            minerPowerWithRegions.region == 'none',
+            averagePowerDaily['avg(rawBytePower)']
+        ).otherwise(averagePowerDaily['avg(splitRawBytePower)'])
+        ) \
+        .withColumn('qualityAdjPower', when(
+            minerPowerWithRegions.region == 'none',
+            averagePowerDaily['avg(qualityAdjPower)']
+        ).otherwise(averagePowerDaily['avg(splitQualityAdjPower)'])
+        )
 
     queryPowerAvgDaily = averagePowerDaily \
         .writeStream \
@@ -57,14 +82,14 @@ def process(minerPower, minerRegions, suffix=""):
             'region'
         ).agg(
             count('miner'),
-            sum('avg(splitRawBytePower)'),
-            sum('avg(splitQualityAdjPower)')
+            sum('rawBytePower'),
+            sum('qualityAdjPower')
         )
 
         # summedDf.coalesce(1).write.partitionBy('date').json(
         summedDf.orderBy('date', 'region').coalesce(1).write.json(
-                outputDir + '/miner_power/by_miner_region/sum_avg_daily/json',
-                mode='overwrite')
+            outputDir + '/miner_power/by_miner_region/sum_avg_daily/json',
+            mode='overwrite')
 
     queryPowerSumAvgDaily = averagePowerDaily \
         .writeStream \
@@ -74,4 +99,3 @@ def process(minerPower, minerRegions, suffix=""):
         .foreachBatch(output_summed) \
         .trigger(processingTime='1 minute') \
         .start()
-
