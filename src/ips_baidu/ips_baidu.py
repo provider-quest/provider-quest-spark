@@ -16,8 +16,8 @@ def process(spark, suffix=""):
         .add("timestamp", "timestamp") \
         .add("ip", "string") \
         .add("city", "string") \
-        .add("long", "string") \
-        .add("lat", "string") \
+        .add("long", "float") \
+        .add("lat", "float") \
         .add("baidu", "string")
 
     ipsBaidu = spark \

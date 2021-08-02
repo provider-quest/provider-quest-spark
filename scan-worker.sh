@@ -38,6 +38,14 @@ while true; do
   echo
   sleep 60
 
+  echo '>> IPs => Baidu lookups'
+  node scan-ips-baidu.js
+
+  echo
+  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
+  echo
+  sleep 60
+
   echo '>> Deals (1 of 3)'
   node scan-deals.js
   echo '>> (finished) Deals (1 of 3)'

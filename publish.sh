@@ -12,4 +12,5 @@ set -e
 ./publish-deals-multiday.sh
 ./publish-dht-addrs.sh
 ./publish-ips-geolite2.sh
+./publish-ips-baidu.sh
 ./publish-regions-locations.sh

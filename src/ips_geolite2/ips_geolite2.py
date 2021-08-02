@@ -5,7 +5,7 @@ from pyspark.sql.functions import window
 from pyspark.sql.functions import last
 from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
-def process_ips_geolite2(spark, suffix=""):
+def process(spark, suffix=""):
 
     inputDir = 'input' + suffix
     outputDir = 'output' + suffix
@@ -19,8 +19,8 @@ def process_ips_geolite2(spark, suffix=""):
         .add("country", "string") \
         .add("subdiv1", "string") \
         .add("city", "string") \
-        .add("long", "string") \
-        .add("lat", "string") \
+        .add("long", "float") \
+        .add("lat", "float") \
         .add("geolite2", "string")
 
     ipsGeoLite2 = spark \

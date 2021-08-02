@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
-    ips_geolite2.process_ips_geolite2(spark, suffix)
+    ips_geolite2.process(spark, suffix)
 
     ips_baidu.process(spark, suffix)
 
