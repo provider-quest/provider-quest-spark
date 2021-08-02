@@ -25,6 +25,7 @@ from asks import asks
 from dht_addrs import dht_addrs
 from multiaddrs_ips import multiaddrs_ips
 from ips_geolite2 import ips_geolite2
+from ips_baidu import ips_baidu
 from miner_regions import miner_regions
 
 if __name__ == "__main__":
@@ -35,15 +36,15 @@ if __name__ == "__main__":
 
     suffix = '-staging'
 
-    minerPower = miner_power_source.get(spark, suffix)
-    miner_power_base.process(minerPower, suffix)
+    #minerPower = miner_power_source.get(spark, suffix)
+    #miner_power_base.process(minerPower, suffix)
 
     #miner_info.process_miner_info(spark, suffix)
 
     #names = client_names.get(spark, suffix)
 
-    minerRegions = miner_regions.get_latest(spark, suffix)
-    miner_power_regions.process(minerPower, minerRegions, suffix)
+    #minerRegions = miner_regions.get_latest(spark, suffix)
+    #miner_power_regions.process(minerPower, minerRegions, suffix)
 
     #deals = deals_source.get(spark, suffix)
     #deals_base.process(deals, suffix)
@@ -60,6 +61,8 @@ if __name__ == "__main__":
     #multiaddrsIps = multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
     #ipsGeoLite2 = ips_geolite2.process_ips_geolite2(spark, suffix)
+
+    ipsBaidu = ips_baidu.process(spark, suffix)
 
     while True:
         for stream in spark.streams.active:

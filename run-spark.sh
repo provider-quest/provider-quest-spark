@@ -10,6 +10,7 @@ mkdir -p \
   input/dht-addrs \
   input/multiaddrs-ips \
   input/ips-geolite2 \
+  input/ips-baidu \
   archive \
   checkpoint
 
