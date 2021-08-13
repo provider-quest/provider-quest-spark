@@ -1,0 +1,14 @@
+{
+  "name": "@jimpick/miner-report-published-deals-daily",
+  "main": "a558fb3444ef7dac@347.js",
+  "version": "347.0.0",
+  "homepage": "https://observablehq.com/@jimpick/miner-report-published-deals-daily",
+  "author": {
+    "name": "Jim Pick",
+    "url": "https://observablehq.com/@jimpick"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4"
+  }
+}

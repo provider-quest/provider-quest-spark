@@ -94,7 +94,7 @@ clean-hourly-totals-verified:
 # named clients: daily-totals
 #
 
-NAMED_CLIENTS_DAILY_TOTALS_DIRS := $(wildcard output/deals/by_client_name/aggr__daily/json/clientName=*)
+NAMED_CLIENTS_DAILY_TOTALS_DIRS := $(wildcard output/deals/by_client_name/aggr_daily/json/clientName=*)
 NAMED_CLIENTS_NAMES := $(subst clientName=,,$(notdir $(NAMED_CLIENTS_DAILY_TOTALS_DIRS)))
 
 DIST_NAMED_CLIENTS_DAILY_TOTALS := $(addsuffix /daily-totals.json,$(addprefix dist/deals/named-clients/,$(NAMED_CLIENTS_NAMES)))
