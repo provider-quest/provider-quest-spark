@@ -20,6 +20,7 @@ from deals import deals_by_client
 from deals import deals_by_pairs
 from deals import deals_sample
 from deals import deals_client_names
+from deals import deals_regions
 from client_names import client_names
 from asks import asks
 from dht_addrs import dht_addrs
@@ -36,23 +37,24 @@ if __name__ == "__main__":
 
     suffix = '-staging'
 
-    #minerPower = miner_power_source.get(spark, suffix)
-    #miner_power_base.process(minerPower, suffix)
+    minerPower = miner_power_source.get(spark, suffix)
+    miner_power_base.process(minerPower, suffix)
 
     #miner_info.process_miner_info(spark, suffix)
 
     #names = client_names.get(spark, suffix)
 
-    #minerRegions = miner_regions.get_latest(spark, suffix)
-    #miner_power_regions.process(minerPower, minerRegions, suffix)
+    minerRegions = miner_regions.get_latest(spark, suffix)
+    miner_power_regions.process(minerPower, minerRegions, suffix)
 
-    #deals = deals_source.get(spark, suffix)
-    #deals_base.process(deals, suffix)
+    deals = deals_source.get(spark, suffix)
+    deals_base.process(deals, suffix)
     #deals_by_provider.process(deals, suffix)
     #deals_by_client.process(deals, suffix)
     #deals_by_pairs.process(deals, suffix)
     #deals_sample.process(deals, suffix)
     #deals_client_names.process(deals, names, suffix)
+    deals_regions.process(deals, minerRegions, suffix)
 
     #asks.process_asks(spark, suffix)
 
@@ -62,7 +64,7 @@ if __name__ == "__main__":
 
     #ipsGeoLite2 = ips_geolite2.process(spark, suffix)
 
-    ipsBaidu = ips_baidu.process(spark, suffix)
+    #ipsBaidu = ips_baidu.process(spark, suffix)
 
     while True:
         for stream in spark.streams.active:

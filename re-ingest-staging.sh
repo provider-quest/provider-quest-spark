@@ -7,7 +7,8 @@ mkdir -p \
   input-staging/deals \
   input-staging/dht-addrs \
   input-staging/multiaddrs-ips \
-  input-staging/ips-geolite2
+  input-staging/ips-geolite2 \
+  input-staging/ips-baidu
 
 COUNT=0
 #FILES=$(node sorted-archive-json-files.js $((1 * 24 * 60 * 2)))
