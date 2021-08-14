@@ -4,14 +4,16 @@ all: daily-totals \
 	hourly-totals \
 	hourly-totals-verified \
 	named-clients-daily-totals \
-	named-clients-hourly-totals
+	named-clients-hourly-totals \
+	daily-deals-by-region
 
 clean: clean-daily-totals \
 	clean-daily-totals-verified \
 	clean-hourly-totals \
 	clean-hourly-totals-verified \
 	clean-named-clients-daily-totals \
-	clean-named-clients-hourly-totals
+	clean-named-clients-hourly-totals \
+	clean-daily-deals-by-region
 
 
 #
@@ -43,6 +45,17 @@ dist/deals/daily-totals-verified.json: $(wildcard output/deals/by_verified/aggr_
 clean-daily-totals-verified:
 	rm -f dist/deals/daily-totals-verified.json
 
+#
+# daily-deals-by-region
+#
+
+daily-deals-by-region: dist/deals/daily-deals-by-region.json
+
+dist/deals/daily-deals-by-region.json: $(wildcard output/deals/by_miner_region/aggr_daily/json/part-*.json) $(wildcard output/deals/by_miner_region/sum_aggr_daily/json/part-*.json)
+	node join-deals-by-region-daily.js > $@
+
+clean-daily-deals-by-region:
+	rm -f dist/deals/daily-deals-by-region.json
 
 #
 # hourly-totals
