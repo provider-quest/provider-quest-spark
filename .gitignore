@@ -4,8 +4,8 @@ input*
 output
 output-staging
 output*
-archive
-archive-staging
+archive/
+archive-staging/
 archive*
 checkpoint
 checkpoint-staging
