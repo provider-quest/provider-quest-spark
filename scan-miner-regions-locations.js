@@ -8,12 +8,13 @@ fs.mkdirSync('input/miner-locations', { recursive: true })
 async function run () {
   const notebook = await load(
     '@jimpick/miner-report-miner-to-region-mapper',
-    ['minerRegionsTable', 'minerLocationsTable', 'currentEpoch']
+    ['minerRegionsTable', 'minerLocationsTable', 'currentEpoch', 'regionHierarchy']
     // { headless: false }
   )
   const epoch = await notebook.value('currentEpoch')
   const minerRegions = await notebook.value('minerRegionsTable')
   const minerLocations = await notebook.value('minerLocationsTable')
+  const regionHierarchy = await notebook.value('regionHierarchy')
   await notebook.browser.close()
 
   async function writeMinerRegions () {
@@ -68,8 +69,29 @@ async function run () {
     }
   }
 
+  async function writeRegionHierarchy () {
+    fs.mkdirSync(`input/region-hierarchy/${epoch}`, { recursive: true })
+    const jsonFilename = `region-hierarchy-${epoch}.json`
+    const dest =`input/region-hierarchy/${epoch}/${jsonFilename}` 
+    if (fs.existsSync(dest)) {
+      console.log(`File already exists, skipping. ${jsonFilename}`)
+    } else {
+      fs.writeFileSync(`tmp/${jsonFilename}`,
+                       JSON.stringify(regionHierarchy, null, 2))
+      fs.rename(`tmp/${jsonFilename}`, dest, err => {
+        if (err) {
+          console.error('Error', err)
+          process.exit(1)
+        }
+      })
+      console.log('Filename:', jsonFilename)
+      console.log('Epoch:', epoch)
+    }
+  }
+
   await writeMinerRegions()
   await writeMinerLocations()
+  await writeRegionHierarchy()
 
   await notebook.browser.close()
 }
