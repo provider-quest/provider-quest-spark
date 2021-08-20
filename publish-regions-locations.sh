@@ -33,11 +33,28 @@ if [ -f input/miner-locations/$LAST_LOCATIONS/miner-locations-*.json ] ; then
   }" > dist/geoip-lookups/miner-locations-latest.json
 fi
 
+# Latest region-hierarchy
+
+LAST_HIERARCHY=$(cd input/region-hierarchy; ls | sort -n | tail -1)
+#echo $LAST_HIERARCHY
+
+if [ -f input/region-hierarchy/$LAST_HIERARCHY/region-hierarchy-*.json ] ; then
+  JSON=input/region-hierarchy/$LAST_HIERARCHY/region-hierarchy-*.json
+  cat $JSON | jq "{ \
+    date: \"$DATE\", \
+    epoch: $LAST_HIERARCHY,
+    regionHierarchy: . \
+  }" > dist/geoip-lookups/region-hierarchy-latest.json
+fi
+
+
 (
   cd dist/geoip-lookups;
   echo "miner-regions-latest.json:"
   head miner-regions-latest.json
   echo "miner-locations-latest.json:"
   head miner-locations-latest.json
+  echo "region-hierarchy-latest.json:"
+  head region-hierarchy-latest.json
   hub bucket push -y
 )
