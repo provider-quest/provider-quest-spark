@@ -6,8 +6,8 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 # Latest GeoIP lookups
 mkdir -p dist/geoip-lookups
 
-if [ -f output/ips_baidu/json_latest/_SUCCESS ] ; then
-  PART=$(ls output/ips_baidu/json_latest/part*.json | head -1)
+if [ -f ../work/output/ips_baidu/json_latest/_SUCCESS ] ; then
+  PART=$(ls ../work/output/ips_baidu/json_latest/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     ipsBaidu: map({ \

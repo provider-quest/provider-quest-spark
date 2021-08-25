@@ -6,8 +6,8 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 # Latest multiaddrs-ips
 mkdir -p dist/multiaddrs-ips-latest
 
-if [ -f output/multiaddrs_ips/json_latest_subset/_SUCCESS ] ; then
-  PART=$(ls output/multiaddrs_ips/json_latest_subset/part*.json | head -1)
+if [ -f ../work/output/multiaddrs_ips/json_latest_subset/_SUCCESS ] ; then
+  PART=$(ls ../work/output/multiaddrs_ips/json_latest_subset/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     multiaddrsIps: map({ \

@@ -6,8 +6,8 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 # Latest DHT addrs
 mkdir -p dist/dht-addrs-latest
 
-if [ -f output/dht_addrs/json_latest_subset/_SUCCESS ] ; then
-  PART=$(ls output/dht_addrs/json_latest_subset/part*.json | head -1)
+if [ -f ../work/output/dht_addrs/json_latest_subset/_SUCCESS ] ; then
+  PART=$(ls ../work/output/dht_addrs/json_latest_subset/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     miners: map({ \
@@ -29,11 +29,11 @@ if [ -f output/dht_addrs/json_latest_subset/_SUCCESS ] ; then
 fi
 
 # Daily counts
-LASTDAILY=$(ls -d output/dht_addrs/json_counts_daily/date\=* | sort | tail -1)
+LASTDAILY=$(ls -d ../work/output/dht_addrs/json_counts_daily/date\=* | sort | tail -1)
 echo $LASTDAILY
 DATEDAILY=$(echo $LASTDAILY | sed 's,^.*date=,,')
 echo $DATEDAILY
-cat output/dht_addrs/json_counts_daily/date\=$DATEDAILY/part-*.json |
+cat ../work/output/dht_addrs/json_counts_daily/date\=$DATEDAILY/part-*.json |
   jq -s "{ \
     date: \"$DATEDAILY\", \
     miners: map({ \
@@ -43,7 +43,7 @@ cat output/dht_addrs/json_counts_daily/date\=$DATEDAILY/part-*.json |
   }" > dist/dht-addrs-latest/dht-addrs-counts-daily.json
 
 # Multiday counts
-LASTMULTIDAY=$(ls -d output/dht_addrs/json_counts_multiday/window\=* | sort | tail -1)
+LASTMULTIDAY=$(ls -d ../work/output/dht_addrs/json_counts_multiday/window\=* | sort | tail -1)
 echo $LASTMULTIDAY
 DATEMULTIDAY=$(echo $LASTMULTIDAY | sed 's,^.*window=%7B\([^ ]*\).*,\1,')
 echo $DATEMULTIDAY

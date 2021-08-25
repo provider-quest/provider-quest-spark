@@ -5,8 +5,8 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 
 # Latest multiday power average
 mkdir -p dist/asks-subset-latest
-if [ -f output/asks/json_latest_subset/_SUCCESS ] ; then
-  PART=$(ls output/asks/json_latest_subset/part*.json | head -1)
+if [ -f ../work/output/asks/json_latest_subset/_SUCCESS ] ; then
+  PART=$(ls ../work/output/asks/json_latest_subset/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     miners: map({ \

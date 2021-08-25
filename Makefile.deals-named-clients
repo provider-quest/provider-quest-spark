@@ -2,7 +2,7 @@
 # Worker
 #
 
-NAMED_CLIENT_HOURLY_TOTALS_DATES_DIRS := $(wildcard output/deals/by_client_name/aggr_hourly/json/clientName=$(NAMED_CLIENT)/date=*)
+NAMED_CLIENT_HOURLY_TOTALS_DATES_DIRS := $(wildcard ../work/output/deals/by_client_name/aggr_hourly/json/clientName=$(NAMED_CLIENT)/date=*)
 NAMED_CLIENT_HOURLY_TOTALS_DATES := $(subst date=,,$(notdir $(NAMED_CLIENT_HOURLY_TOTALS_DATES_DIRS)))
 NAMED_CLIENT_DIST_HOURLY_TOTALS := $(addsuffix .json,$(addprefix dist/deals/named-clients/$(NAMED_CLIENT)/hourly/,$(NAMED_CLIENT_HOURLY_TOTALS_DATES)))
 
@@ -15,7 +15,7 @@ dist/deals/named-clients/$(NAMED_CLIENT)/hourly/dates.json: $(NAMED_CLIENT_HOURL
 
 .SECONDEXPANSION:
 
-$(NAMED_CLIENT_DIST_HOURLY_TOTALS): dist/deals/named-clients/$(NAMED_CLIENT)/hourly/%.json: $$(wildcard output/deals/by_client_name/aggr_hourly/json/clientName=$(NAMED_CLIENT)/date=%/part-*.json)
+$(NAMED_CLIENT_DIST_HOURLY_TOTALS): dist/deals/named-clients/$(NAMED_CLIENT)/hourly/%.json: $$(wildcard ../work/output/deals/by_client_name/aggr_hourly/json/clientName=$(NAMED_CLIENT)/date=%/part-*.json)
 	@echo $@
 	@mkdir -p dist/deals/named-clients/$(NAMED_CLIENT)/hourly
 	@cat $^ | jq -s 'sort_by(.window.start)' > $@

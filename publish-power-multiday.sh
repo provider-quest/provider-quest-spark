@@ -4,7 +4,7 @@ IFS="$(printf '\n\t')"
 
 # Latest multiday power average
 mkdir -p dist/miner-power-multiday-average-latest
-LAST="$(ls -d output/miner_power/json_avg_multiday/window\=* | sort | tail -1)"
+LAST="$(ls -d ../work/output/miner_power/json_avg_multiday/window\=* | sort | tail -1)"
 echo $LAST
 LAST_ESCAPE=$(echo $LAST | sed 's, ,\\ ,g')
 DATE=$(echo $LAST | sed 's,^.*window=%7B\([^ ]*\).*,\1,')

@@ -155,3 +155,68 @@ def process(deals, suffix=""):
         .partitionBy("date") \
         .trigger(processingTime='1 minute') \
         .start()
+
+    # Aggregate Weekly
+
+    dealsWeeklyAggr = deals.groupBy(
+        window(deals.messageTime, '7 days')
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
+    )
+
+    queryAggrDealsWeekly = dealsWeeklyAggr \
+        .writeStream \
+        .queryName("deals_aggr_weekly_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals/aggr_weekly/json") \
+        .option("checkpointLocation", checkpointDir + "/deals/aggr_weekly/json") \
+        .partitionBy("window") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+    dealsWeeklyAggrByVerified = deals.groupBy(
+        window(deals.messageTime, '7 days'),
+        deals.verifiedDeal
+    ).agg(
+        expr("count(*) as count"),
+        sum(deals.pieceSizeDouble),
+        avg(deals.pieceSizeDouble),
+        min(deals.pieceSizeDouble),
+        max(deals.pieceSizeDouble),
+        avg(deals.storagePricePerEpochDouble),
+        min(deals.storagePricePerEpochDouble),
+        max(deals.storagePricePerEpochDouble),
+        approx_count_distinct(deals.label),
+        sum(deals.lifetimeValue),
+        avg(deals.lifetimeValue),
+        min(deals.lifetimeValue),
+        max(deals.lifetimeValue),
+        approx_count_distinct(deals.provider),
+        approx_count_distinct(deals.client),
+        approx_count_distinct(deals.clientProvider)
+    )
+
+    queryAggrDealsWeeklyByVerified = dealsWeeklyAggrByVerified \
+        .writeStream \
+        .queryName("deals_by_verified_aggr_weekly_json") \
+        .format("json") \
+        .option("path", outputDir + "/deals/by_verified/aggr_weekly/json") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_verified/aggr_weekly/json") \
+        .partitionBy("window") \
+        .trigger(processingTime='1 minute') \
+        .start()

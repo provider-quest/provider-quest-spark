@@ -4,7 +4,7 @@ set -e
 
 # Latest daily power average
 mkdir -p dist/miner-power-daily-average-latest
-LAST=$(ls -d output/miner_power/json_avg_daily/date\=* | sort | tail -1)
+LAST=$(ls -d ../work/output/miner_power/json_avg_daily/date\=* | sort | tail -1)
 echo $LAST
 DATE=$(echo $LAST | sed 's,^.*date=,,')
 echo $DATE
