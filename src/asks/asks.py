@@ -9,8 +9,8 @@ from pyspark.sql.types import StructType, ArrayType, StringType
 def process_asks(spark, suffix=""):
 
     inputDir = 'input' + suffix
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     schemaAsks = StructType() \
         .add("epoch", "long") \

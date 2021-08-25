@@ -3,8 +3,8 @@ from pyspark.sql.functions import last
 
 def process(minerPower, suffix=""):
 
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     numberOfPowerRecords = minerPower.groupBy().count()
 

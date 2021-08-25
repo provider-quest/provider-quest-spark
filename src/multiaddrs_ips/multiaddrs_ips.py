@@ -9,8 +9,8 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 def process_multiaddrs_ips(spark, suffix=""):
 
     inputDir = 'input' + suffix
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     schemaMultiaddrsIps = StructType() \
         .add("epoch", "long") \

@@ -10,8 +10,8 @@ from pyspark.sql.functions import approx_count_distinct
 
 def process(deals, minerRegions, suffix=""):
 
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     dealsWithRegions = deals \
         .join(

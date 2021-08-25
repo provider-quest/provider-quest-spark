@@ -7,8 +7,8 @@ from pyspark.sql.functions import min, max, sum, approx_count_distinct
 
 def process(deals, suffix=""):
 
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     # By Pairs - Aggregated Hourly
 

@@ -7,8 +7,8 @@ from pyspark.sql.functions import when
 
 def process(minerPower, minerRegions, suffix=""):
 
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     minerPower = minerPower.where(
         "rawBytePower > 0 OR qualityAdjPower > 0"

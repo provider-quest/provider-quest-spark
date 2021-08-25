@@ -9,8 +9,8 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 def process_dht_addrs(spark, suffix=""):
 
     inputDir = 'input' + suffix
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     schemaDhtAddrs = StructType() \
         .add("epoch", "long") \

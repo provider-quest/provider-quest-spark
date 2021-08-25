@@ -9,8 +9,8 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 def process_miner_info(spark, suffix=""):
 
     inputDir = 'input' + suffix
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     schemaInfo = StructType() \
         .add("epoch", "long") \

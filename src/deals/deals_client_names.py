@@ -6,8 +6,8 @@ from pyspark.sql.functions import min, max, sum, approx_count_distinct
 
 def process(deals, client_names, suffix=""):
 
-    outputDir = 'output' + suffix
-    checkpointDir = 'checkpoint' + suffix
+    outputDir = '../work/output' + suffix
+    checkpointDir = '../work/checkpoint' + suffix
 
     dealsWithClientNames = deals.join(client_names, client_names.address == deals.client)
 
