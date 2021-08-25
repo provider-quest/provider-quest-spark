@@ -1,20 +1,47 @@
 
-all: daily-totals \
-	daily-totals-verified \
-	hourly-totals \
-	hourly-totals-verified \
+all: weekly-totals weekly-totals-verified \
+	daily-totals daily-totals-verified \
+	hourly-totals hourly-totals-verified \
 	named-clients-daily-totals \
 	named-clients-hourly-totals \
 	daily-deals-by-region
 
-clean: clean-daily-totals \
-	clean-daily-totals-verified \
-	clean-hourly-totals \
-	clean-hourly-totals-verified \
+clean: clean-weekly-totals clean-weekly-totals-verified \
+	clean-daily-totals clean-daily-totals-verified \
+	clean-hourly-totals clean-hourly-totals-verified \
 	clean-named-clients-daily-totals \
 	clean-named-clients-hourly-totals \
 	clean-daily-deals-by-region
 
+
+#
+# weekly-totals
+#
+
+weekly-totals: dist/deals/weekly-totals.json
+
+dist/deals/weekly-totals.json: $(wildcard ../work/output/deals/aggr_weekly/json/windowStart=*/part-*.json)
+	cat ../work/output/deals/aggr_weekly/json/windowStart=*/part-*.json | \
+		jq -s 'sort_by(.window.start)' > \
+		dist/deals/weekly-totals.json
+
+clean-weekly-totals:
+	rm -f dist/deals/weekly-totals.json
+
+
+#
+# weekly-totals-verified
+#
+
+weekly-totals-verified: dist/deals/weekly-totals-verified.json
+
+dist/deals/weekly-totals-verified.json: $(wildcard ../work/output/deals/by_verified/aggr_weekly/json/windowStart=*/part-*.json)
+	cat ../work/output/deals/by_verified/aggr_weekly/json/windowStart=*/part-*.json | \
+		jq -s 'sort_by(.window.start)' > \
+		dist/deals/weekly-totals-verified.json
+
+clean-weekly-totals-verified:
+	rm -f dist/deals/weekly-totals-verified.json
 
 #
 # daily-totals
