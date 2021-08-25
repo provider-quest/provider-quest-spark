@@ -177,7 +177,7 @@ def process(deals, suffix=""):
         approx_count_distinct(deals.provider),
         approx_count_distinct(deals.client),
         approx_count_distinct(deals.clientProvider)
-    )
+    ).withColumn('windowStart', expr('window.start').astype('date'))
 
     queryAggrDealsWeekly = dealsWeeklyAggr \
         .writeStream \
@@ -185,7 +185,7 @@ def process(deals, suffix=""):
         .format("json") \
         .option("path", outputDir + "/deals/aggr_weekly/json") \
         .option("checkpointLocation", checkpointDir + "/deals/aggr_weekly/json") \
-        .partitionBy("window") \
+        .partitionBy("windowStart") \
         .trigger(processingTime='1 minute') \
         .start()
 
@@ -209,7 +209,7 @@ def process(deals, suffix=""):
         approx_count_distinct(deals.provider),
         approx_count_distinct(deals.client),
         approx_count_distinct(deals.clientProvider)
-    )
+    ).withColumn('windowStart', expr('window.start').astype('date'))
 
     queryAggrDealsWeeklyByVerified = dealsWeeklyAggrByVerified \
         .writeStream \
@@ -217,6 +217,6 @@ def process(deals, suffix=""):
         .format("json") \
         .option("path", outputDir + "/deals/by_verified/aggr_weekly/json") \
         .option("checkpointLocation", checkpointDir + "/deals/by_verified/aggr_weekly/json") \
-        .partitionBy("window") \
+        .partitionBy("windowStart") \
         .trigger(processingTime='1 minute') \
         .start()
