@@ -18,7 +18,8 @@ rsync -vaP estuary-archive/miner-regions input-staging
 rsync -vaP estuary-archive/miner-locations input-staging
 
 export TZ=UTC
+export TIMESTAMP=$(date +'%s')
 
-~/projects-jpimac/spark/spark-3.1.2-bin-hadoop3.2/bin/spark-submit ./pyspark_main_staging.py 2> ~/tmp/spark-staging-stderr.log | tee ~/tmp/spark-staging.log
+~/projects-jpimac/spark/spark-3.1.2-bin-hadoop3.2/bin/spark-submit ./pyspark_main_staging.py 2> ~/tmp/spark-staging-stderr-$TIMESTAMP.log | tee ~/tmp/spark-staging-$TIMESTAMP.log
 
 

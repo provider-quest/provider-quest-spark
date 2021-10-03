@@ -4,9 +4,9 @@ export TZ=UTC
 while true; do
 
   echo '>> Miner Power'
-  node scan-miner-power.js
-  node scan-miner-power.js --newest-not-recent
-  node scan-miner-power.js --all-not-recent
+  timeout 30m node scan-miner-power.js
+  timeout 30m node scan-miner-power.js --newest-not-recent
+  timeout 30m node scan-miner-power.js --all-not-recent
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
@@ -14,7 +14,7 @@ while true; do
   sleep 60
 
   echo '>> Miner Info'
-  node scan-miner-info.js
+  timeout 30m node scan-miner-info.js
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
@@ -22,8 +22,8 @@ while true; do
   sleep 60
 
   echo '>> Asks'
-  node scan-asks.js
-  node scan-asks.js --no-recents
+  timeout 30m node scan-asks.js
+  timeout 30m node scan-asks.js --no-recents
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
@@ -31,7 +31,7 @@ while true; do
   sleep 60
 
   echo '>> IPs => GeoLite2 lookups'
-  node scan-ips-geolite2.js
+  timeout 30m node scan-ips-geolite2.js
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
@@ -39,7 +39,7 @@ while true; do
   sleep 60
 
   echo '>> IPs => Baidu lookups'
-  node scan-ips-baidu.js
+  timeout 30m node scan-ips-baidu.js
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
@@ -47,7 +47,7 @@ while true; do
   sleep 60
 
   echo '>> Deals (1 of 3)'
-  node scan-deals.js
+  timeout 30m node scan-deals.js
   echo '>> (finished) Deals (1 of 3)'
 
   echo
@@ -56,7 +56,7 @@ while true; do
   sleep 60
 
   echo '>> DHT Addrs (No fail)'
-  node scan-dht-addrs.sh
+  timeout 30m node scan-dht-addrs.js
   echo '>> (finished) DHT Addrs (No fail)'
 
   echo
@@ -73,7 +73,7 @@ while true; do
   sleep 15
 
   echo '>> Deals (2 of 3)'
-  node scan-deals.js
+  timeout 30m node scan-deals.js
   echo '>> (finished) Deals (2 of 3)'
 
   echo
@@ -82,7 +82,7 @@ while true; do
   sleep 60
 
   echo '>> DHT Addrs (No recents)'
-  node scan-dht-addrs.sh --no-recents
+  timeout 30m node scan-dht-addrs.js --no-recents
   echo '>> (finished) DHT Addrs (No recents)'
 
   echo
@@ -99,11 +99,11 @@ while true; do
   sleep 15
 
   echo '>> Deals (3 of 3)'
-  node scan-deals.js
+  timeout 30m node scan-deals.js
   echo '>> (finished) Deals (3 of 3)'
 
   echo
-  echo 'Sleeping 20m' $(TZ=America/Vancouver date)
+  echo 'Sleeping 30m' $(TZ=America/Vancouver date)
   echo
   sleep $((20 * 60))
 
@@ -116,7 +116,7 @@ while true; do
   sleep 15
 
   echo '>> Multiaddrs + IPs'
-  node scan-multiaddrs-ips.js
+  timeout 30m node scan-multiaddrs-ips.js
 
   echo
   echo 'Sleeping 15s' $(TZ=America/Vancouver date)
@@ -124,7 +124,7 @@ while true; do
   sleep 15
 
   echo '>> Regions and Locations'
-  node scan-miner-regions-locations.js
+  timeout 30m node scan-miner-regions-locations.js
 
   echo
   echo 'Sleeping 5m' $(TZ=America/Vancouver date)
