@@ -33,6 +33,7 @@ def process_dht_addrs(spark, suffix=""):
     dhtAddrs = dhtAddrs.withColumn(
         "date", dhtAddrs.timestamp.astype('date'))
 
+    """
     queryArchiveDhtAddrs = dhtAddrs \
         .writeStream \
         .queryName("dht_addrs_json") \
@@ -42,6 +43,7 @@ def process_dht_addrs(spark, suffix=""):
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     latestDhtAddrsSubset = dhtAddrs \
         .groupBy('miner') \

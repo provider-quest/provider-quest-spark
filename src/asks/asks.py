@@ -56,6 +56,7 @@ def process_asks(spark, suffix=""):
             last('seqNo'),
             last('error'))
 
+    """
     queryAsksCounter = numberOfAsksRecords \
         .writeStream \
         .queryName("asks_counter") \
@@ -73,6 +74,7 @@ def process_asks(spark, suffix=""):
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     def output_latest_asks_subset(df, epoch_id):
         df.coalesce(1).write.json(

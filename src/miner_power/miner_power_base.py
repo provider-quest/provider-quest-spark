@@ -33,6 +33,7 @@ def process(minerPower, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    """
     queryPowerArchive = minerPower \
         .writeStream \
         .queryName("miner_power_json") \
@@ -42,7 +43,9 @@ def process(minerPower, suffix=""):
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
+    """
     queryPowerAvgHourly = averagePowerHourly \
         .writeStream \
         .queryName("miner_power_avg_hourly_json") \
@@ -52,6 +55,7 @@ def process(minerPower, suffix=""):
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     queryPowerAvgDaily = averagePowerDaily \
         .writeStream \

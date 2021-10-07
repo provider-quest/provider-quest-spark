@@ -30,6 +30,7 @@ def process(minerPower, minerRegions, suffix=""):
 
     # Archive
 
+    """
     queryArchiveDealsByRegion = minerPowerWithRegions \
         .writeStream \
         .queryName("miner_power_by_miner_region_json") \
@@ -39,6 +40,7 @@ def process(minerPower, minerRegions, suffix=""):
         .partitionBy("region", "date") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     # Summed Average Power
 

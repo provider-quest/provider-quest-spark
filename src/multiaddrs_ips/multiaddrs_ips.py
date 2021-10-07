@@ -31,6 +31,7 @@ def process_multiaddrs_ips(spark, suffix=""):
     multiaddrsIps = multiaddrsIps.withColumn(
         "date", multiaddrsIps.timestamp.astype('date'))
 
+    """
     queryArchiveMultiaddrsIps = multiaddrsIps \
         .writeStream \
         .queryName("multiaddrs_ips_json") \
@@ -40,6 +41,7 @@ def process_multiaddrs_ips(spark, suffix=""):
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     latestMultiaddrsIpsSubset = multiaddrsIps \
         .groupBy(

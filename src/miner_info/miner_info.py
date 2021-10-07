@@ -55,6 +55,7 @@ def process_miner_info(spark, suffix=""):
             last('dnsLookups') \
         )
 
+    """
     queryInfoCounter = numberOfInfoRecords \
         .writeStream \
         .queryName("miner_info_counter") \
@@ -72,6 +73,7 @@ def process_miner_info(spark, suffix=""):
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     def output_latest_miner_info_subset(df, epoch_id):
         df.coalesce(1).write.json(
