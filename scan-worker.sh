@@ -22,8 +22,8 @@ while true; do
   sleep 60
 
   echo '>> Asks'
-  timeout 30m node scan-asks.js
-  timeout 30m node scan-asks.js --no-recents
+  timeout 5m node scan-asks.js
+  timeout 4m node scan-asks.js --no-recents
 
   echo
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)

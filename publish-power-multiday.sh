@@ -1,5 +1,10 @@
 #! /bin/bash
 
+if [ ! -f PUBLISH ]; then
+	echo Skipping publishing, PUBLISH file is missing
+	exit
+fi
+
 IFS="$(printf '\n\t')"
 
 # Latest multiday power average

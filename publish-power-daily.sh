@@ -3,6 +3,11 @@
 set -e
 set +x
 
+if [ ! -f PUBLISH ]; then
+	echo Skipping publishing, PUBLISH file is missing
+	exit
+fi
+
 # Latest daily power average
 mkdir -p dist/miner-power-daily-average-latest
 LAST=$(ls -d ../work/output/miner_power/json_avg_daily/date\=* | sort | tail -1)

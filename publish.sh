@@ -2,6 +2,11 @@
 
 set -e
 
+if [ ! -f PUBLISH ]; then
+	echo Skipping publishing, PUBLISH file is missing
+	exit
+fi
+
 ./publish-power-latest.sh
 ./publish-power-daily.sh
 ./publish-power-multiday.sh
