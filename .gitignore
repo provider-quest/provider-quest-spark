@@ -15,6 +15,7 @@ yarn.lock
 tmp
 dist
 estuary-archive
+estuary-archive-2
 local-state
 __pycache__
 .env
