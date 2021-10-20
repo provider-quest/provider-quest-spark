@@ -1,0 +1,29 @@
+
+all: provider-power-daily-averages
+
+clean: clean-provider-power-daily-averages
+
+
+#
+# provider-power-daily-averages
+#
+
+PROVIDER_DAILY_AVERAGES_DIRS := $(wildcard ../../work/output/miner_power/json_avg_daily/miner=f0*)
+PROVIDER_DAILY_AVERAGES_PROVIDERS := $(subst miner=,,$(notdir $(PROVIDER_DAILY_AVERAGES_DIRS)))
+DIST_PROVIDER_DAILY_AVERAGES := $(addsuffix .json,$(addprefix ../dist/provider-power-daily-averages/,$(PROVIDER_DAILY_AVERAGES_PROVIDERS)))
+
+provider-power-daily-averages: $(DIST_PROVIDER_DAILY_AVERAGES) ../dist/provider-power-daily-averages/providers.json
+
+../dist/provider-power-daily-averages/providers.json: $(PROVIDER_DAILY_AVERAGES_DIRS)
+	(for f in $(PROVIDER_DAILY_AVERAGES_PROVIDERS); do echo \"$$f\"; done) | jq -s 'sort' > $@
+
+.SECONDEXPANSION:
+
+$(DIST_PROVIDER_DAILY_AVERAGES): ../dist/provider-power-daily-averages/%.json: $$(wildcard ../../work/output/miner_power/json_avg_daily/miner=%/part-*.json)
+	@echo $@
+	@mkdir -p ../dist/provider-power-daily-averages
+	@cat $^ | jq -s 'map({ date: .date, rawBytePower: .["avg(rawBytePower)"], qualityAdjPower: .["avg(qualityAdjPower)"] }) | sort_by(.date)' > $@
+
+clean-provider-power-daily-averages:
+	rm -rf ../dist/provider-power-daily-averages
+
