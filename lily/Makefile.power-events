@@ -1,0 +1,23 @@
+
+all: provider-power-level-events
+
+clean: clean-provider-power-level-events
+
+#
+# provider-power-level-events
+#
+
+DIST_PROVIDER_DAILY_AVERAGES_FILES := $(wildcard ../dist/provider-power-daily-averages/f0*.json)
+DIST_PROVIDER_LEVEL_EVENTS := $(subst provider-power-daily-averages,provider-power-level-events,$(DIST_PROVIDER_DAILY_AVERAGES_FILES))
+
+provider-power-level-events: $(DIST_PROVIDER_LEVEL_EVENTS)
+
+.SECONDEXPANSION:
+
+$(DIST_PROVIDER_LEVEL_EVENTS): ../dist/provider-power-level-events/%.json: ../dist/provider-power-daily-averages/%.json
+	@echo $@
+	@mkdir -p ../dist/provider-power-level-events
+	@node generate-level-events.mjs $< > $@
+
+clean-provider-power-level-events:
+	rm -rf ../dist/provider-power-level-events
