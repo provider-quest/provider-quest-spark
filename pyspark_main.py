@@ -46,29 +46,29 @@ if __name__ == "__main__":
 
     miner_info.process_miner_info(spark, suffix)
 
-    names = client_names.get(spark, suffix)
+    #names = client_names.get(spark, suffix)
 
     minerRegions = miner_regions.get_latest(spark, suffix)
     miner_power_regions.process(minerPower, minerRegions, suffix)
 
-    deals = deals_source.get(spark, suffix)
-    deals_base.process(deals, suffix)
-    deals_by_provider.process(deals, suffix)
-    deals_by_client.process(deals, suffix)
-    deals_by_pairs.process(deals, suffix)
-    deals_sample.process(deals, suffix)
-    deals_client_names.process(deals, names, suffix)
-    deals_regions.process(deals, minerRegions, suffix)
+    #deals = deals_source.get(spark, suffix)
+    #deals_base.process(deals, suffix)
+    #deals_by_provider.process(deals, suffix)
+    #deals_by_client.process(deals, suffix)
+    #deals_by_pairs.process(deals, suffix)
+    #deals_sample.process(deals, suffix)
+    #deals_client_names.process(deals, names, suffix)
+    #deals_regions.process(deals, minerRegions, suffix)
 
-    asks.process_asks(spark, suffix)
+    #asks.process_asks(spark, suffix)
 
-    dht_addrs.process_dht_addrs(spark, suffix)
+    #dht_addrs.process_dht_addrs(spark, suffix)
 
-    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
+    #multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
-    ips_geolite2.process(spark, suffix)
+    #ips_geolite2.process(spark, suffix)
 
-    ips_baidu.process(spark, suffix)
+    #ips_baidu.process(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
