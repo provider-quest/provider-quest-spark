@@ -23,4 +23,4 @@ const transitions = powerLevels.reduce((acc, record) => {
   return newAcc
 }, [])
 
-console.log(transitions)
+console.log(JSON.stringify(transitions))
