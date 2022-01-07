@@ -124,7 +124,8 @@ while true; do
   sleep 15
 
   echo '>> Regions and Locations'
-  timeout 30m node scan-miner-regions-locations.js
+  timeout 1m node scan-miner-regions-locations.js
+  timeout 1m node scan-provider-country-state-province.js
 
   echo
   echo 'Sleeping 5m' $(TZ=America/Vancouver date)

@@ -12,6 +12,6 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 mkdir -p dist/deals/named-clients
 make -f Makefile.deals
 
-(cd dist/deals; hub bucket push -y; hub bucket pull -y)
-#(cd dist/deals; hub bucket push -y)
+#(cd dist/deals; hub bucket push -y; hub bucket pull -y)
+(cd dist/deals; hub bucket push -y)
 
