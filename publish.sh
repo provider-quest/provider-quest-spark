@@ -11,6 +11,7 @@ fi
 ./publish-power-daily.sh
 ./publish-power-multiday.sh
 ./publish-power-by-region.sh
+./publish-power-by-country-state-province.sh
 ./publish-info-subset.sh
 ./publish-asks-subset.sh
 ./publish-deals.sh
