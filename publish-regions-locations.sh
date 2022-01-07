@@ -53,6 +53,50 @@ if [ -f input/region-hierarchy/$LAST_HIERARCHY/region-hierarchy-*.json ] ; then
 fi
 
 
+# Latest provider-country-state-province
+
+LAST_CSP_REGIONS=$(cd input/provider-country-state-province; ls | sort -n | tail -1)
+#echo $LAST_CSP_REGIONS
+
+if [ -f input/provider-country-state-province/$LAST_CSP_REGIONS/provider-country-state-province-*.json ] ; then
+  JSON=input/provider-country-state-province/$LAST_CSP_REGIONS/provider-country-state-province-*.json
+  cat $JSON | jq -s "{ \
+    date: \"$DATE\", \
+    epoch: $LAST_CSP_REGIONS,
+    minerRegions: . \
+  }" > dist/geoip-lookups/provider-country-state-province-latest.json
+fi
+
+# Latest provider-country-state-province-locations
+
+LAST_CSP_LOCATIONS=$(cd input/provider-country-state-province-locations; ls | sort -n | tail -1)
+#echo $LAST_CSP_LOCATIONS
+
+if [ -f input/provider-country-state-province-locations/$LAST_CSP_LOCATIONS/provider-country-state-province-locations-*.json ] ; then
+  JSON=input/provider-country-state-province-locations/$LAST_CSP_LOCATIONS/provider-country-state-province-locations-*.json
+  cat $JSON | jq -s "{ \
+    date: \"$DATE\", \
+    epoch: $LAST_CSP_LOCATIONS,
+    minerLocations: . \
+  }" > dist/geoip-lookups/provider-country-state-province-locations-latest.json
+fi
+
+# Latest country-state-province-hierarchy
+
+LAST_CSP_HIERARCHY=$(cd input/country-state-province-hierarchy; ls | sort -n | tail -1)
+#echo $LAST_CSP_HIERARCHY
+
+if [ -f input/country-state-province-hierarchy/$LAST_CSP_HIERARCHY/country-state-province-hierarchy-*.json ] ; then
+  JSON=input/country-state-province-hierarchy/$LAST_CSP_HIERARCHY/country-state-province-hierarchy-*.json
+  cat $JSON | jq "{ \
+    date: \"$DATE\", \
+    epoch: $LAST_CSP_HIERARCHY,
+    regionHierarchy: . \
+  }" > dist/geoip-lookups/country-state-province-hierarchy-latest.json
+fi
+
+
+
 (
   cd dist/geoip-lookups;
   echo "miner-regions-latest.json:"
@@ -61,5 +105,11 @@ fi
   head miner-locations-latest.json
   echo "region-hierarchy-latest.json:"
   head region-hierarchy-latest.json
+  echo "provider-country-state-province-latest.json:"
+  head provider-country-state-province-latest.json
+  echo "provider-country-state-province-locations-latest.json:"
+  head provider-country-state-province-locations-latest.json
+  echo "country-state-province-hierarchy-latest.json:"
+  head country-state-province-hierarchy-latest.json
   hub bucket push -y
 )
