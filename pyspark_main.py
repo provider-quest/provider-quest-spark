@@ -26,6 +26,7 @@ from deals import deals_by_pairs
 from deals import deals_sample
 from deals import deals_client_names
 from deals import deals_regions
+from deals import deals_country_state_province
 from client_names import client_names
 from asks import asks
 from dht_addrs import dht_addrs
@@ -64,6 +65,7 @@ if __name__ == "__main__":
     deals_sample.process(deals, suffix)
     deals_client_names.process(deals, names, suffix)
     deals_regions.process(deals, minerRegions, suffix)
+    deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)
 
     asks.process_asks(spark, suffix)
 

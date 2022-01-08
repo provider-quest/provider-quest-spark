@@ -4,14 +4,16 @@ all: weekly-totals weekly-totals-verified \
 	hourly-totals hourly-totals-verified \
 	named-clients-daily-totals \
 	named-clients-hourly-totals \
-	daily-deals-by-region
+	daily-deals-by-region \
+	daily-deals-by-country-state-province
 
 clean: clean-weekly-totals clean-weekly-totals-verified \
 	clean-daily-totals clean-daily-totals-verified \
 	clean-hourly-totals clean-hourly-totals-verified \
 	clean-named-clients-daily-totals \
 	clean-named-clients-hourly-totals \
-	clean-daily-deals-by-region
+	clean-daily-deals-by-region \
+	clean-daily-deals-by-country-state-province
 
 
 #
@@ -83,6 +85,18 @@ dist/deals/daily-deals-by-region.json: $(wildcard ../work/output/deals/by_miner_
 
 clean-daily-deals-by-region:
 	rm -f dist/deals/daily-deals-by-region.json
+
+#
+# daily-deals-by-country-state-province
+#
+
+daily-deals-by-country-state-province: dist/deals/daily-deals-by-country-state-province.json
+
+dist/deals/daily-deals-by-country-state-province.json: $(wildcard ../work/output/deals/by_provider_country_state_province/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_provider_country_state_province/sum_aggr_daily/json/part-*.json)
+	node join-deals-by-country-state-province-daily.js > $@
+
+clean-daily-deals-by-country-state-province:
+	rm -f dist/deals/daily-deals-by-country-state-province.json
 
 #
 # hourly-totals
