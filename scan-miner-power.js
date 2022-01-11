@@ -11,6 +11,7 @@ async function run () {
     ['minerPower', 'selectedDate', 'minerCount']
     // { headless: false }
   )
+  // await notebook.redefine('interactiveEpoch', 1451584) // Override
   const selectedEpoch = await notebook.value('selectedEpoch')
   const selectedDate = await notebook.value('selectedDate')
   console.log('Date:', selectedDate)
@@ -22,6 +23,7 @@ async function run () {
     const minerPower = await notebook.value('minerPower')
     if (minerPower.state === 'paused') {
       await notebook.redefine('start', 1)
+      await notebook.redefine('subsetToScan', 'Recents, Averages')
       if (process.argv[2] === '--newest-not-recent') {
         await notebook.redefine('maxElapsed', 3 * 60 * 1000)
         await notebook.redefine('subsetToScan', 'Newest miners, not recent')
