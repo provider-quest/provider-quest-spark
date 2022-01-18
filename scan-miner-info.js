@@ -43,10 +43,14 @@ async function run () {
               const dnsHost = match[1]
               console.log('DNS Lookup', dnsHost)
               dnsLookups ||= {}
-              dnsLookups[dnsHost] = await dnsLookup(
-                dnsHost,
-                { all: true, verbatim: true }
-              )
+              try {
+		            dnsLookups[dnsHost] = await dnsLookup(
+                  dnsHost,
+                  { all: true, verbatim: true }
+                )
+              } catch (e) {
+                console.error('DNS lookup failed', dnsHost, e)
+              }
             }
           }
         }
