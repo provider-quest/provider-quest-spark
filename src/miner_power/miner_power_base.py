@@ -1,4 +1,5 @@
 from pyspark.sql.functions import window
+from pyspark.sql.functions import expr
 from pyspark.sql.functions import last
 
 def process(minerPower, suffix=""):
@@ -19,6 +20,9 @@ def process(minerPower, suffix=""):
         minerPower.date,
         window(minerPower.timestamp, '1 day')
     ).avg("rawBytePower", "qualityAdjPower")
+
+    averagePowerDailyFlat = averagePowerDaily \
+        .drop('window')
 
     averagePowerMultiDay = minerPower.groupBy(
         minerPower.miner,
@@ -64,6 +68,16 @@ def process(minerPower, suffix=""):
         .option("path", outputDir + "/miner_power/json_avg_daily") \
         .option("checkpointLocation", checkpointDir + "/miner_power/json_avg_daily") \
         .partitionBy("date", "miner") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
+    queryPowerAvgDailyCsv = averagePowerDailyFlat \
+        .writeStream \
+        .queryName("miner_power_avg_daily_csv") \
+        .format("csv") \
+        .option("path", outputDir + "/miner_power/csv_avg_daily") \
+        .option("checkpointLocation", checkpointDir + "/miner_power/csv_avg_daily") \
+        .option("header", True) \
         .trigger(processingTime='1 minute') \
         .start()
 
