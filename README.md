@@ -1,11 +1,11 @@
-miner-report-spark
+provider-quest-spark
 ---
 
-Data pipeline for Filecoin analytical data for https://miner.report/
+Data pipeline for Filecoin analytical data for https://provider.quest/
 
 The following scripts live here:
 
-* scripts to collect data from "Miner.Report" ObservableHQ notebooks and
+* scripts to collect data from "Provider.Quest" ObservableHQ notebooks and
   store the data as JSON files
 * a Pyspark script to run Apache Spark Structured Streaming, which ingests
   the JSON files continuously, and generates new JSON files with
@@ -14,7 +14,7 @@ The following scripts live here:
 
 ## Documentation
 
-* https://observablehq.com/@jimpick/miner-report-documentation?collection=@jimpick/miner-report
+* https://observablehq.com/@jimpick/provider-quest-documentation?collection=@jimpick/provider-quest
 
 ## License
 
