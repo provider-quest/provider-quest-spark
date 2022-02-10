@@ -1,8 +1,11 @@
+import os
 from pyspark.sql.types import StructType
 
 def get(spark, suffix=""):
 
-    inputDir = 'input' + suffix
+    base_dir = os.environ.get('WORK_DIR') or '.'
+
+    input_dir = base_dir + '/' + 'input' + suffix
 
     schemaPower = StructType() \
         .add("epoch", "long") \
@@ -15,7 +18,7 @@ def get(spark, suffix=""):
     minerPower = spark \
         .readStream \
         .schema(schemaPower) \
-        .json(inputDir + '/miner-power') \
+        .json(input_dir + '/miner-power') \
         .withWatermark("timestamp", "1 minute")
 
     minerPower = minerPower.withColumn(
