@@ -3,7 +3,7 @@ FROM ubuntu
 RUN useradd ubuntu
 
 RUN apt update
-RUN apt install -y python3 vim less openjdk-11-jre wget tmux curl psmisc
+RUN apt install -y python3 vim less openjdk-11-jre wget tmux curl psmisc htop
 
 WORKDIR /opt/spark
 RUN wget -q https://dlcdn.apache.org/spark/spark-3.2.1/spark-3.2.1-bin-hadoop3.2.tgz
