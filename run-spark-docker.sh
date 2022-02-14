@@ -21,7 +21,7 @@ export TIMESTAMP=$(date +'%s')
 
 while true; do
   date
-  timeout 6h /opt/spark/spark-3.2.1-bin-hadoop3.2/bin/spark-submit ./pyspark_main_power_only.py 2> $WORK_DIR/tmp/spark-stderr-$TIMESTAMP.log | tee -a $WORK_DIR/tmp/spark-$TIMESTAMP.log
+  timeout 6h /opt/spark/spark-3.2.1-bin-hadoop3.2/bin/spark-submit --driver-memory 10G --executor-memory 4G ./pyspark_main_power_only.py 2> $WORK_DIR/tmp/spark-stderr-$TIMESTAMP.log | tee -a $WORK_DIR/tmp/spark-$TIMESTAMP.log
   killall java 2> /dev/null
   echo
   echo Sleeping for 60 seconds...
