@@ -4,6 +4,9 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
+const workDir = process.env.WORK_DIR || '.'
+const tmpDir = `${workDir}/tmp`
+
 async function run () {
   let jsonFilename
   const notebook = await load(
@@ -50,7 +53,7 @@ async function run () {
     }
     if (minerPower.state === 'done') {
       jsonFilename = `power-${selectedEpoch}.json`
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       numRecords = minerPower.records.length
       for (const record of minerPower.records) {
         const { height, ...rest } = record
@@ -64,7 +67,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/miner-power/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/miner-power/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
