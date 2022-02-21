@@ -2,8 +2,9 @@ FROM ubuntu
 
 RUN useradd ubuntu
 
-RUN apt update
-RUN apt install -y python3 vim less openjdk-11-jre wget tmux curl psmisc htop rsync
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+RUN apt install -y python3 vim less openjdk-11-jre wget tmux curl psmisc htop rsync build-essential
 
 RUN curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
 RUN apt install -y nodejs
@@ -24,10 +25,11 @@ RUN ls -l
 RUN mkdir -p tmp
 RUN mkdir -p work
 
-RUN npm install
 
 WORKDIR /home/ubuntu/provider-quest-spark
 
 COPY . .
+
+RUN npm install
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
