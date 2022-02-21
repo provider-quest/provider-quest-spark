@@ -30,6 +30,8 @@ WORKDIR /home/ubuntu/provider-quest-spark
 
 COPY . .
 
+RUN ls -l
+RUN mkdir -p node_modules
 RUN npm install
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
