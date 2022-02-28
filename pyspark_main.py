@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import date_format
 from pyspark.sql.functions import window
@@ -16,6 +15,7 @@ else:
 from miner_power import miner_power_source
 from miner_power import miner_power_base
 from miner_power import miner_power_regions
+from miner_power import miner_power_synthetic_regions
 from miner_power import miner_power_country_state_province
 from miner_info import miner_info
 from deals import deals_source
@@ -34,6 +34,7 @@ from multiaddrs_ips import multiaddrs_ips
 from ips_geolite2 import ips_geolite2
 from ips_baidu import ips_baidu
 from miner_regions import miner_regions
+from synthetic_regions import synthetic_regions
 from provider_country_state_province import provider_country_state_province
 
 if __name__ == "__main__":
@@ -53,6 +54,9 @@ if __name__ == "__main__":
 
     minerRegions = miner_regions.get_latest(spark, suffix)
     miner_power_regions.process(minerPower, minerRegions, suffix)
+
+    syntheticRegions = synthetic_regions.get_latest(spark, suffix)
+    miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
 
     providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
     miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
