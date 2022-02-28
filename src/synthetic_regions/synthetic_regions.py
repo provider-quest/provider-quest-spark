@@ -21,6 +21,6 @@ def get_latest(spark, suffix=""):
 
     syntheticRegions = syntheticRegions.withColumn("syntheticRegionEpoch", lit(epoch))
 
-    #minerRegions.show()
+    #syntheticRegions.show()
 
     return syntheticRegions

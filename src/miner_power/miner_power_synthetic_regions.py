@@ -14,6 +14,10 @@ def process(minerPower, syntheticRegions, suffix=""):
         "rawBytePower > 0 OR qualityAdjPower > 0"
     )
 
+    #minerPower = minerPower.where(
+    #  "epoch > 1550000"
+    #)
+
     minerPowerWithRegions = minerPower.join(
         syntheticRegions,
         minerPower.miner == syntheticRegions.provider,
