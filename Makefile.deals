@@ -5,6 +5,7 @@ all: weekly-totals weekly-totals-verified \
 	named-clients-daily-totals \
 	named-clients-hourly-totals \
 	daily-deals-by-region \
+	daily-deals-by-synthetic-region \
 	daily-deals-by-country-state-province
 
 clean: clean-weekly-totals clean-weekly-totals-verified \
@@ -13,6 +14,7 @@ clean: clean-weekly-totals clean-weekly-totals-verified \
 	clean-named-clients-daily-totals \
 	clean-named-clients-hourly-totals \
 	clean-daily-deals-by-region \
+	clean-daily-deals-by-synthetic-region \
 	clean-daily-deals-by-country-state-province
 
 
@@ -81,10 +83,22 @@ clean-daily-totals-verified:
 daily-deals-by-region: dist/deals/daily-deals-by-region.json
 
 dist/deals/daily-deals-by-region.json: $(wildcard ../work/output/deals/by_miner_region/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_miner_region/sum_aggr_daily/json/part-*.json)
-	node join-deals-by-region-daily.js > $@
+	node join-deals-by-region-daily.js by_miner_region > $@
 
 clean-daily-deals-by-region:
 	rm -f dist/deals/daily-deals-by-region.json
+
+#
+# daily-deals-by-synthetic-region
+#
+
+daily-deals-by-synthetic-region: dist/deals/daily-deals-by-synthetic-region.json
+
+dist/deals/daily-deals-by-synthetic-region.json: $(wildcard ../work/output/deals/by_synthetic_region/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_synthetic_region/sum_aggr_daily/json/part-*.json)
+	node join-deals-by-region-daily.js by_synthetic_region > $@
+
+clean-daily-deals-by-synthetic-region:
+	rm -f dist/deals/daily-deals-by-synthetic-region.json
 
 #
 # daily-deals-by-country-state-province
@@ -93,7 +107,7 @@ clean-daily-deals-by-region:
 daily-deals-by-country-state-province: dist/deals/daily-deals-by-country-state-province.json
 
 dist/deals/daily-deals-by-country-state-province.json: $(wildcard ../work/output/deals/by_provider_country_state_province/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_provider_country_state_province/sum_aggr_daily/json/part-*.json)
-	node join-deals-by-country-state-province-daily.js > $@
+	node join-deals-by-region-daily.js by_provider_country_state_province > $@
 
 clean-daily-deals-by-country-state-province:
 	rm -f dist/deals/daily-deals-by-country-state-province.json

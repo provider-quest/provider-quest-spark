@@ -27,6 +27,7 @@ from deals import deals_by_pairs
 from deals import deals_sample
 from deals import deals_client_names
 from deals import deals_regions
+from deals import deals_synthetic_regions
 from deals import deals_country_state_province
 from client_names import client_names
 from asks import asks
@@ -47,35 +48,37 @@ if __name__ == "__main__":
 
     suffix = ''
 
-    minerPower = miner_power_source.get(spark, suffix)
-    miner_power_base.process(minerPower, suffix)
+    #minerPower = miner_power_source.get(spark, suffix)
+    #miner_power_base.process(minerPower, suffix)
 
-    miner_info.process_miner_info(spark, suffix)
+    #miner_info.process_miner_info(spark, suffix)
 
-    names = client_names.get(spark, suffix)
+    #names = client_names.get(spark, suffix)
 
-    minerRegions = miner_regions.get_latest(spark, suffix)
-    miner_power_regions.process(minerPower, minerRegions, suffix)
+    #minerRegions = miner_regions.get_latest(spark, suffix)
+    #miner_power_regions.process(minerPower, minerRegions, suffix)
 
     syntheticRegions = synthetic_regions.get_latest(spark, suffix)
-    miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
+    #miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
 
-    syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
-    miner_power_synthetic_csp_regions.process(minerPower, syntheticCSPRegions, suffix)
+    #providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
+    #miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
 
-    providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
-    miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
+    #syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
+    #miner_power_synthetic_csp_regions.process(minerPower, syntheticCSPRegions, suffix)
 
     deals = deals_source.get(spark, suffix)
-    deals_base.process(deals, suffix)
-    deals_by_provider.process(deals, suffix)
-    deals_by_client.process(deals, suffix)
-    deals_by_pairs.process(deals, suffix)
-    deals_sample.process(deals, suffix)
-    deals_client_names.process(deals, names, suffix)
-    deals_regions.process(deals, minerRegions, suffix)
-    deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)
+    #deals_base.process(deals, suffix)
+    #deals_by_provider.process(deals, suffix)
+    #deals_by_client.process(deals, suffix)
+    #deals_by_pairs.process(deals, suffix)
+    #deals_sample.process(deals, suffix)
+    #deals_client_names.process(deals, names, suffix)
+    #deals_regions.process(deals, minerRegions, suffix)
+    deals_synthetic_regions.process(deals, syntheticRegions, suffix)
+    #deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)
 
+    """
     asks.process_asks(spark, suffix)
 
     dht_addrs.process_dht_addrs(spark, suffix)
@@ -85,6 +88,7 @@ if __name__ == "__main__":
     ips_geolite2.process(spark, suffix)
 
     ips_baidu.process(spark, suffix)
+    """
 
     while True:
         for stream in spark.streams.active:

@@ -16,11 +16,11 @@ def process(deals, minerRegions, suffix=""):
     dealsWithRegions = deals \
         .join(
             minerRegions,
-            deals.provider == minerRegions.miner,
+            deals.provider == minerRegions.provider,
             how='leftOuter'
         ) \
         .fillna('none', 'region') \
-        .drop('miner')
+        .drop(minerRegions.provider)
 
     dealsWithRegions = dealsWithRegions \
         .withColumn("splitPieceSizeDouble",
@@ -36,10 +36,10 @@ def process(deals, minerRegions, suffix=""):
     queryArchiveDealsByRegion = dealsWithRegions \
         .drop("hour", "clientProvider") \
         .writeStream \
-        .queryName("deals_by_miner_region_json") \
+        .queryName("deals_by_synthetic_region_json") \
         .format("json") \
-        .option("path", outputDir + "/deals/by_miner_region/archive/json") \
-        .option("checkpointLocation", checkpointDir + "/deals/by_miner_region/archive/json") \
+        .option("path", outputDir + "/deals/by_synthetic_region/archive/json") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_synthetic_region/archive/json") \
         .partitionBy("region", "date") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -78,10 +78,10 @@ def process(deals, minerRegions, suffix=""):
 
     queryAggrDealsByRegionByProviderDaily = dealsDailyAggrByRegionByProvider \
         .writeStream \
-        .queryName("deals_aggr_by_miner_region_by_provider_daily_with_splits_json") \
+        .queryName("deals_aggr_by_synthetic_region_by_provider_daily_with_splits_json") \
         .format("json") \
-        .option("path", outputDir + "/deals/by_miner_region/by_provider/aggr_daily_with_splits/json") \
-        .option("checkpointLocation", checkpointDir + "/deals/by_miner_region/by_provider/aggr_daily_with_splits/json") \
+        .option("path", outputDir + "/deals/by_synthetic_region/by_provider/aggr_daily_with_splits/json") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_synthetic_region/by_provider/aggr_daily_with_splits/json") \
         .partitionBy("region", "date") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -99,14 +99,14 @@ def process(deals, minerRegions, suffix=""):
 
         # summedDf.coalesce(1).write.partitionBy('date').json(
         summedDf.orderBy('date', 'region').coalesce(1).write.json(
-            outputDir + '/deals/by_miner_region/sum_aggr_daily/json',
+            outputDir + '/deals/by_synthetic_region/sum_aggr_daily/json',
             mode='overwrite')
 
     queryDealsSumAvgDaily = dealsDailyAggrByRegionByProvider \
         .writeStream \
-        .queryName("deals_by_miner_region_sum_aggr_daily_json") \
+        .queryName("deals_by_synthetic_region_sum_aggr_daily_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/deals/by_miner_region/sum_aggr_daily/json") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_synthetic_region/sum_aggr_daily/json") \
         .foreachBatch(output_summed) \
         .trigger(processingTime='1 minute') \
         .start()
@@ -128,10 +128,10 @@ def process(deals, minerRegions, suffix=""):
 
     queryAggrDealsByRegionDaily = dealsDailyAggrByRegion \
         .writeStream \
-        .queryName("deals_aggr_by_miner_region_daily_json") \
+        .queryName("deals_aggr_by_synthetic_region_daily_json") \
         .format("json") \
-        .option("path", outputDir + "/deals/by_miner_region/aggr_daily/json") \
-        .option("checkpointLocation", checkpointDir + "/deals/by_miner_region/aggr_daily/json") \
+        .option("path", outputDir + "/deals/by_synthetic_region/aggr_daily/json") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_synthetic_region/aggr_daily/json") \
         .trigger(processingTime='1 minute') \
         .start()
 
