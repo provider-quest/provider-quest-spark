@@ -6,7 +6,8 @@ all: weekly-totals weekly-totals-verified \
 	named-clients-hourly-totals \
 	daily-deals-by-region \
 	daily-deals-by-synthetic-region \
-	daily-deals-by-country-state-province
+	daily-deals-by-country-state-province \
+	daily-deals-by-synthetic-csp-region
 
 clean: clean-weekly-totals clean-weekly-totals-verified \
 	clean-daily-totals clean-daily-totals-verified \
@@ -15,7 +16,8 @@ clean: clean-weekly-totals clean-weekly-totals-verified \
 	clean-named-clients-hourly-totals \
 	clean-daily-deals-by-region \
 	clean-daily-deals-by-synthetic-region \
-	clean-daily-deals-by-country-state-province
+	clean-daily-deals-by-country-state-province \
+	clean-daily-deals-by-synthetic-csp-region
 
 
 #
@@ -111,6 +113,18 @@ dist/deals/daily-deals-by-country-state-province.json: $(wildcard ../work/output
 
 clean-daily-deals-by-country-state-province:
 	rm -f dist/deals/daily-deals-by-country-state-province.json
+
+#
+# daily-deals-by-synthetic-csp-region
+#
+
+daily-deals-by-synthetic-csp-region: dist/deals/daily-deals-by-synthetic-csp-region.json
+
+dist/deals/daily-deals-by-synthetic-csp-region.json: $(wildcard ../work/output/deals/by_synthetic_csp_region/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_synthetic_csp_region/sum_aggr_daily/json/part-*.json)
+	node join-deals-by-region-daily.js by_synthetic_csp_region > $@
+
+clean-daily-deals-by-synthetic-csp-region:
+	rm -f dist/deals/daily-deals-by-synthetic-csp-region.json
 
 #
 # hourly-totals
