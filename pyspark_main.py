@@ -16,6 +16,7 @@ from miner_power import miner_power_source
 from miner_power import miner_power_base
 from miner_power import miner_power_regions
 from miner_power import miner_power_synthetic_regions
+from miner_power import miner_power_synthetic_csp_regions
 from miner_power import miner_power_country_state_province
 from miner_info import miner_info
 from deals import deals_source
@@ -35,6 +36,7 @@ from ips_geolite2 import ips_geolite2
 from ips_baidu import ips_baidu
 from miner_regions import miner_regions
 from synthetic_regions import synthetic_regions
+from synthetic_regions import synthetic_csp_regions
 from provider_country_state_province import provider_country_state_province
 
 if __name__ == "__main__":
@@ -57,6 +59,9 @@ if __name__ == "__main__":
 
     syntheticRegions = synthetic_regions.get_latest(spark, suffix)
     miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
+
+    syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
+    miner_power_synthetic_csp_regions.process(minerPower, syntheticCSPRegions, suffix)
 
     providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
     miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
