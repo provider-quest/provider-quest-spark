@@ -21,5 +21,20 @@ if [ -f ../work/output/miner_power/by_provider_country_state_province/sum_avg_da
 
 fi
 
-(cd dist/miner-power-daily-average-latest; head miner-power-by-country-state-province.json; hub bucket push -y)
+if [ -f ../work/output/miner_power/by_synthetic_csp_region/sum_avg_daily/json/_SUCCESS ] ; then
+  PART=$(ls ../work/output/miner_power/by_synthetic_csp_region/sum_avg_daily/json/part*.json | head -1)
+
+  cat $PART | jq -s "{ \
+    date: \"$DATE\", \
+    rows: .
+  }" > dist/miner-power-daily-average-latest/provider-power-by-synthetic-csp-region.json
+
+fi
+
+(
+  cd dist/miner-power-daily-average-latest
+  head miner-power-by-country-state-province.json
+  head provider-power-by-synthetic-csp-region.json
+  hub bucket push -y
+) 
 
