@@ -12,6 +12,7 @@ def process(deals, suffix=""):
 
     # Archive
 
+    """
     queryArchiveDealsByClient = deals \
         .drop("hour") \
         .writeStream \
@@ -22,6 +23,7 @@ def process(deals, suffix=""):
         .partitionBy("date", "client") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     # By Client - Aggregated Daily
 

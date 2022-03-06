@@ -12,6 +12,7 @@ def process(deals, suffix=""):
 
     # Archive
 
+    """
     queryArchiveDealsHourly = deals \
         .writeStream \
         .queryName("deals_archive_hourly_json") \
@@ -21,6 +22,7 @@ def process(deals, suffix=""):
         .partitionBy("date", "hour") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     # Aggregate Hourly
 
