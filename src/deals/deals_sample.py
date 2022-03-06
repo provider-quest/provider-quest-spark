@@ -12,6 +12,7 @@ def process(deals, suffix=""):
 
     ### Sample deals
 
+    """
     dealsDailyByDealId = deals.groupBy(
         deals.date,
         window(deals.messageTime, '1 day'),
@@ -56,3 +57,4 @@ def process(deals, suffix=""):
         .partitionBy("label", "provider", "date") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
