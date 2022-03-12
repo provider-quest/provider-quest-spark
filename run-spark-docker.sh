@@ -2,19 +2,7 @@
 
 # ./bin/pyspark --master local[2]
 
-mkdir -p \
-  $WORK_DIR/input/miner-power \
-  $WORK_DIR/input/miner-info \
-  $WORK_DIR/input/asks \
-  $WORK_DIR/input/deals \
-  $WORK_DIR/input/dht-addrs \
-  $WORK_DIR/input/multiaddrs-ips \
-  $WORK_DIR/input/ips-geolite2 \
-  $WORK_DIR/input/ips-baidu \
-  $WORK_DIR/input/client-names \
-  $WORK_DIR/archive \
-  $WORK_DIR/checkpoint \
-  $WORK_DIR/tmp
+mkdir -p $WORK_DIR/tmp
 
 export TZ=UTC
 export TIMESTAMP=$(date +'%s')
