@@ -8,7 +8,7 @@ if [ ! -f PUBLISH ]; then
 fi
 
 ./publish-power-latest.sh
-./publish-power-daily.sh
+#./publish-power-daily.sh
 ./publish-power-multiday.sh
 ./publish-power-by-region.sh
 ./publish-power-by-country-state-province.sh

@@ -25,9 +25,13 @@ if [ -f ../work/output/miner_power/json_latest/_SUCCESS ] ; then
         qualityAdjPower: .[\"last(qualityAdjPower)\"], \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
-  }" > dist/miner-power-daily-average-latest/miner-power-latest.json
+  }" > tmp/miner-power-latest.json
 
 fi
 
-(cd dist/miner-power-daily-average-latest; head miner-power-latest.json; hub bucket push -y)
+cd dist/miner-power-daily-average-latest
+hub bucket pull -y
+mv ../../tmp/miner-power-latest.json .
+head miner-power-latest.json
+hub bucket push -y
 
