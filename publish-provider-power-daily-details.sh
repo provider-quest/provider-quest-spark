@@ -16,7 +16,10 @@ for f in ../work/output/miner_power/csv_avg_daily/part*.csv; do
   echo $f
   grep ^f $f >> tmp/provider-power-daily.csv
 done
-mv tmp/provider-power-daily.csv dist/miner-power-daily/provider-power-daily.csv
 
-(cd dist/miner-power-daily; head provider-power-daily.csv; hub bucket push -y)
+cd dist/miner-power-daily
+#hub bucket pull -y
+mv ../../tmp/provider-power-daily.csv provider-power-daily.csv
+head provider-power-daily.csv
+hub bucket push -y
 
