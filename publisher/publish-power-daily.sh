@@ -3,6 +3,9 @@
 set -e
 set +x
 
+TMP=$WORK_DIR/tmp
+mkdir -p $TMP
+
 TARGET=$WORK_DIR/dist/miner-power-daily-average-latest
 if [ ! -d $TARGET ]; then
 	mkdir -p $TARGET
@@ -24,10 +27,11 @@ COUNT=0
 	  echo Daily $((++COUNT)) $MINER 1>&2
 	  # {"window":{"start":"2021-05-30T00:00:00.000Z","end":"2021-05-31T00:00:00.000Z"},"avg(rawBytePower)":0.0,"avg(qualityAdjPower)":0.0}
 	  cat $(ls $m/*.json) | head -1 | jq "{ miner: \"$MINER\", rawBytePower: .[\"avg(rawBytePower)\"], qualityAdjPower: .[\"avg(qualityAdjPower)\"] }"
-  done) | jq -s "{ date: \"$DATE\", miners: map({ key: .miner, value: { qualityAdjPower: .qualityAdjPower, rawBytePower: .rawBytePower } }) | from_entries }" > $TARGET/miner-power-daily-average-latest.json
+  done) | jq -s "{ date: \"$DATE\", miners: map({ key: .miner, value: { qualityAdjPower: .qualityAdjPower, rawBytePower: .rawBytePower } }) | from_entries }" > $TMP/miner-power-daily-average-latest.json
 
 cd $TARGET
 hub bucket pull -y
+mv $TMP/miner-power-daily-average-latest.json .
 head miner-power-daily-average-latest.json
 hub bucket push -y
 
