@@ -6,6 +6,8 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
+./setup-textile.sh
+
 TARGET=$WORK_DIR/dist/miner-power-daily-average-latest
 if [ ! -d $TARGET ]; then
 	mkdir -p $TARGET
