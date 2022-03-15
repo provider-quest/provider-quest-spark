@@ -2,8 +2,11 @@ const fs = require('fs')
 const { formatWithOptions } = require('util')
 const { load } = require('@alex.garcia/observable-prerender')
 
-fs.mkdirSync('input/miner-regions', { recursive: true })
-fs.mkdirSync('input/miner-locations', { recursive: true })
+const workDir = process.env.WORK_DIR || '.'
+const tmpDir = `${workDir}/tmp`
+
+fs.mkdirSync(`${workDir}/input/miner-regions`, { recursive: true })
+fs.mkdirSync(`${workDir}/input/miner-locations`, { recursive: true })
 
 async function run () {
   const notebook = await load(
@@ -18,18 +21,18 @@ async function run () {
   await notebook.browser.close()
 
   async function writeMinerRegions () {
-    fs.mkdirSync(`input/miner-regions/${epoch}`, { recursive: true })
+    fs.mkdirSync(`${workDir}/input/miner-regions/${epoch}`, { recursive: true })
     const jsonFilename = `miner-regions-${epoch}.json`
-    const dest =`input/miner-regions/${epoch}/${jsonFilename}` 
+    const dest =`${workDir}/input/miner-regions/${epoch}/${jsonFilename}` 
     if (fs.existsSync(dest)) {
       console.log(`File already exists, skipping. ${jsonFilename}`)
     } else {
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       for (const record of minerRegions) {
         await jsonFile.write(JSON.stringify(record) + '\n')
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, dest, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, dest, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
@@ -44,18 +47,18 @@ async function run () {
   }
 
   async function writeMinerLocations () {
-    fs.mkdirSync(`input/miner-locations/${epoch}`, { recursive: true })
+    fs.mkdirSync(`${workDir}/input/miner-locations/${epoch}`, { recursive: true })
     const jsonFilename = `miner-locations-${epoch}.json`
-    const dest =`input/miner-locations/${epoch}/${jsonFilename}` 
+    const dest =`${workDir}/input/miner-locations/${epoch}/${jsonFilename}` 
     if (fs.existsSync(dest)) {
       console.log(`File already exists, skipping. ${jsonFilename}`)
     } else {
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       for (const record of minerLocations) {
         await jsonFile.write(JSON.stringify(record) + '\n')
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, dest, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, dest, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
@@ -70,15 +73,15 @@ async function run () {
   }
 
   async function writeRegionHierarchy () {
-    fs.mkdirSync(`input/region-hierarchy/${epoch}`, { recursive: true })
+    fs.mkdirSync(`${workDir}/input/region-hierarchy/${epoch}`, { recursive: true })
     const jsonFilename = `region-hierarchy-${epoch}.json`
-    const dest =`input/region-hierarchy/${epoch}/${jsonFilename}` 
+    const dest =`${workDir}/input/region-hierarchy/${epoch}/${jsonFilename}` 
     if (fs.existsSync(dest)) {
       console.log(`File already exists, skipping. ${jsonFilename}`)
     } else {
-      fs.writeFileSync(`tmp/${jsonFilename}`,
+      fs.writeFileSync(`${tmpDir}/${jsonFilename}`,
                        JSON.stringify(regionHierarchy, null, 2))
-      fs.rename(`tmp/${jsonFilename}`, dest, err => {
+      fs.rename(`${tmpDir}/${jsonFilename}`, dest, err => {
         if (err) {
           console.error('Error', err)
           process.exit(1)
