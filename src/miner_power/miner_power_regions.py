@@ -1,3 +1,4 @@
+import os
 from pyspark.sql.functions import window
 from pyspark.sql.functions import count
 from pyspark.sql.functions import sum
@@ -7,8 +8,10 @@ from pyspark.sql.functions import when
 
 def process(minerPower, minerRegions, suffix=""):
 
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    outputDir = os.environ.get('OUTPUT_POWER_REGIONS_DIR') or \
+            '../work/output' + suffix + '/miner_power/by_miner_region'
+    checkpointDir = os.environ.get('CHECKPOINT_POWER_REGIONS_DIR') or \
+            '../work/checkpoint' + suffix + '/miner_power/by_miner_region'
 
     minerPower = minerPower.where(
         "rawBytePower > 0 OR qualityAdjPower > 0"
@@ -35,8 +38,8 @@ def process(minerPower, minerRegions, suffix=""):
         .writeStream \
         .queryName("miner_power_by_miner_region_json") \
         .format("json") \
-        .option("path", outputDir + "/miner_power/by_miner_region/archive/json") \
-        .option("checkpointLocation", checkpointDir + "/miner_power/by_miner_region/archive/json") \
+        .option("path", outputDir + "/archive/json") \
+        .option("checkpointLocation", checkpointDir + "/archive/json") \
         .partitionBy("region", "date") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -72,8 +75,8 @@ def process(minerPower, minerRegions, suffix=""):
         .writeStream \
         .queryName("miner_power_by_miner_region_avg_daily_json") \
         .format("json") \
-        .option("path", outputDir + "/miner_power/by_miner_region/avg_daily/json") \
-        .option("checkpointLocation", checkpointDir + "/miner_power/by_miner_region/avg_daily/json") \
+        .option("path", outputDir + "/avg_daily/json") \
+        .option("checkpointLocation", checkpointDir + "/avg_daily/json") \
         .partitionBy("date") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -90,14 +93,14 @@ def process(minerPower, minerRegions, suffix=""):
 
         # summedDf.coalesce(1).write.partitionBy('date').json(
         summedDf.orderBy('date', 'region').coalesce(1).write.json(
-            outputDir + '/miner_power/by_miner_region/sum_avg_daily/json',
+            outputDir + '/sum_avg_daily/json',
             mode='overwrite')
 
     queryPowerSumAvgDaily = averagePowerDaily \
         .writeStream \
         .queryName("miner_power_by_miner_region_sum_avg_daily_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/miner_power/by_miner_region/sum_avg_daily/json") \
+        .option("checkpointLocation", checkpointDir + "/sum_avg_daily/json") \
         .foreachBatch(output_summed) \
         .trigger(processingTime='1 minute') \
         .start()
