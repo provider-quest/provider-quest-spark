@@ -14,10 +14,8 @@ else:
 
 from miner_power import miner_power_source
 from miner_power import miner_power_base
-from miner_power import miner_power_regions
 from miner_power import miner_power_synthetic_regions
 from miner_power import miner_power_synthetic_csp_regions
-from miner_power import miner_power_country_state_province
 from miner_info import miner_info
 from deals import deals_source
 from deals import deals_base
@@ -57,13 +55,13 @@ if __name__ == "__main__":
     names = client_names.get(spark, suffix)
 
     minerRegions = miner_regions.get_latest(spark, suffix)
-    miner_power_regions.process(minerPower, minerRegions, suffix)
+    #miner_power_regions.process(minerPower, minerRegions, suffix)
 
     syntheticRegions = synthetic_regions.get_latest(spark, suffix)
     miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
 
     providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
-    miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
+    #miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
 
     syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
     miner_power_synthetic_csp_regions.process(minerPower, syntheticCSPRegions, suffix)

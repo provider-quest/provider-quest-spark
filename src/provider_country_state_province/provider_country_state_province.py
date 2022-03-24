@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType
 
 def get_latest(spark, suffix=""):
 
-    inputDir = os.environ['INPUT_MINER_CSP_REGIONS_DIR'] or \
+    inputDir = os.environ.get('INPUT_MINER_CSP_REGIONS_DIR') or \
         'input' + suffix + '/provider-country-state-province'
 
     candidates = os.listdir(inputDir)
