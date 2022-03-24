@@ -4,9 +4,10 @@ from pyspark.sql.types import StructType
 
 def get_latest(spark, suffix=""):
 
-    inputDir = 'input' + suffix
+    inputDir = os.environ['INPUT_MINER_CSP_REGIONS_DIR'] or \
+        'input' + suffix + '/provider-country-state-province'
 
-    candidates = os.listdir(inputDir + '/provider-country-state-province')
+    candidates = os.listdir(inputDir)
     epoch = sorted([int(n) for n in candidates])[-1]
 
     schemaMinerRegions = StructType() \
@@ -17,7 +18,7 @@ def get_latest(spark, suffix=""):
     minerRegions = spark \
         .read \
         .schema(schemaMinerRegions) \
-        .json(f"{inputDir}/provider-country-state-province/{epoch}/provider-country-state-province-{epoch}.json")
+        .json(f"{inputDir}/{epoch}/provider-country-state-province-{epoch}.json")
 
     minerRegions = minerRegions.withColumn("minerRegionEpoch", lit(epoch))
 

@@ -54,8 +54,8 @@ if __name__ == "__main__":
     minerRegions = miner_regions.get_latest(spark, suffix)
     miner_power_regions.process(minerPower, minerRegions, suffix)
 
-#    providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
-#    miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
+    providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
+    miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
 
 #    deals = deals_source.get(spark, suffix)
 #    deals_base.process(deals, suffix)
