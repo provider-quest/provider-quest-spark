@@ -13,7 +13,6 @@ else:
     sys.path.insert(0, './src')
 
 from miner_power import miner_power_source
-from miner_power import miner_power_base
 from miner_power import miner_power_synthetic_regions
 from miner_power import miner_power_synthetic_csp_regions
 from miner_info import miner_info
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     suffix = ''
 
     minerPower = miner_power_source.get(spark, suffix)
-    miner_power_base.process(minerPower, suffix)
+    #miner_power_base.process(minerPower, suffix)
 
     miner_info.process_miner_info(spark, suffix)
 

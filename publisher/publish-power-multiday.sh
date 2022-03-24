@@ -1,5 +1,8 @@
 #! /bin/bash
 
+echo 'Under construction'
+exit
+
 if [ ! -f PUBLISH ]; then
 	echo Skipping publishing, PUBLISH file is missing
 	exit
