@@ -9,7 +9,7 @@ mkdir -p $TMP
 ./setup-textile.sh
 
 IFS="$(printf '\n\t')"
-DATE=$(node -e 'console.log((new Date()).toISOString())')
+DATE=$(node -e 'console.log((new Date()).toISOString().slice(0, 10))')
 
 TARGET=$WORK_DIR/dist/miner-power-daily-average-latest
 if [ ! -d $TARGET ]; then
