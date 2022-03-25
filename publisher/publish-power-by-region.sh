@@ -31,28 +31,25 @@ if [ -f $OUTPUT_POWER_REGIONS_DIR/sum_avg_daily/json/_SUCCESS ] ; then
 
 fi
 
-#if [ -f ../work/output/miner_power/by_synthetic_region/sum_avg_daily/json/_SUCCESS ] ; then
-#  PART=$(ls ../work/output/miner_power/by_synthetic_region/sum_avg_daily/json/part*.json | head -1)
-#
-#  cat $PART | jq -s "{ \
-#    date: \"$DATE\", \
-#    rows: .
-#  }" > tmp/provider-power-by-synthetic-region.json
-#
-#fi
+if [ -f $OUTPUT_POWER_SYNTHETIC_REGIONS_DIR/sum_avg_daily/json/_SUCCESS ] ; then
+  PART=$(ls $OUTPUT_POWER_SYNTHETIC_REGIONS_DIR/sum_avg_daily/json/part*.json | head -1)
+
+  cat $PART | jq -s "{ \
+    date: \"$DATE\", \
+    rows: .
+  }" > $TMP/provider-power-by-synthetic-region.json
+fi
 
 cd $TARGET
 hub bucket pull -y
+
 mv $TMP/miner-power-by-region.json .
+echo miner-power-by-region.json:
 head miner-power-by-region.json
+
+mv $TMP/provider-power-by-synthetic-region.json .
+echo provider-power-by-synthetic-region.json:
+head provider-power-by-synthetic-region.json
+
 hub bucket push -y
-
-
-#cd dist/miner-power-daily-average-latest
-#hub bucket pull -y
-#mv ../../tmp/miner-power-by-region.json .
-#mv ../../tmp/provider-power-by-synthetic-region.json .
-#head miner-power-by-region.json
-#head provider-power-by-synthetic-region.json
-#hub bucket push -y
 
