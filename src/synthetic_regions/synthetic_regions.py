@@ -4,9 +4,10 @@ from pyspark.sql.types import StructType
 
 def get_latest(spark, suffix=""):
 
-    inputDir = 'input' + suffix
+    inputDir = os.environ.get('INPUT_SYNTHETIC_REGIONS_DIR') or \
+            'input' + suffix + '/synthetic-regions'
 
-    candidates = os.listdir(inputDir + '/synthetic-regions')
+    candidates = os.listdir(inputDir)
     epoch = sorted([int(n) for n in candidates])[-1]
 
     schemaSyntheticRegions = StructType() \
@@ -17,7 +18,7 @@ def get_latest(spark, suffix=""):
     syntheticRegions = spark \
         .read \
         .schema(schemaSyntheticRegions) \
-        .json(f"{inputDir}/synthetic-regions/{epoch}/synthetic-provider-regions-{epoch}.json")
+        .json(f"{inputDir}/{epoch}/synthetic-provider-regions-{epoch}.json")
 
     syntheticRegions = syntheticRegions.withColumn("syntheticRegionEpoch", lit(epoch))
 
