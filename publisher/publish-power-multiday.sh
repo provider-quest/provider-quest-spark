@@ -1,18 +1,26 @@
 #! /bin/bash
 
-echo 'Under construction'
-exit
+set -e
+set +x
 
-if [ ! -f PUBLISH ]; then
-	echo Skipping publishing, PUBLISH file is missing
-	exit
+TMP=$WORK_DIR/tmp
+mkdir -p $TMP
+
+./setup-textile.sh
+
+TARGET=$WORK_DIR/dist/miner-power-multiday-average-latest
+if [ ! -d $TARGET ]; then
+	mkdir -p $TARGET
+	cd $TARGET
+	hub bucket init \
+		--thread $TEXTILE_BUCKET_THREAD \
+		--key $BUCKET_MINER_POWER_MULTIDAY_AVERAGE_LATEST_KEY
 fi
 
 IFS="$(printf '\n\t')"
 
 # Latest multiday power average
-mkdir -p dist/miner-power-multiday-average-latest
-LAST="$(ls -d ../work/output/miner_power/json_avg_multiday/window\=* | sort | tail -1)"
+LAST="$(ls -d $OUTPUT_POWER_DIR/json_avg_multiday/window\=* | sort | tail -1)"
 echo $LAST
 LAST_ESCAPE=$(echo $LAST | sed 's, ,\\ ,g')
 DATE=$(echo $LAST | sed 's,^.*window=%7B\([^ ]*\).*,\1,')
@@ -41,7 +49,12 @@ done) | jq -s "{ \
       qualityAdjPower: .qualityAdjPower, \
       rawBytePower: .rawBytePower \
     } \
-  }) | from_entries }" > dist/miner-power-multiday-average-latest/miner-power-multiday-average-latest.json
+  }) | from_entries }" > $TMP/miner-power-multiday-average-latest.json
 
-(cd dist/miner-power-multiday-average-latest; head miner-power-multiday-average-latest.json; hub bucket push -y)
+cd $TARGET
+hub bucket pull -y
+mv $TMP/miner-power-multiday-average-latest.json .
+head miner-power-multiday-average-latest.json
+hub bucket push -y
+
 
