@@ -3,16 +3,6 @@
 export TZ=UTC
 while true; do
 
-  echo '>> Miner Power'
-  timeout 30m node scan-miner-power.js
-  timeout 30m node scan-miner-power.js --newest-not-recent
-  timeout 30m node scan-miner-power.js --all-not-recent
-
-  echo
-  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
-  echo
-  sleep 60
-
   echo '>> Miner Info'
   timeout 30m node scan-miner-info.js
 
