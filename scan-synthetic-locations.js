@@ -54,23 +54,16 @@ async function run () {
       console.log('Progress', JSON.stringify(progress))
       if (progress.done) {
         console.log('Done')
-        /*
-        jsonFilename = `power-${selectedEpoch}.json`
+        const outputEpoch = 'xxx'
+        const cspRegions = await notebook.value('syntheticProviderCSPRegions')
+        jsonFilename = `synthetic-provider-country-state-province-${outputEpoch}.json`
         const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
-        numRecords = minerPower.records.length
-        for (const record of minerPower.records) {
-          const { height, ...rest } = record
-          await jsonFile.write(
-            JSON.stringify({
-              timestamp: selectedDate,
-              epoch: selectedEpoch,
-              tipSet,
-              ...rest
-            }) + '\n'
-          )
+        numRecords = cspRegions.length
+        for (const record of cspRegions) {
+          await jsonFile.write(JSON.stringify(record) + '\n')
         }
         jsonFile.on('finish', () => {
-          fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/miner-power/${jsonFilename}`, err => {
+          fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/tmp/${jsonFilename}`, err => {
             if (err) {
               console.error('Error', err)
               process.exit(1)
@@ -78,7 +71,6 @@ async function run () {
           })
         })
         jsonFile.end()
-        */
         break
       }
     } catch (e) {
