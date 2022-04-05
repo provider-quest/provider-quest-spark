@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { formatWithOptions } = require('util')
-const { load } = require('@alex.garcia/observable-prerender')
+const { load } = require('@jimpick/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
@@ -10,9 +10,13 @@ const tmpDir = `${workDir}/tmp`
 async function run () {
   let jsonFilename
   const notebook = await load(
-    '@jimpick/internal-provider-funding-tree-provider-quest-test',
-    ['funderTreeWithDelegatesProgress'],
-    { headless: false }
+    '@jimpick/internal-provider-funding-tree-provider-quest-test-2',
+    [
+      'minersAndFundersUrl',
+      'cryptoApiPresent',
+      'funderTreeWithDelegatesProgressWithoutResult'
+    ],
+    { headless: true }
   )
   // await notebook.redefine('interactiveEpoch', 1451584) // Override
   // const selectedEpoch = await notebook.value('selectedEpoch')
@@ -26,8 +30,9 @@ async function run () {
   */
   while (true) {
     try {
-      const progress = await notebook.value('funderTreeWithDelegatesProgress')
+      const progress = await notebook.value('funderTreeWithDelegatesProgressWithoutResult')
       if (!progress) {
+        await delay(1000)
         await notebook.redefine('start', 1)
         await delay(1000)
         // minerCount = await notebook.value('minerCount')
@@ -47,7 +52,8 @@ async function run () {
       }
       */
       console.log('Progress', JSON.stringify(progress))
-      if (progress.state === 'done') {
+      if (progress.done) {
+        console.log('Done')
         /*
         jsonFilename = `power-${selectedEpoch}.json`
         const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
@@ -87,7 +93,8 @@ async function run () {
   console.log('TipSet:', tipSet)
   console.log('Records:', numRecords)
   */
-  // await notebook.browser.close()
-  await delay(10 * 60 * 1000) // 10 minutes  
+  await notebook.browser.close()
+  // console.log('Close')
+  // await delay(10 * 60 * 1000) // 10 minutes  
 }
 run()
