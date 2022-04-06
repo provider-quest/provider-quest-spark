@@ -40,7 +40,23 @@ async function run () {
     { headless: true }
   )
   // await notebook.redefine('interactiveEpoch', 1451584) // Override
-  await notebook.redefine('minersAndFundersUrl', 'http://127.0.0.1:3000/funding/miners-and-funders-2022-03-18.json') // Override
+  if (process.env.FUNDING_COLLECTOR_SINK_DIR) {
+    const fundingFiles = fs.readdirSync(`${process.env.FUNDING_COLLECTOR_SINK_DIR}/combined/results/`)
+    const fundingFileDates = []
+    for (const file of fundingFiles) {
+      const match = file.match(/^miners-and-funders-(.*)\.json$/)
+      if (match) {
+        fundingFileDates.push(match[1])
+      }
+    }
+    fundingFileDates.sort()
+    if (fundingFileDates.length > 0) {
+      const lastDate = fundingFileDates[fundingFileDates.length - 1]
+      const minersAndFundersUrl = `http://127.0.0.1:3000/funding/miners-and-funders-${lastDate}.json`
+      await notebook.redefine('minersAndFundersUrl', minersAndFundersUrl) // Override
+      console.log('minersAndFundersUrl:', minersAndFundersUrl)
+    }
+  }
   const currentEpoch = await notebook.value('currentEpoch')
   const currentEpochDate = await notebook.value('currentEpochDate')
   // console.log('Date:', selectedDate)
