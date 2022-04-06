@@ -3,9 +3,30 @@ const { formatWithOptions } = require('util')
 const { load } = require('@jimpick/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
-
+const fastify = require('fastify')({ logger: true })
+const fastifyStatic = require('fastify-static')
+const fastifyCors = require('fastify-cors')
 const workDir = process.env.WORK_DIR || '.'
 const tmpDir = `${workDir}/tmp`
+
+fastify.register(fastifyCors, {
+  origin: '*'
+})
+
+fastify.register(fastifyStatic, {
+  root: process.env.FUNDING_COLLECTOR_SINK_DIR + '/combined/results',
+  prefix: '/funding/'
+})
+
+const startFastify = async () => {
+  try {
+    await fastify.listen(3000, '0.0.0.0')
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+}
+startFastify()
 
 async function run () {
   const notebook = await load(
@@ -19,6 +40,7 @@ async function run () {
     { headless: true }
   )
   // await notebook.redefine('interactiveEpoch', 1451584) // Override
+  await notebook.redefine('minersAndFundersUrl', 'http://127.0.0.1:3000/funding/miners-and-funders-2022-03-18.json') // Override
   const currentEpoch = await notebook.value('currentEpoch')
   const currentEpochDate = await notebook.value('currentEpochDate')
   // console.log('Date:', selectedDate)
@@ -121,6 +143,7 @@ async function run () {
   */
   await notebook.browser.close()
   // console.log('Close')
-  // await delay(10 * 60 * 1000) // 10 minutes  
+  // await delay(10 * 60 * 1000) // 10 minutes
+  fastify.close()
 }
 run()
