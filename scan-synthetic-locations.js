@@ -30,7 +30,7 @@ startFastify()
 
 async function run () {
   const notebook = await load(
-    '@jimpick/internal-provider-funding-tree-provider-quest-test-2',
+    '@jimpick/internal-synthetic-locations-from-provider-funding-tree',
     [
       'minersAndFundersUrl',
       'currentEpoch',
@@ -39,7 +39,6 @@ async function run () {
     ],
     { headless: true }
   )
-  // await notebook.redefine('interactiveEpoch', 1451584) // Override
   if (process.env.FUNDING_COLLECTOR_SINK_DIR) {
     const fundingFiles = fs.readdirSync(`${process.env.FUNDING_COLLECTOR_SINK_DIR}/combined/results/`)
     const fundingFileDates = []
