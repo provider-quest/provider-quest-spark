@@ -19,4 +19,4 @@ timeout 15m ./publish-deals-multiday.sh
 timeout 15m ./publish-dht-addrs.sh
 timeout 15m ./publish-ips-geolite2.sh
 timeout 15m ./publish-ips-baidu.sh
-timeout 15m ./publish-regions-locations.sh
+#timeout 15m ./publish-regions-locations.sh
