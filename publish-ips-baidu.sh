@@ -25,7 +25,14 @@ if [ -f ../work/output/ips_baidu/json_latest/_SUCCESS ] ; then
         baidu: .[\"last(baidu)\"] | fromjson \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
-  }" > dist/geoip-lookups/ips-baidu-latest.json
+  }" > tmp/ips-baidu-latest.json
 fi
 
-(cd dist/geoip-lookups; head ips-baidu-latest.json; hub bucket push -y)
+(
+  cd dist/geoip-lookups
+  hub bucket pull
+  mv ../../tmp/ips-baidu-latest.json .
+  echo "ips-baidu-latest.json:"
+  head ips-baidu-latest.json
+  hub bucket push -y
+)

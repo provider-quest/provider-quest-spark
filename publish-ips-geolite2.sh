@@ -28,7 +28,13 @@ if [ -f ../work/output/ips_geolite2/json_latest/_SUCCESS ] ; then
         geolite2: .[\"last(geolite2)\"] | fromjson \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
-  }" > dist/geoip-lookups/ips-geolite2-latest.json
+  }" > tmp/ips-geolite2-latest.json
 fi
 
-(cd dist/geoip-lookups; head ips-geolite2-latest.json; hub bucket push -y)
+(
+  cd dist/geoip-lookups
+  mv ../../tmp/ips-geolite2-latest.json .
+  echo "ips-geolite2-latest.json:"
+  head ips-geolite2-latest.json
+  hub bucket push -y
+)
