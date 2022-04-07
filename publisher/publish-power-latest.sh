@@ -20,7 +20,6 @@ fi
 IFS="$(printf '\n\t')"
 DATE=$(node -e 'console.log((new Date()).toISOString())')
 
-TARGET=$WORK_DIR/dist/miner-power-daily-average-latest
 if [ -f $OUTPUT_POWER_DIR/json_latest/_SUCCESS ] ; then
   PART=$(ls $OUTPUT_POWER_DIR/json_latest/part*.json | head -1)
 
