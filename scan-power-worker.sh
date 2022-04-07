@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 export TZ=UTC
 
 echo '>> Miner Power'
