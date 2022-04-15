@@ -12,9 +12,9 @@ TARGET=$WORK_DIR/dist/miner-power-multiday-average-latest
 if [ ! -d $TARGET ]; then
 	mkdir -p $TARGET
 	cd $TARGET
-	hub bucket init \
-		--thread $TEXTILE_BUCKET_THREAD \
-		--key $BUCKET_MINER_POWER_MULTIDAY_AVERAGE_LATEST_KEY
+	#hub bucket init \
+	#	--thread $TEXTILE_BUCKET_THREAD \
+	#	--key $BUCKET_MINER_POWER_MULTIDAY_AVERAGE_LATEST_KEY
 fi
 
 IFS="$(printf '\n\t')"
@@ -52,9 +52,9 @@ done) | jq -s "{ \
   }) | from_entries }" > $TMP/miner-power-multiday-average-latest.json
 
 cd $TARGET
-hub bucket pull -y
+#hub bucket pull -y
 mv $TMP/miner-power-multiday-average-latest.json .
 head miner-power-multiday-average-latest.json
-hub bucket push -y
+#hub bucket push -y
 
 

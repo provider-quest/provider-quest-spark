@@ -12,9 +12,9 @@ TARGET=$WORK_DIR/dist/miner-power-daily
 if [ ! -d $TARGET ]; then
         mkdir -p $TARGET
         cd $TARGET
-        hub bucket init \
-                --thread $TEXTILE_BUCKET_THREAD \
-                --key $BUCKET_MINER_POWER_DAILY_KEY
+        #hub bucket init \
+        #        --thread $TEXTILE_BUCKET_THREAD \
+        #        --key $BUCKET_MINER_POWER_DAILY_KEY
 fi
 
 IFS="$(printf '\n\t')"
@@ -28,9 +28,9 @@ for f in $OUTPUT_POWER_DIR/csv_avg_daily/part*.csv; do
 done
 
 cd $TARGET
-hub bucket pull -y
+#hub bucket pull -y
 mv $TMP/provider-power-daily.csv .
 echo 'provider-power-daily.csv:'
 head provider-power-daily.csv
-hub bucket push -y
+#hub bucket push -y
 
