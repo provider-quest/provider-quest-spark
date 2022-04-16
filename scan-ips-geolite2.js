@@ -3,7 +3,10 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
-fs.mkdirSync('input/ips-geolite2', { recursive: true })
+const workDir = process.env.WORK_DIR || '.'
+const tmpDir = `${workDir}/tmp`
+
+fs.mkdirSync(`${workDir}/ips-geolite2`, { recursive: true })
 
 async function run () {
   let jsonFilename
@@ -49,7 +52,7 @@ async function run () {
     if (ipsGeoLite2.state === 'done') {
       count = ipsGeoLite2.records.length
       jsonFilename = `ips-geolite2-${currentEpoch}.json`
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       for (const record of ipsGeoLite2.records) {
         await jsonFile.write(
           JSON.stringify({
@@ -60,7 +63,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/ips-geolite2/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/ips-geolite2/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)

@@ -49,6 +49,11 @@ elif [ "$1" = "synthetic-locations" ]; then
     --exclude sync-code.sh \
     --exclude package-lock.json \
     root@nuc2-wired:/var/lib/kubelet/pods/$POD_UID/volumes/kubernetes.io~csi/$PVC/mount/provider-quest-spark/* .
+elif [ "$1" = "scanner-geoip" ]; then
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    ubuntu@pq-scan-1:/mnt/geoip-lookups/provider-quest-spark/* .
 else
   echo "Supported targets:"
   echo "  spark"
@@ -57,6 +62,7 @@ else
   echo "  publish-power-regions"
   echo "  publish-regions-locations"
   echo "  synthetic-locations"
+  echo "  scanner-geoip"
   exit 1
 fi
 
