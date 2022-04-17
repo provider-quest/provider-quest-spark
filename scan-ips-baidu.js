@@ -23,8 +23,8 @@ async function run () {
   while (true) {
     const ipsBaidu = await notebook.value('ipsBaidu')
     if (ipsBaidu.state === 'paused') {
-      await notebook.redefine('geoIpBaiduKey', process.env.GEOIP_BAIDU_KEY)
-      await notebook.redefine('geoIpBaiduSecret', process.env.GEOIP_BAIDU_SECRET)
+      await notebook.redefine('geoIpBaiduKey', process.env.GEOIP_BAIDU_KEY.trim())
+      await notebook.redefine('geoIpBaiduSecret', process.env.GEOIP_BAIDU_SECRET.trim())
       await notebook.redefine('maxLookups', 50)
       await notebook.redefine('maxElapsed', 1 * 60 * 1000)
       await notebook.redefine('start', 1)
