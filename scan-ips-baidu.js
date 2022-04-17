@@ -4,10 +4,10 @@ const dateFns = require('date-fns')
 const delay = require('delay')
 require('dotenv').config()
 
-const workDir = process.env.WORK_DIR || './input'
+const workDir = process.env.WORK_DIR || '.'
 const tmpDir = `${workDir}/tmp`
 
-fs.mkdirSync(`${workDir}/ips-baidu`, { recursive: true })
+fs.mkdirSync(`${workDir}/input/ips-baidu`, { recursive: true })
 
 async function run () {
   let jsonFilename
@@ -45,6 +45,7 @@ async function run () {
       )
     }
     if (ipsBaidu.state === 'done') {
+      console.log('Last error:', ipsBaidu.lastError)
       count = ipsBaidu.records.length
       jsonFilename = `ips-baidu-${currentEpoch}.json`
       const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
@@ -58,7 +59,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/ips-baidu/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/ips-baidu/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)

@@ -3,10 +3,10 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
-const workDir = process.env.WORK_DIR || './input'
+const workDir = process.env.WORK_DIR || '.'
 const tmpDir = `${workDir}/tmp`
 
-fs.mkdirSync(`${workDir}/ips-geolite2`, { recursive: true })
+fs.mkdirSync(`${workDir}/input/ips-geolite2`, { recursive: true })
 
 async function run () {
   let jsonFilename
@@ -63,7 +63,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/ips-geolite2/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/ips-geolite2/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
