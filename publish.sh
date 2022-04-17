@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -e
+#set -e
 
 if [ ! -f PUBLISH ]; then
 	echo Skipping publishing, PUBLISH file is missing
