@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 
@@ -7,9 +8,12 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
 def process(spark, suffix=""):
 
-    inputDir = 'input' + suffix
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    inputDir = os.environ.get('INPUT_IPS_GEOLITE2_DIR') or \
+             'input' + suffix + '/ips-geolite2'
+    outputDir = os.environ.get('OUTPUT_IPS_GEOLITE2_DIR') or \
+            '../work/output' + suffix + '/ips-geolite2'
+    checkpointDir = os.environ.get('CHECKPOINT_IPS_GEOLITE2_DIR') or \
+            '../work/checkpoint' + suffix + '/ips-geolite2'
 
     schemaIpsGeoLite2 = StructType() \
         .add("epoch", "long") \
@@ -26,7 +30,7 @@ def process(spark, suffix=""):
     ipsGeoLite2 = spark \
         .readStream \
         .schema(schemaIpsGeoLite2) \
-        .json(inputDir + '/ips-geolite2') \
+        .json(inputDir) \
         .withWatermark("timestamp", "1 minute")
 
     ipsGeoLite2 = ipsGeoLite2.withColumn(
@@ -36,8 +40,8 @@ def process(spark, suffix=""):
         .writeStream \
         .queryName("ips_geolite2_json") \
         .format("json") \
-        .option("path", outputDir + "/ips_geolite2/json") \
-        .option("checkpointLocation", checkpointDir + "/ips_geolite2/json") \
+        .option("path", outputDir + "/json") \
+        .option("checkpointLocation", checkpointDir + "/json") \
         .partitionBy("ip", "date") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -59,13 +63,13 @@ def process(spark, suffix=""):
 
     def output_latest_ips_geolite2(df, epoch_id):
         df.coalesce(1).write.json(
-            outputDir + '/ips_geolite2/json_latest', mode='overwrite')
+            outputDir + '/json_latest', mode='overwrite')
 
     queryLatestIpsGeoLite2 = latestIpsGeoLite2 \
         .writeStream \
         .queryName("ips_geolite2_latest_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/ips_geolite2/json_latest") \
+        .option("checkpointLocation", checkpointDir + "/json_latest") \
         .foreachBatch(output_latest_ips_geolite2) \
         .trigger(processingTime='1 minute') \
         .start()

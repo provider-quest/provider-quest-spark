@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 
@@ -7,9 +8,12 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
 def process(spark, suffix=""):
 
-    inputDir = 'input' + suffix
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    inputDir = os.environ.get('INPUT_IPS_BAIDU_DIR') or \
+             'input' + suffix + '/ips-baidu'
+    outputDir = os.environ.get('OUTPUT_IPS_BAIDU_DIR') or \
+            '../work/output' + suffix + '/ips-baidu'
+    checkpointDir = os.environ.get('CHECKPOINT_IPS_BAIDU_DIR') or \
+            '../work/checkpoint' + suffix + '/ips-baidu'
 
     schemaIpsBaidu = StructType() \
         .add("epoch", "long") \
@@ -23,7 +27,7 @@ def process(spark, suffix=""):
     ipsBaidu = spark \
         .readStream \
         .schema(schemaIpsBaidu) \
-        .json(inputDir + '/ips-baidu') \
+        .json(inputDir) \
         .withWatermark("timestamp", "1 minute")
 
     ipsBaidu = ipsBaidu.withColumn(
@@ -33,8 +37,8 @@ def process(spark, suffix=""):
         .writeStream \
         .queryName("ips_baidu_json") \
         .format("json") \
-        .option("path", outputDir + "/ips_baidu/json") \
-        .option("checkpointLocation", checkpointDir + "/ips_baidu/json") \
+        .option("path", outputDir + "/json") \
+        .option("checkpointLocation", checkpointDir + "/json") \
         .partitionBy("ip", "date") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -53,13 +57,13 @@ def process(spark, suffix=""):
 
     def output_latest_ips_baidu(df, epoch_id):
         df.coalesce(1).write.json(
-            outputDir + '/ips_baidu/json_latest', mode='overwrite')
+            outputDir + '/json_latest', mode='overwrite')
 
     queryLatestIpsBaidu = latestIpsBaidu \
         .writeStream \
         .queryName("ips_baidu_latest_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/ips_baidu/json_latest") \
+        .option("checkpointLocation", checkpointDir + "/json_latest") \
         .foreachBatch(output_latest_ips_baidu) \
         .trigger(processingTime='1 minute') \
         .start()
