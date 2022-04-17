@@ -3,7 +3,7 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
-const workDir = process.env.WORK_DIR || '.'
+const workDir = process.env.WORK_DIR || './input'
 const tmpDir = `${workDir}/tmp`
 
 fs.mkdirSync(`${workDir}/ips-geolite2`, { recursive: true })

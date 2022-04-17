@@ -4,7 +4,7 @@ const dateFns = require('date-fns')
 const delay = require('delay')
 require('dotenv').config()
 
-const workDir = process.env.WORK_DIR || '.'
+const workDir = process.env.WORK_DIR || './input'
 const tmpDir = `${workDir}/tmp`
 
 fs.mkdirSync(`${workDir}/ips-baidu`, { recursive: true })
