@@ -1,18 +1,29 @@
 #! /bin/bash
 
-if [ ! -f PUBLISH ]; then
-	echo Skipping publishing, PUBLISH file is missing
-	exit
+set -e
+set +x
+
+TMP=$WORK_DIR/tmp
+mkdir -p $TMP
+
+./setup-textile.sh
+
+TARGET=$WORK_DIR/dist/geoip-lookups
+if [ ! -d $TARGET ]; then
+        mkdir -p $TARGET
+        cd $TARGET
+        hub bucket init \
+                --thread $TEXTILE_BUCKET_THREAD \
+                --key $BUCKET_GEOIP_LOOKUPS_KEY
 fi
 
 IFS="$(printf '\n\t')"
 DATE=$(node -e 'console.log((new Date()).toISOString())')
 
 # Latest GeoIP lookups
-mkdir -p dist/geoip-lookups
 
-if [ -f ../work/output/ips_geolite2/json_latest/_SUCCESS ] ; then
-  PART=$(ls ../work/output/ips_geolite2/json_latest/part*.json | head -1)
+if [ -f $OUTPUT_IPS_GEOLITE2_DIR/json_latest/_SUCCESS ] ; then
+  PART=$(ls $OUTPUT_IPS_GEOLITE2_DIR/json_latest/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     ipsGeoLite2: map({ \
@@ -28,13 +39,19 @@ if [ -f ../work/output/ips_geolite2/json_latest/_SUCCESS ] ; then
         geolite2: .[\"last(geolite2)\"] | fromjson \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
-  }" > tmp/ips-geolite2-latest.json
+  }" > $TMP/ips-geolite2-latest.json
 fi
 
 (
-  cd dist/geoip-lookups
-  mv ../../tmp/ips-geolite2-latest.json .
+  set -e
+
+  cd $TARGET
+  hub bucket pull
+
+  mv $TMP/ips-geolite2-latest.json .
   echo "ips-geolite2-latest.json:"
   head ips-geolite2-latest.json
+
   hub bucket push -y
 )
+
