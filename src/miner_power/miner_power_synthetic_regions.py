@@ -28,6 +28,7 @@ def process(minerPower, syntheticRegions, suffix=""):
     ).fillna('none', 'region')
 
     minerPowerWithRegions = minerPowerWithRegions \
+        .withColumn("splitCount", 1.0 / minerPowerWithRegions.numRegions) \
         .withColumn("splitRawBytePower",
                     minerPowerWithRegions.rawBytePower /
                     minerPowerWithRegions.numRegions) \
@@ -55,6 +56,7 @@ def process(minerPower, syntheticRegions, suffix=""):
         minerPowerWithRegions.miner,
         minerPowerWithRegions.date,
         minerPowerWithRegions.region,
+        minerPowerWithRegions.splitCount,
         window('timestamp', '1 day')
     ).agg(
         avg("rawBytePower"),
@@ -91,6 +93,7 @@ def process(minerPower, syntheticRegions, suffix=""):
             'region'
         ).agg(
             count('miner'),
+            sum('splitCount'),
             sum('rawBytePower'),
             sum('qualityAdjPower')
         )
