@@ -24,7 +24,9 @@ def process(minerPower, providerCountryStateProvinces, suffix=""):
     ).fillna('none', 'region')
 
     minerPowerWithRegions = minerPowerWithRegions \
-        .withColumn("splitCount", 1.0 / minerPowerWithRegions.numRegions) \
+        .withColumn("splitCount",
+                    when(minerPowerWithRegions.region == 'none', 1.0) \
+                    .otherwise(1.0 / minerPowerWithRegions.numRegions)) \
         .withColumn("splitRawBytePower",
                     minerPowerWithRegions.rawBytePower /
                     minerPowerWithRegions.numRegions) \
