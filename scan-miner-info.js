@@ -13,13 +13,11 @@ fs.mkdirSync(`${workDir}/input/miner-info`, { recursive: true })
 
 async function run () {
   let jsonFilename
-	console.log('Jim1')
   const notebook = await load(
     '@jimpick/miner-report-miner-info-scanner',
     ['minerInfo', 'selectedDate']
     // { headless: false }
   )
-	console.log('Jim2')
   const selectedEpoch = await notebook.value('selectedEpoch')
   const selectedDate = await notebook.value('selectedDate')
   console.log('Date:', selectedDate)
