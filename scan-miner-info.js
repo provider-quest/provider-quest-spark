@@ -6,13 +6,20 @@ const { load } = require('@alex.garcia/observable-prerender')
 
 const dnsLookup = util.promisify(dns.lookup)
 
+const workDir = process.env.WORK_DIR || '.'
+const tmpDir = `${workDir}/tmp`
+
+fs.mkdirSync(`${workDir}/input/miner-info`, { recursive: true })
+
 async function run () {
   let jsonFilename
+	console.log('Jim1')
   const notebook = await load(
     '@jimpick/miner-report-miner-info-scanner',
     ['minerInfo', 'selectedDate']
     // { headless: false }
   )
+	console.log('Jim2')
   const selectedEpoch = await notebook.value('selectedEpoch')
   const selectedDate = await notebook.value('selectedDate')
   console.log('Date:', selectedDate)
@@ -32,7 +39,7 @@ async function run () {
     }
     if (minerInfo.state === 'done') {
       jsonFilename = `info-${selectedEpoch}.json`
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       for (const record of minerInfo.records) {
         const { height, multiaddrsDecoded, ...rest } = record
         let dnsLookups
@@ -66,7 +73,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/miner-info/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/miner-info/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)
