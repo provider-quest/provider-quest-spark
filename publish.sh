@@ -7,7 +7,6 @@ if [ ! -f PUBLISH ]; then
 	exit
 fi
 
-timeout 15m ./publish-info-subset.sh
 timeout 15m ./publish-asks-subset.sh
 timeout 15m ./publish-deals.sh
 timeout 15m ./publish-deals-multiday.sh
