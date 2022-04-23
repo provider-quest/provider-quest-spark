@@ -44,8 +44,6 @@ if __name__ == "__main__":
 
     suffix = ''
 
-    miner_info.process_miner_info(spark, suffix)
-
     names = client_names.get(spark, suffix)
 
     minerRegions = miner_regions.get_latest(spark, suffix)

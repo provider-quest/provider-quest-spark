@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 
@@ -8,9 +9,12 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
 def process_miner_info(spark, suffix=""):
 
-    inputDir = 'input' + suffix
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    inputDir = os.environ.get('INPUT_MINER_INFO_DIR') or \
+        'input' + suffix + '/miner-info'
+    outputDir = os.environ.get('OUTPUT_MINER_INFO_DIR') or \
+        '../work/output' + suffix + '/miner-info'
+    checkpointDir = os.environ.get('CHECKPOINT_MINER_INFO_DIR') or \
+        '../work/checkpoint' + suffix + '/miner-info'
 
     schemaInfo = StructType() \
         .add("epoch", "long") \
@@ -36,7 +40,7 @@ def process_miner_info(spark, suffix=""):
     minerInfo = spark \
         .readStream \
         .schema(schemaInfo) \
-        .json(inputDir + '/miner-info') \
+        .json(inputDir) \
         .withWatermark("timestamp", "1 minute")
 
     minerInfo = minerInfo.withColumn(
@@ -68,8 +72,8 @@ def process_miner_info(spark, suffix=""):
         .writeStream \
         .queryName("miner_info_json") \
         .format("json") \
-        .option("path", outputDir + "/miner_info/json") \
-        .option("checkpointLocation", checkpointDir + "/miner_info/json") \
+        .option("path", outputDir + "/json") \
+        .option("checkpointLocation", checkpointDir + "/json") \
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -77,13 +81,13 @@ def process_miner_info(spark, suffix=""):
 
     def output_latest_miner_info_subset(df, epoch_id):
         df.coalesce(1).write.json(
-            outputDir + '/miner_info/json_latest_subset', mode='overwrite')
+            outputDir + '/json_latest_subset', mode='overwrite')
 
     queryMinerInfoSubsetLatest = latestMinerInfoSubset \
         .writeStream \
         .queryName("miner_info_subset_latest_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/miner_info/json_latest_subset") \
+        .option("checkpointLocation", checkpointDir + "/json_latest_subset") \
         .foreachBatch(output_latest_miner_info_subset) \
         .trigger(processingTime='1 minute') \
         .start()

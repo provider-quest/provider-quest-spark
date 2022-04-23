@@ -51,7 +51,7 @@ if __name__ == "__main__":
     minerPower = miner_power_source.get(spark, suffix)
     miner_power_base.process(minerPower, suffix)
 
-#    miner_info.process_miner_info(spark, suffix)
+    miner_info.process_miner_info(spark, suffix)
 
 #    names = client_names.get(spark, suffix)
 
