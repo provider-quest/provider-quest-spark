@@ -1,18 +1,29 @@
 #! /bin/bash
 
-if [ ! -f PUBLISH ]; then
-	echo Skipping publishing, PUBLISH file is missing
-	exit
+set -e
+set +x
+
+TMP=$WORK_DIR/tmp
+mkdir -p $TMP
+
+./setup-textile.sh
+
+TARGET=$WORK_DIR/dist/geoip-lookups
+if [ ! -d $TARGET ]; then
+        mkdir -p $TARGET
+        cd $TARGET
+        hub bucket init \
+                --thread $TEXTILE_BUCKET_THREAD \
+                --key $BUCKET_GEOIP_LOOKUPS_KEY
 fi
 
 IFS="$(printf '\n\t')"
 DATE=$(node -e 'console.log((new Date()).toISOString())')
 
 # Latest GeoIP lookups
-mkdir -p dist/geoip-lookups
 
-if [ -f ../work/output/ips_baidu/json_latest/_SUCCESS ] ; then
-  PART=$(ls ../work/output/ips_baidu/json_latest/part*.json | head -1)
+if [ -f $OUTPUT_IPS_BAIDU_DIR/json_latest/_SUCCESS ] ; then
+  PART=$(ls $OUTPUT_IPS_BAIDU_DIR/json_latest/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     ipsBaidu: map({ \
@@ -25,14 +36,18 @@ if [ -f ../work/output/ips_baidu/json_latest/_SUCCESS ] ; then
         baidu: .[\"last(baidu)\"] | fromjson \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
-  }" > tmp/ips-baidu-latest.json
+  }" > $TMP/ips-baidu-latest.json
 fi
 
 (
-  cd dist/geoip-lookups
+  set -e
+
+  cd $TARGET
   hub bucket pull
-  mv ../../tmp/ips-baidu-latest.json .
+
+  mv $TMP/ips-baidu-latest.json .
   echo "ips-baidu-latest.json:"
   head ips-baidu-latest.json
+
   hub bucket push -y
 )

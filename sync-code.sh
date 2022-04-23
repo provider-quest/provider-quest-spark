@@ -41,6 +41,14 @@ elif [ "$1" = "publish-regions-locations" ]; then
     --exclude sync-code.sh \
     --exclude package-lock.json \
     root@nuc2-wired:/var/lib/kubelet/pods/$POD_UID/volumes/kubernetes.io~csi/$PVC/mount/provider-quest-spark/* .
+elif [ "$1" = "publish-geoip-lookups" ]; then
+  POD=publisher-test-pod-geoip-lookups
+  POD_UID=$(kubectl -n argo get pod $POD -o json | jq -r .metadata.uid)
+  PVC=$(kubectl -n argo get pvc publisher-work -o json | jq -r .spec.volumeName)
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    root@nuc2-wired:/var/lib/kubelet/pods/$POD_UID/volumes/kubernetes.io~csi/$PVC/mount/provider-quest-spark/* .
 elif [ "$1" = "synthetic-locations" ]; then
   POD=synthetic-locations-test-pod
   POD_UID=$(kubectl -n argo get pod $POD -o json | jq -r .metadata.uid)
@@ -54,6 +62,11 @@ elif [ "$1" = "scanner-geoip" ]; then
     --exclude sync-code.sh \
     --exclude package-lock.json \
     ubuntu@pq-scan-1:/mnt/geoip-lookups/provider-quest-spark/* .
+elif [ "$1" = "scanner-miner-info" ]; then
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    ubuntu@pq-scan-1:/mnt/miner-info/provider-quest-spark/* .
 else
   echo "Supported targets:"
   echo "  spark"
@@ -61,8 +74,10 @@ else
   echo "  publish-power-daily"
   echo "  publish-power-regions"
   echo "  publish-regions-locations"
+  echo "  publish-geoip-lookups"
   echo "  synthetic-locations"
   echo "  scanner-geoip"
+  echo "  scanner-miner-info"
   exit 1
 fi
 

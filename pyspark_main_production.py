@@ -83,9 +83,9 @@ if __name__ == "__main__":
 
 #    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
-#    ips_geolite2.process(spark, suffix)
+    ips_geolite2.process(spark, suffix)
 
-#    ips_baidu.process(spark, suffix)
+    ips_baidu.process(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
