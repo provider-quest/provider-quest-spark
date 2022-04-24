@@ -75,6 +75,11 @@ elif [ "$1" = "scanner-miner-info" ]; then
     --exclude sync-code.sh \
     --exclude package-lock.json \
     ubuntu@pq-scan-1:/mnt/miner-info/provider-quest-spark/* .
+elif [ "$1" = "scanner-dht-addrs" ]; then
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    ubuntu@pq-scan-1:/mnt/dht-addrs/provider-quest-spark/* .
 else
   echo "Supported targets:"
   echo "  spark"
@@ -87,6 +92,7 @@ else
   echo "  synthetic-locations"
   echo "  scanner-geoip"
   echo "  scanner-miner-info"
+  echo "  scanner-dht-addrs"
   exit 1
 fi
 

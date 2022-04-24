@@ -6,9 +6,12 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
-const dnsLookup = util.promisify(dns.lookup)
+const workDir = process.env.WORK_DIR || '.'
+const tmpDir = `${workDir}/tmp`
 
-fs.mkdirSync('input/dht-addrs', { recursive: true })
+fs.mkdirSync(`${workDir}/input/dht-addrs`, { recursive: true })
+
+const dnsLookup = util.promisify(dns.lookup)
 
 async function run () {
   let jsonFilename
@@ -52,7 +55,7 @@ async function run () {
     }
     if (dhtAddrs.state === 'done') {
       jsonFilename = `dht-addrs-${currentEpoch}.json`
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       for (const record of dhtAddrs.records) {
         const { multiaddrs } = record
         let dnsLookups
@@ -81,7 +84,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/dht-addrs/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/input/dht-addrs/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)

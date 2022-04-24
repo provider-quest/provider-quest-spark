@@ -21,15 +21,6 @@ while true; do
   echo
   sleep 60
 
-  echo '>> DHT Addrs (No fail)'
-  timeout 30m node scan-dht-addrs.js
-  echo '>> (finished) DHT Addrs (No fail)'
-
-  echo
-  echo 'Sleeping 5m' $(TZ=America/Vancouver date)
-  echo
-  sleep $((5 * 60))
-
   echo '>> Publishing deals'
   ./publish-deals.sh
 
@@ -46,15 +37,6 @@ while true; do
   echo 'Sleeping 60s' $(TZ=America/Vancouver date)
   echo
   sleep 60
-
-  echo '>> DHT Addrs (No recents)'
-  timeout 30m node scan-dht-addrs.js --no-recents
-  echo '>> (finished) DHT Addrs (No recents)'
-
-  echo
-  echo 'Sleeping 5m' $(TZ=America/Vancouver date)
-  echo
-  sleep $((5 * 60))
 
   echo '>> Publishing deals'
   ./publish-deals.sh
