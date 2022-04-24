@@ -57,6 +57,14 @@ elif [ "$1" = "publish-miner-info" ]; then
     --exclude sync-code.sh \
     --exclude package-lock.json \
     root@nuc2-wired:/var/lib/kubelet/pods/$POD_UID/volumes/kubernetes.io~csi/$PVC/mount/provider-quest-spark/* .
+elif [ "$1" = "publish-dht-addrs" ]; then
+  POD=publisher-test-pod-dht-addrs
+  POD_UID=$(kubectl -n argo get pod $POD -o json | jq -r .metadata.uid)
+  PVC=$(kubectl -n argo get pvc publisher-work -o json | jq -r .spec.volumeName)
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    root@nuc2-wired:/var/lib/kubelet/pods/$POD_UID/volumes/kubernetes.io~csi/$PVC/mount/provider-quest-spark/* .
 elif [ "$1" = "synthetic-locations" ]; then
   POD=synthetic-locations-test-pod
   POD_UID=$(kubectl -n argo get pod $POD -o json | jq -r .metadata.uid)
@@ -89,6 +97,7 @@ else
   echo "  publish-regions-locations"
   echo "  publish-geoip-lookups"
   echo "  publish-miner-info"
+  echo "  publish-dht-addrs"
   echo "  synthetic-locations"
   echo "  scanner-geoip"
   echo "  scanner-miner-info"
