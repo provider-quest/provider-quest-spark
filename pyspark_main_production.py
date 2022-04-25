@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     dht_addrs.process_dht_addrs(spark, suffix)
 
-#    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
+    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
     ips_geolite2.process(spark, suffix)
 

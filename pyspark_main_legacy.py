@@ -47,11 +47,8 @@ if __name__ == "__main__":
     names = client_names.get(spark, suffix)
 
     minerRegions = miner_regions.get_latest(spark, suffix)
-
     syntheticRegions = synthetic_regions.get_latest(spark, suffix)
-
     providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
-
     syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
 
     deals = deals_source.get(spark, suffix)
@@ -67,8 +64,6 @@ if __name__ == "__main__":
     deals_synthetic_csp_regions.process(deals, syntheticCSPRegions, suffix)
 
     asks.process_asks(spark, suffix)
-
-    multiaddrs_ips.process_multiaddrs_ips(spark, suffix)
 
     while True:
         for stream in spark.streams.active:

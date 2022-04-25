@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 
@@ -8,9 +9,12 @@ from pyspark.sql.types import StructType, ArrayType, MapType, StringType
 
 def process_multiaddrs_ips(spark, suffix=""):
 
-    inputDir = 'input' + suffix
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    inputDir = os.environ.get('INPUT_MULTIADDRS_IPS_DIR') or \
+             'input' + suffix + '/multiaddrs-ips'
+    outputDir = os.environ.get('OUTPUT_MULTIADDRS_IPS_DIR') or \
+            '../work/output' + suffix + '/multiaddrs-ips'
+    checkpointDir = os.environ.get('CHECKPOINT_MULTIADDRS_IPS_DIR') or \
+            '../work/checkpoint' + suffix + '/multiaddrs-ips'
 
     schemaMultiaddrsIps = StructType() \
         .add("epoch", "long") \
@@ -25,7 +29,7 @@ def process_multiaddrs_ips(spark, suffix=""):
     multiaddrsIps = spark \
         .readStream \
         .schema(schemaMultiaddrsIps) \
-        .json(inputDir + '/multiaddrs-ips') \
+        .json(inputDir) \
         .withWatermark("timestamp", "1 minute")
 
     multiaddrsIps = multiaddrsIps.withColumn(
@@ -36,8 +40,8 @@ def process_multiaddrs_ips(spark, suffix=""):
         .writeStream \
         .queryName("multiaddrs_ips_json") \
         .format("json") \
-        .option("path", outputDir + "/multiaddrs_ips/json") \
-        .option("checkpointLocation", checkpointDir + "/multiaddrs_ips/json") \
+        .option("path", outputDir + "/json") \
+        .option("checkpointLocation", checkpointDir + "/json") \
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -58,13 +62,13 @@ def process_multiaddrs_ips(spark, suffix=""):
 
     def output_latest_multiaddrs_ips_subset(df, epoch_id):
         df.coalesce(1).write.json(
-            outputDir + '/multiaddrs_ips/json_latest_subset', mode='overwrite')
+            outputDir + '/json_latest_subset', mode='overwrite')
 
     queryLatestMultiaddrsIpsSubset = latestMultiaddrsIpsSubset \
         .writeStream \
         .queryName("multiaddrs_ips_subset_latest_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/multiaddrs_ips/json_latest_subset") \
+        .option("checkpointLocation", checkpointDir + "/json_latest_subset") \
         .foreachBatch(output_latest_multiaddrs_ips_subset) \
         .trigger(processingTime='1 minute') \
         .start()
