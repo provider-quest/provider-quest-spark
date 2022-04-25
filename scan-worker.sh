@@ -63,14 +63,6 @@ while true; do
   echo
   sleep 15
 
-  echo '>> Multiaddrs + IPs'
-  timeout 30m node scan-multiaddrs-ips.js
-
-  echo
-  echo 'Sleeping 15s' $(TZ=America/Vancouver date)
-  echo
-  sleep 15
-
   echo '>> Regions and Locations'
   timeout 1m node scan-miner-regions-locations.js
   timeout 1m node scan-provider-country-state-province.js
@@ -79,14 +71,6 @@ while true; do
   echo 'Sleeping 5m' $(TZ=America/Vancouver date)
   echo
   sleep $((5 * 60))
-
-  echo '>> Publishing Multiaddrs + IPs'
-  ./publish-multiaddrs-ips.sh
-
-  echo
-  echo 'Sleeping 60s' $(TZ=America/Vancouver date)
-  echo
-  sleep 60
 
 
 done

@@ -2,7 +2,11 @@ const fs = require('fs')
 const { formatWithOptions } = require('util')
 const { load } = require('@alex.garcia/observable-prerender')
 
-fs.mkdirSync('input/multiaddrs-ips', { recursive: true })
+const workDir = process.env.WORK_DIR || '.'
+const tmpDir = `${workDir}/tmp`
+
+const outputDir = process.env.MULTIADDRS_IPS_DIR || `${workDir}/input/multiaddrs-ips`
+fs.mkdirSync(outputDir, { recursive: true })
 
 async function run () {
   const notebook = await load(
@@ -18,16 +22,16 @@ async function run () {
     if (record.epoch > lastEpoch) lastEpoch = record.epoch
   }
   const jsonFilename = `multiaddrs-ips-${lastEpoch}.json`
-  const dest =`input/multiaddrs-ips/${jsonFilename}` 
+  const dest =`${outputDir}/${jsonFilename}` 
   if (fs.existsSync(dest)) {
     console.log(`File already exists, skipping. ${jsonFilename}`)
   } else {
-    const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+    const jsonFile = fs.createWriteStream(`${workDir}/tmp/${jsonFilename}`)
     for (const record of minerMultiaddrIps) {
       await jsonFile.write(JSON.stringify(record) + '\n')
     }
     jsonFile.on('finish', () => {
-      fs.rename(`tmp/${jsonFilename}`, dest, err => {
+      fs.rename(`${workDir}/tmp/${jsonFilename}`, dest, err => {
         if (err) {
           console.error('Error', err)
           process.exit(1)
