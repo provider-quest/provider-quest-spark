@@ -4,13 +4,17 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
-fs.mkdirSync('input/deals', { recursive: true })
-fs.mkdirSync('local-state/deals', { recursive: true })
+const workDir = process.env.DEALS_VOLUME || '.'
+const tmpDir = `${workDir}/tmp`
+
+fs.mkdirSync(`${workDir}/deals`, { recursive: true })
+
+fs.mkdirSync(`${workDir}/local-state`, { recursive: true })
 
 let startHeight
 
 try {
-  startHeight = Number(fs.readFileSync('local-state/deals/last-height', 'utf8')) + 1
+  startHeight = Number(fs.readFileSync(`${workDir}/local-state/last-height`, 'utf8')) + 1
 } catch (e) {}
 
 async function run () {
@@ -55,12 +59,12 @@ async function run () {
       lastHeight = deals.lastHeight
       if (deals.deals.length > 0 && lastHeight) {
         jsonFilename = `deals-${lastHeight}.json`
-        const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+        const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
         for (const deal of deals.deals) {
           await jsonFile.write(JSON.stringify(deal) + '\n')
         }
         jsonFile.on('finish', () => {
-          fs.rename(`tmp/${jsonFilename}`, `input/deals/${jsonFilename}`, err => {
+          fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/deals/${jsonFilename}`, err => {
             if (err) {
               console.error('Error', err)
               process.exit(1)
@@ -76,7 +80,7 @@ async function run () {
   console.log('Filename:', jsonFilename)
   console.log('Last Epoch:', lastHeight)
   if (lastHeight) {
-    fs.writeFileSync('local-state/deals/last-height', `${lastHeight}`)
+    fs.writeFileSync(`${workDir}/local-state/last-height`, `${lastHeight}`)
   }
   await notebook.browser.close()
 }
