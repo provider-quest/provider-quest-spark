@@ -39,10 +39,10 @@ if __name__ == "__main__":
 
     names = client_names.get(spark, suffix)
 
-    #minerRegions = miner_regions.get_latest(spark, suffix)
-    #syntheticRegions = synthetic_regions.get_latest(spark, suffix)
-    #providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
-    #syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
+    minerRegions = miner_regions.get_latest(spark, suffix)
+    syntheticRegions = synthetic_regions.get_latest(spark, suffix)
+    providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
+    syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
 
     deals = deals_source.get(spark, suffix)
     deals_base.process(deals, suffix)
@@ -51,10 +51,10 @@ if __name__ == "__main__":
     deals_by_pairs.process(deals, suffix)
     deals_sample.process(deals, suffix)
     deals_client_names.process(deals, names, suffix)
-    #deals_regions.process(deals, minerRegions, suffix)
-    #deals_synthetic_regions.process(deals, syntheticRegions, suffix)
-    #deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)
-    #deals_synthetic_csp_regions.process(deals, syntheticCSPRegions, suffix)
+    deals_regions.process(deals, minerRegions, suffix)
+    deals_synthetic_regions.process(deals, syntheticRegions, suffix)
+    deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)
+    deals_synthetic_csp_regions.process(deals, syntheticCSPRegions, suffix)
 
     while True:
         for stream in spark.streams.active:
