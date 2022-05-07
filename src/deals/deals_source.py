@@ -1,3 +1,4 @@
+import os
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import hour
 from pyspark.sql.functions import concat_ws
@@ -6,7 +7,7 @@ from pyspark.sql.types import StructType
 
 def get(spark, suffix=""):
 
-    inputDir = 'input' + suffix
+    inputDir = os.environ.get('INPUT_DEALS_DIR') or base_dir + '/' + 'input' + suffix + '/deals'
 
     schemaDeals = StructType() \
         .add("dealId", "long") \
@@ -30,7 +31,7 @@ def get(spark, suffix=""):
     deals = spark \
         .readStream \
         .schema(schemaDeals) \
-        .json(inputDir + '/deals') \
+        .json(inputDir) \
         .withWatermark("messageTime", "1 minute")
 
     deals = deals \

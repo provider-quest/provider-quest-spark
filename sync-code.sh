@@ -4,7 +4,16 @@ if [ "$1" = "spark" ]; then
   POD=spark
   PVC_NAME=spark
   POD_UID=$(kubectl -n argo get pod $POD -o json | jq -r .metadata.uid)
-  PVC=$(kubectl -n argo get pvc spark -o json | jq -r .spec.volumeName)
+  PVC=$(kubectl -n argo get pvc $PVC_NAME -o json | jq -r .spec.volumeName)
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    root@nuc2-wired:/var/lib/kubelet/pods/$POD_UID/volumes/kubernetes.io~csi/$PVC/mount/provider-quest-spark/* .
+elif [ "$1" = "spark-deals" ]; then
+  POD=spark-deals
+  PVC_NAME=spark-deals-work
+  POD_UID=$(kubectl -n argo get pod $POD -o json | jq -r .metadata.uid)
+  PVC=$(kubectl -n argo get pvc $PVC_NAME -o json | jq -r .spec.volumeName)
   rsync -vaP --exclude node_modules \
     --exclude sync-code.sh \
     --exclude package-lock.json \
@@ -109,6 +118,7 @@ elif [ "$1" = "combiner-multiaddrs-ips" ]; then
 else
   echo "Supported targets:"
   echo "  spark"
+  echo "  spark-deals"
   echo "  publish-power"
   echo "  publish-power-daily"
   echo "  publish-power-regions"

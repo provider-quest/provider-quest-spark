@@ -1,3 +1,4 @@
+import os
 from pyspark.sql.functions import window
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import last
@@ -7,8 +8,8 @@ from pyspark.sql.functions import min, max, sum, approx_count_distinct
 
 def process(deals, suffix=""):
 
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    outputDir = os.environ.get('OUTPUT_DEALS_DIR') or base_dir + '/output' + suffix
+    checkpointDir = os.environ.get('CHECKPOINT_DEALS_DIR') or base_dir + '/checkpoint' + suffix
 
     # Archive
 
