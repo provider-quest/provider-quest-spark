@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     suffix = ''
 
-    #names = client_names.get(spark, suffix)
+    names = client_names.get(spark, suffix)
 
     #minerRegions = miner_regions.get_latest(spark, suffix)
     #syntheticRegions = synthetic_regions.get_latest(spark, suffix)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     deals_by_client.process(deals, suffix)
     deals_by_pairs.process(deals, suffix)
     deals_sample.process(deals, suffix)
-    #deals_client_names.process(deals, names, suffix)
+    deals_client_names.process(deals, names, suffix)
     #deals_regions.process(deals, minerRegions, suffix)
     #deals_synthetic_regions.process(deals, syntheticRegions, suffix)
     #deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)

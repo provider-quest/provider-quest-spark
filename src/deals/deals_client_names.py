@@ -1,3 +1,4 @@
+import os
 from pyspark.sql.functions import window
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import avg
@@ -6,8 +7,8 @@ from pyspark.sql.functions import min, max, sum, approx_count_distinct
 
 def process(deals, client_names, suffix=""):
 
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    outputDir = os.environ.get('OUTPUT_DEALS_DIR') or base_dir + '/output' + suffix
+    checkpointDir = os.environ.get('CHECKPOINT_DEALS_DIR') or base_dir + '/checkpoint' + suffix
 
     dealsWithClientNames = deals.join(client_names, client_names.address == deals.client)
 
@@ -30,7 +31,7 @@ def process(deals, client_names, suffix=""):
 
     dealsDailyAggrByClientName = dealsWithClientNames.groupBy(
         dealsWithClientNames.date,
-        window(dealsWithClientNames.messageTime, '1 day'),
+        window('messageTime', '1 day'),
         dealsWithClientNames.clientName
     ).agg(
         expr("count(*) as count"),
@@ -66,7 +67,7 @@ def process(deals, client_names, suffix=""):
     dealsHourlyAggrByClientName = dealsWithClientNames.groupBy(
         dealsWithClientNames.date,
         dealsWithClientNames.hour,
-        window(dealsWithClientNames.messageTime, '1 hour'),
+        window('messageTime', '1 hour'),
         dealsWithClientNames.clientName
     ).agg(
         expr("count(*) as count"),
