@@ -1,4 +1,3 @@
-
 all: weekly-totals weekly-totals-verified \
 	daily-totals daily-totals-verified \
 	hourly-totals hourly-totals-verified \
@@ -24,201 +23,201 @@ clean: clean-weekly-totals clean-weekly-totals-verified \
 # weekly-totals
 #
 
-weekly-totals: dist/deals/weekly-totals.json
+weekly-totals: $(WORK_DIR)/dist/deals/weekly-totals.json
 
-dist/deals/weekly-totals.json: $(wildcard ../work/output/deals/aggr_weekly/json/windowStart=*/part-*.json)
-	cat ../work/output/deals/aggr_weekly/json/windowStart=*/part-*.json | \
+$(WORK_DIR)/dist/deals/weekly-totals.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/aggr_weekly/json/windowStart=*/part-*.json)
+	cat $(OUTPUT_DEALS_DIR)/deals/aggr_weekly/json/windowStart=*/part-*.json | \
 		jq -s 'sort_by(.window.start)' > \
-		dist/deals/weekly-totals.json
+		$(WORK_DIR)/dist/deals/weekly-totals.json
 
 clean-weekly-totals:
-	rm -f dist/deals/weekly-totals.json
+	rm -f $(WORK_DIR)/dist/deals/weekly-totals.json
 
 
 #
 # weekly-totals-verified
 #
 
-weekly-totals-verified: dist/deals/weekly-totals-verified.json
+weekly-totals-verified: $(WORK_DIR)/dist/deals/weekly-totals-verified.json
 
-dist/deals/weekly-totals-verified.json: $(wildcard ../work/output/deals/by_verified/aggr_weekly/json/windowStart=*/part-*.json)
-	cat ../work/output/deals/by_verified/aggr_weekly/json/windowStart=*/part-*.json | \
+$(WORK_DIR)/dist/deals/weekly-totals-verified.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_weekly/json/windowStart=*/part-*.json)
+	cat $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_weekly/json/windowStart=*/part-*.json | \
 		jq -s 'sort_by(.window.start)' > \
-		dist/deals/weekly-totals-verified.json
+		$(WORK_DIR)/dist/deals/weekly-totals-verified.json
 
 clean-weekly-totals-verified:
-	rm -f dist/deals/weekly-totals-verified.json
+	rm -f $(WORK_DIR)/dist/deals/weekly-totals-verified.json
 
 #
 # daily-totals
 #
 
-daily-totals: dist/deals/daily-totals.json
+daily-totals: $(WORK_DIR)/dist/deals/daily-totals.json
 
-dist/deals/daily-totals.json: $(wildcard ../work/output/deals/aggr_daily/json/date=*/part-*.json)
-	cat ../work/output/deals/aggr_daily/json/date=*/part-*.json | \
+$(WORK_DIR)/dist/deals/daily-totals.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/aggr_daily/json/date=*/part-*.json)
+	cat $(OUTPUT_DEALS_DIR)/deals/aggr_daily/json/date=*/part-*.json | \
 		jq -s 'sort_by(.window.start)' > \
-		dist/deals/daily-totals.json
+		$(WORK_DIR)/dist/deals/daily-totals.json
 
 clean-daily-totals:
-	rm -f dist/deals/daily-totals.json
+	rm -f $(WORK_DIR)/dist/deals/daily-totals.json
 
 
 #
 # daily-totals-verified
 #
 
-daily-totals-verified: dist/deals/daily-totals-verified.json
+daily-totals-verified: $(WORK_DIR)/dist/deals/daily-totals-verified.json
 
-dist/deals/daily-totals-verified.json: $(wildcard ../work/output/deals/by_verified/aggr_daily/json/date=*/part-*.json)
-	cat ../work/output/deals/by_verified/aggr_daily/json/date=*/part-*.json | \
+$(WORK_DIR)/dist/deals/daily-totals-verified.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_daily/json/date=*/part-*.json)
+	cat $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_daily/json/date=*/part-*.json | \
 		jq -s 'sort_by(.window.start)' > \
-		dist/deals/daily-totals-verified.json
+		$(WORK_DIR)/dist/deals/daily-totals-verified.json
 
 clean-daily-totals-verified:
-	rm -f dist/deals/daily-totals-verified.json
+	rm -f $(WORK_DIR)/dist/deals/daily-totals-verified.json
 
 #
 # daily-deals-by-region
 #
 
-daily-deals-by-region: dist/deals/daily-deals-by-region.json
+daily-deals-by-region: $(WORK_DIR)/dist/deals/daily-deals-by-region.json
 
-dist/deals/daily-deals-by-region.json: $(wildcard ../work/output/deals/by_miner_region/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_miner_region/sum_aggr_daily/json/part-*.json)
+$(WORK_DIR)/dist/deals/daily-deals-by-region.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_miner_region/aggr_daily/json/part-*.json) $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_miner_region/sum_aggr_daily/json/part-*.json)
 	node join-deals-by-region-daily.js by_miner_region > $@
 
 clean-daily-deals-by-region:
-	rm -f dist/deals/daily-deals-by-region.json
+	rm -f $(WORK_DIR)/dist/deals/daily-deals-by-region.json
 
 #
 # daily-deals-by-synthetic-region
 #
 
-daily-deals-by-synthetic-region: dist/deals/daily-deals-by-synthetic-region.json
+daily-deals-by-synthetic-region: $(WORK_DIR)/dist/deals/daily-deals-by-synthetic-region.json
 
-dist/deals/daily-deals-by-synthetic-region.json: $(wildcard ../work/output/deals/by_synthetic_region/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_synthetic_region/sum_aggr_daily/json/part-*.json)
+$(WORK_DIR)/dist/deals/daily-deals-by-synthetic-region.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_synthetic_region/aggr_daily/json/part-*.json) $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_synthetic_region/sum_aggr_daily/json/part-*.json)
 	node join-deals-by-region-daily.js by_synthetic_region > $@
 
 clean-daily-deals-by-synthetic-region:
-	rm -f dist/deals/daily-deals-by-synthetic-region.json
+	rm -f $(WORK_DIR)/dist/deals/daily-deals-by-synthetic-region.json
 
 #
 # daily-deals-by-country-state-province
 #
 
-daily-deals-by-country-state-province: dist/deals/daily-deals-by-country-state-province.json
+daily-deals-by-country-state-province: $(WORK_DIR)/dist/deals/daily-deals-by-country-state-province.json
 
-dist/deals/daily-deals-by-country-state-province.json: $(wildcard ../work/output/deals/by_provider_country_state_province/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_provider_country_state_province/sum_aggr_daily/json/part-*.json)
+$(WORK_DIR)/dist/deals/daily-deals-by-country-state-province.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_provider_country_state_province/aggr_daily/json/part-*.json) $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_provider_country_state_province/sum_aggr_daily/json/part-*.json)
 	node join-deals-by-region-daily.js by_provider_country_state_province > $@
 
 clean-daily-deals-by-country-state-province:
-	rm -f dist/deals/daily-deals-by-country-state-province.json
+	rm -f $(WORK_DIR)/dist/deals/daily-deals-by-country-state-province.json
 
 #
 # daily-deals-by-synthetic-csp-region
 #
 
-daily-deals-by-synthetic-csp-region: dist/deals/daily-deals-by-synthetic-csp-region.json
+daily-deals-by-synthetic-csp-region: $(WORK_DIR)/dist/deals/daily-deals-by-synthetic-csp-region.json
 
-dist/deals/daily-deals-by-synthetic-csp-region.json: $(wildcard ../work/output/deals/by_synthetic_csp_region/aggr_daily/json/part-*.json) $(wildcard ../work/output/deals/by_synthetic_csp_region/sum_aggr_daily/json/part-*.json)
+$(WORK_DIR)/dist/deals/daily-deals-by-synthetic-csp-region.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_synthetic_csp_region/aggr_daily/json/part-*.json) $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_synthetic_csp_region/sum_aggr_daily/json/part-*.json)
 	node join-deals-by-region-daily.js by_synthetic_csp_region > $@
 
 clean-daily-deals-by-synthetic-csp-region:
-	rm -f dist/deals/daily-deals-by-synthetic-csp-region.json
+	rm -f $(WORK_DIR)/dist/deals/daily-deals-by-synthetic-csp-region.json
 
 #
 # hourly-totals
 #
 
-HOURLY_TOTALS_DATES_DIRS := $(wildcard ../work/output/deals/aggr_hourly/json/date=*)
+HOURLY_TOTALS_DATES_DIRS := $(wildcard $(OUTPUT_DEALS_DIR)/deals/aggr_hourly/json/date=*)
 HOURLY_TOTALS_DATES := $(subst date=,,$(notdir $(HOURLY_TOTALS_DATES_DIRS)))
-DIST_HOURLY_TOTALS := $(addsuffix .json,$(addprefix dist/deals/hourly-totals/,$(HOURLY_TOTALS_DATES)))
+DIST_HOURLY_TOTALS := $(addsuffix .json,$(addprefix $(WORK_DIR)/dist/deals/hourly-totals/,$(HOURLY_TOTALS_DATES)))
 
-hourly-totals: $(DIST_HOURLY_TOTALS) dist/deals/hourly-totals/dates.json
+hourly-totals: $(DIST_HOURLY_TOTALS) $(WORK_DIR)/dist/deals/hourly-totals/dates.json
 
-dist/deals/hourly-totals/dates.json: $(HOURLY_TOTALS_DATES_DIRS)
+$(WORK_DIR)/dist/deals/hourly-totals/dates.json: $(HOURLY_TOTALS_DATES_DIRS)
 	(for f in $(HOURLY_TOTALS_DATES); do echo \"$$f\"; done) | jq -s 'sort' > $@
 
 .SECONDEXPANSION:
 
-$(DIST_HOURLY_TOTALS): dist/deals/hourly-totals/%.json: $$(wildcard ../work/output/deals/aggr_hourly/json/date=%/part-*.json)
+$(DIST_HOURLY_TOTALS): $(WORK_DIR)/dist/deals/hourly-totals/%.json: $$(wildcard $(OUTPUT_DEALS_DIR)/deals/aggr_hourly/json/date=%/part-*.json)
 	@echo $@
-	@mkdir -p dist/deals/hourly-totals
+	@mkdir -p $(WORK_DIR)/dist/deals/hourly-totals
 	@cat $^ | jq -s 'sort_by(.window.start)' > $@
 
 clean-hourly-totals:
-	rm -rf dist/deals/hourly-totals
+	rm -rf $(WORK_DIR)/dist/deals/hourly-totals
 
 #
 # hourly-totals-verified
 #
 
-HOURLY_TOTALS_VERIFIED_DATES_DIRS := $(wildcard ../work/output/deals/by_verified/aggr_hourly/json/date=*)
+HOURLY_TOTALS_VERIFIED_DATES_DIRS := $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_hourly/json/date=*)
 HOURLY_TOTALS_VERIFIED_DATES := $(subst date=,,$(notdir $(HOURLY_TOTALS_VERIFIED_DATES_DIRS)))
-DIST_HOURLY_TOTALS_VERIFIED := $(addsuffix .json,$(addprefix dist/deals/hourly-totals-verified/,$(HOURLY_TOTALS_VERIFIED_DATES)))
+DIST_HOURLY_TOTALS_VERIFIED := $(addsuffix .json,$(addprefix $(WORK_DIR)/dist/deals/hourly-totals-verified/,$(HOURLY_TOTALS_VERIFIED_DATES)))
 
-hourly-totals-verified: $(DIST_HOURLY_TOTALS_VERIFIED) dist/deals/hourly-totals-verified/dates.json
+hourly-totals-verified: $(DIST_HOURLY_TOTALS_VERIFIED) $(WORK_DIR)/dist/deals/hourly-totals-verified/dates.json
 
-dist/deals/hourly-totals-verified/dates.json: $(HOURLY_TOTALS_VERIFIED_DATES_DIRS)
+$(WORK_DIR)/dist/deals/hourly-totals-verified/dates.json: $(HOURLY_TOTALS_VERIFIED_DATES_DIRS)
 	(for f in $(HOURLY_TOTALS_VERIFIED_DATES); do echo \"$$f\"; done) | jq -s 'sort' > $@
 
 .SECONDEXPANSION:
 
-$(DIST_HOURLY_TOTALS_VERIFIED): dist/deals/hourly-totals-verified/%.json: $$(wildcard ../work/output/deals/by_verified/aggr_hourly/json/date=%/part-*.json)
+$(DIST_HOURLY_TOTALS_VERIFIED): $(WORK_DIR)/dist/deals/hourly-totals-verified/%.json: $$(wildcard $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_hourly/json/date=%/part-*.json)
 	@echo $@
-	@mkdir -p dist/deals/hourly-totals-verified
+	@mkdir -p $(WORK_DIR)/dist/deals/hourly-totals-verified
 	@cat $^ | jq -s 'sort_by(.window.start)' > $@
 
 clean-hourly-totals-verified:
-	rm -rf dist/deals/hourly-totals-verified
+	rm -rf $(WORK_DIR)/dist/deals/hourly-totals-verified
 
 #
 # named clients: daily-totals
 #
 
-NAMED_CLIENTS_DAILY_TOTALS_DIRS := $(wildcard ../work/output/deals/by_client_name/aggr_daily/json/clientName=*)
+NAMED_CLIENTS_DAILY_TOTALS_DIRS := $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_client_name/aggr_daily/json/clientName=*)
 NAMED_CLIENTS_NAMES := $(subst clientName=,,$(notdir $(NAMED_CLIENTS_DAILY_TOTALS_DIRS)))
 
-DIST_NAMED_CLIENTS_DAILY_TOTALS := $(addsuffix /daily-totals.json,$(addprefix dist/deals/named-clients/,$(NAMED_CLIENTS_NAMES)))
+DIST_NAMED_CLIENTS_DAILY_TOTALS := $(addsuffix /daily-totals.json,$(addprefix $(WORK_DIR)/dist/deals/named-clients/,$(NAMED_CLIENTS_NAMES)))
 
-named-clients-daily-totals: $(DIST_NAMED_CLIENTS_DAILY_TOTALS) dist/deals/named-clients/named-clients.json
+named-clients-daily-totals: $(DIST_NAMED_CLIENTS_DAILY_TOTALS) $(WORK_DIR)/dist/deals/named-clients/named-clients.json
 
-dist/deals/named-clients/named-clients.json: $(NAMED_CLIENTS_DAILY_TOTALS_DIRS)
+$(WORK_DIR)/dist/deals/named-clients/named-clients.json: $(NAMED_CLIENTS_DAILY_TOTALS_DIRS)
 	(for f in $(NAMED_CLIENTS_NAMES); do echo \"$$f\"; done) | jq -s 'sort' > $@
 
 .SECONDEXPANSION:
 
-$(DIST_NAMED_CLIENTS_DAILY_TOTALS): dist/deals/named-clients/%/daily-totals.json: $$(wildcard ../work/output/deals/by_client_name/aggr_daily/json/clientName=%/date*/part-*.json)
+$(DIST_NAMED_CLIENTS_DAILY_TOTALS): $(WORK_DIR)/dist/deals/named-clients/%/daily-totals.json: $$(wildcard $(OUTPUT_DEALS_DIR)/deals/by_client_name/aggr_daily/json/clientName=%/date*/part-*.json)
 	@echo $@
 	@mkdir -p $(dir $@)
 	@cat $^ | jq -s 'sort_by(.window.start)' > $@
 
 clean-named-client-daily-totals:
-	rm -rf dist/deals/named-clients/*/daily-totals.json
+	rm -rf $(WORK_DIR)/dist/deals/named-clients/*/daily-totals.json
 
 #
 # named clients: hourly-totals
 #
 
-NAMED_CLIENTS_HOURLY_NAME_DIRS := $(wildcard ../work/output/deals/by_client_name/aggr_hourly/json/clientName=*)
+NAMED_CLIENTS_HOURLY_NAME_DIRS := $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_client_name/aggr_hourly/json/clientName=*)
 NAMED_CLIENTS_HOURLY_NAMES := $(subst clientName=,,$(notdir $(NAMED_CLIENTS_HOURLY_NAME_DIRS)))
 
 
-DIST_NAMED_CLIENTS_DATES_JSON := $(addsuffix /hourly/dates.json,$(addprefix dist/deals/named-clients/,$(NAMED_CLIENTS_HOURLY_NAMES)))
+DIST_NAMED_CLIENTS_DATES_JSON := $(addsuffix /hourly/dates.json,$(addprefix $(WORK_DIR)/dist/deals/named-clients/,$(NAMED_CLIENTS_HOURLY_NAMES)))
 
 named-clients-hourly-totals: $(DIST_NAMED_CLIENTS_DATES_JSON)
 
 .SECONDEXPANSION:
 
-$(DIST_NAMED_CLIENTS_DATES_JSON): dist/deals/named-clients/%/hourly/dates.json: $$(wildcard ../work/output/deals/by_client_name/aggr_hourly/json/clientName=%/date*/part-*.json)
+$(DIST_NAMED_CLIENTS_DATES_JSON): $(WORK_DIR)/dist/deals/named-clients/%/hourly/dates.json: $$(wildcard $(OUTPUT_DEALS_DIR)/deals/by_client_name/aggr_hourly/json/clientName=%/date*/part-*.json)
 	@echo Make $@
-	make -f Makefile.deals-named-clients named-clients-hourly-totals-worker NAMED_CLIENT=`echo $@ | sed 's,dist/deals/named-clients/\([^/]*\)/hourly/dates.json,\1,'`
+	make -f Makefile.deals-named-clients named-clients-hourly-totals-worker NAMED_CLIENT=`echo $@ | sed 's,$(WORK_DIR)/dist/deals/named-clients/\([^/]*\)/hourly/dates.json,\1,'`
 
 #
 # Clean
 # 
 
 clean-named-client-hourly-totals:
-	rm -rf dist/deals/named-clients/*/hourly
+	rm -rf $(WORK_DIR)/dist/deals/named-clients/*/hourly
 
 
