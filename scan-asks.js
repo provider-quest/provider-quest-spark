@@ -4,6 +4,10 @@ const { load } = require('@alex.garcia/observable-prerender')
 const dateFns = require('date-fns')
 const delay = require('delay')
 
+const workDir = process.env.ASKS_VOLUME || '.'
+const tmpDir = `${workDir}/tmp`
+fs.mkdirSync(`${workDir}/asks`, { recursive: true })
+
 async function run () {
   let jsonFilename
   const notebook = await load(
@@ -45,7 +49,7 @@ async function run () {
     }
     if (asks.state === 'done') {
       jsonFilename = `asks-${selectedEpoch}.json`
-      const jsonFile = fs.createWriteStream(`tmp/${jsonFilename}`)
+      const jsonFile = fs.createWriteStream(`${tmpDir}/${jsonFilename}`)
       for (const record of asks.records) {
         await jsonFile.write(
           JSON.stringify({
@@ -56,7 +60,7 @@ async function run () {
         )
       }
       jsonFile.on('finish', () => {
-        fs.rename(`tmp/${jsonFilename}`, `input/asks/${jsonFilename}`, err => {
+        fs.rename(`${tmpDir}/${jsonFilename}`, `${workDir}/asks/${jsonFilename}`, err => {
           if (err) {
             console.error('Error', err)
             process.exit(1)

@@ -118,6 +118,11 @@ elif [ "$1" = "scanner-deals" ]; then
     --exclude sync-code.sh \
     --exclude package-lock.json \
     ubuntu@pq-scan-1:/mnt/deals/provider-quest-spark/* .
+elif [ "$1" = "scanner-asks" ]; then
+  rsync -vaP --exclude node_modules \
+    --exclude sync-code.sh \
+    --exclude package-lock.json \
+    ubuntu@pq-scan-1:/mnt/asks/provider-quest-spark/* .
 elif [ "$1" = "combiner-multiaddrs-ips" ]; then
   rsync -vaP --exclude node_modules \
     --exclude sync-code.sh \
@@ -141,6 +146,7 @@ else
   echo "  scanner-miner-info"
   echo "  scanner-dht-addrs"
   echo "  scanner-deals"
+  echo "  scanner-asks"
   echo "  combiner-multiaddrs-ips"
   exit 1
 fi
