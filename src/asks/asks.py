@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 
@@ -8,9 +9,9 @@ from pyspark.sql.types import StructType, ArrayType, StringType
 
 def process_asks(spark, suffix=""):
 
-    inputDir = 'input' + suffix
-    outputDir = '../work/output' + suffix
-    checkpointDir = '../work/checkpoint' + suffix
+    inputDir = os.environ.get('INPUT_ASKS_DIR') or base_dir + '/' + 'input' + suffix + '/asks'
+    outputDir = os.environ.get('OUTPUT_ASKS_DIR') or base_dir + '/output' + suffix + '/asks'
+    checkpointDir = os.environ.get('CHECKPOINT_ASKS_DIR') or base_dir + '/checkpoint' + suffix + '/asks'
 
     schemaAsks = StructType() \
         .add("epoch", "long") \
@@ -30,7 +31,7 @@ def process_asks(spark, suffix=""):
     asks = spark \
         .readStream \
         .schema(schemaAsks) \
-        .json(inputDir + '/asks') \
+        .json(inputDir) \
         .withWatermark("timestamp", "1 minute")
 
     asks = asks \
@@ -69,8 +70,8 @@ def process_asks(spark, suffix=""):
         .writeStream \
         .queryName("asks_json") \
         .format("json") \
-        .option("path", outputDir + "/asks/json") \
-        .option("checkpointLocation", checkpointDir + "/asks/json") \
+        .option("path", outputDir + "/json") \
+        .option("checkpointLocation", checkpointDir + "/json") \
         .partitionBy("date", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
@@ -78,13 +79,13 @@ def process_asks(spark, suffix=""):
 
     def output_latest_asks_subset(df, epoch_id):
         df.coalesce(1).write.json(
-            outputDir + '/asks/json_latest_subset', mode='overwrite')
+            outputDir + '/json_latest_subset', mode='overwrite')
 
     queryLatestAsksSubset = latestAsksSubset \
         .writeStream \
         .queryName("asks_subset_latest_json") \
         .outputMode('complete') \
-        .option("checkpointLocation", checkpointDir + "/asks/json_latest_subset") \
+        .option("checkpointLocation", checkpointDir + "/json_latest_subset") \
         .foreachBatch(output_latest_asks_subset) \
         .trigger(processingTime='1 minute') \
         .start()

@@ -28,6 +28,7 @@ from miner_regions import miner_regions
 from synthetic_regions import synthetic_regions
 from synthetic_regions import synthetic_csp_regions
 from provider_country_state_province import provider_country_state_province
+from asks import asks
 
 if __name__ == "__main__":
     spark = SparkSession\
@@ -55,6 +56,8 @@ if __name__ == "__main__":
     deals_synthetic_regions.process(deals, syntheticRegions, suffix)
     deals_country_state_province.process(deals, providerCountryStateProvinces, suffix)
     deals_synthetic_csp_regions.process(deals, syntheticCSPRegions, suffix)
+
+    asks.process_asks(spark, suffix)
 
     while True:
         for stream in spark.streams.active:
