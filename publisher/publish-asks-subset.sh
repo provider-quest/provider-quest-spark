@@ -1,17 +1,28 @@
 #! /bin/bash
 
-if [ ! -f PUBLISH ]; then
-	echo Skipping publishing, PUBLISH file is missing
-	exit
+set -e
+set +x
+
+TMP=$WORK_DIR/tmp
+mkdir -p $TMP
+
+./setup-textile.sh
+
+TARGET=$WORK_DIR/dist/asks-subset-latest
+if [ ! -d $TARGET ]; then
+        mkdir -p $TARGET
+        cd $TARGET
+        hub bucket init \
+                --thread $TEXTILE_BUCKET_THREAD \
+                --key $BUCKET_ASKS_SUBSET_LATEST_KEY
 fi
+
 
 IFS="$(printf '\n\t')"
 DATE=$(node -e 'console.log((new Date()).toISOString())')
 
-# Latest multiday power average
-mkdir -p dist/asks-subset-latest
-if [ -f ../work/output/asks/json_latest_subset/_SUCCESS ] ; then
-  PART=$(ls ../work/output/asks/json_latest_subset/part*.json | head -1)
+if [ -f $OUTPUT_ASKS_DIR/json_latest_subset/_SUCCESS ] ; then
+  PART=$(ls $OUTPUT_ASKS_DIR/json_latest_subset/part*.json | head -1)
   cat $PART | jq -s "{ \
     date: \"$DATE\", \
     miners: map({ \
@@ -31,7 +42,19 @@ if [ -f ../work/output/asks/json_latest_subset/_SUCCESS ] ; then
         error: .[\"last(error)\"] \
       } \
     }) | from_entries \
-  }" > dist/asks-subset-latest/asks-subset-latest.json
+  }" > $TMP/asks-subset-latest.json
 fi
-(cd dist/asks-subset-latest; head asks-subset-latest.json; hub bucket push -y)
+
+(
+  set -e
+
+  cd $TARGET
+  hub bucket pull
+
+  mv $TMP/asks-subset-latest.json .
+  echo "asks-subset-latest.json:"
+  head asks-subset-latest.json
+
+  hub bucket push -y
+)
 
