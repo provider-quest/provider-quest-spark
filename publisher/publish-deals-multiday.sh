@@ -16,7 +16,7 @@ fi
 IFS="$(printf '\n\t')"
 
 # Latest multiday deals average
-LAST="$(ls -d $OUTPUT_DEALS_DIR/by_provider/aggr_multiday/json/window\=* | sort | tail -1)"
+LAST="$(ls -d $OUTPUT_DEALS_DIR/deals/by_provider/aggr_multiday/json/window\=* | sort | tail -1)"
 echo $LAST
 LAST_ESCAPE=$(echo $LAST | sed 's, ,\\ ,g')
 DATE=$(echo $LAST | sed 's,^.*window=%7B\([^ ]*\).*,\1,')
