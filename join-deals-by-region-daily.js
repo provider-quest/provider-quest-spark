@@ -5,7 +5,7 @@ async function run () {
   const records = {}
 
   const aggrFiles = await glob(
-    '../work/output/deals/' + process.argv[2] + '/aggr_daily/json/part-*'
+    process.env.OUTPUT_DEALS_DIR + '/deals/' + process.argv[2] + '/aggr_daily/json/part-*'
   )
   for (aggrFile of aggrFiles) {
     const lines = fs.readFileSync(aggrFile, 'utf8').split('\n')
@@ -24,7 +24,7 @@ async function run () {
   }
 
   const sumFiles = await glob(
-    '../work/output/deals/' + process.argv[2] + '/sum_aggr_daily/json/part-*'
+    process.env.OUTPUT_DEALS_DIR + '/deals/' + process.argv[2] + '/sum_aggr_daily/json/part-*'
   )
   for (sumFile of sumFiles) {
     const lines = fs.readFileSync(sumFile, 'utf8').split('\n')
