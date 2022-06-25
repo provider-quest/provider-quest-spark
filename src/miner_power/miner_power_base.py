@@ -2,6 +2,7 @@ import os
 from pyspark.sql.functions import window
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import last
+from pyspark.sql.functions import max
 
 def process(minerPower, suffix=""):
 
@@ -103,7 +104,9 @@ def process(minerPower, suffix=""):
             last('epoch'),
             last('timestamp'),
             last('rawBytePower'),
-            last('qualityAdjPower')
+            last('qualityAdjPower'),
+            max('rawBytePower'),
+            max('qualityAdjPower')
         )
 
     def output_latest_power(df, epoch_id):
