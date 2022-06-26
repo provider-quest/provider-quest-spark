@@ -32,6 +32,8 @@ if [ -f $OUTPUT_POWER_DIR/json_latest/_SUCCESS ] ; then
         timestamp: .[\"last(timestamp)\"], \
         rawBytePower: .[\"last(rawBytePower)\"], \
         qualityAdjPower: .[\"last(qualityAdjPower)\"], \
+        maxRawBytePower: .[\"max(rawBytePower)\"], \
+        maxQualityAdjPower: .[\"max(qualityAdjPower)\"], \
       } | to_entries | [(.[] | select(.value != null))] | from_entries \
     }) | from_entries \
   }" > $TMP/miner-power-latest.json
