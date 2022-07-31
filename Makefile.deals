@@ -56,7 +56,7 @@ daily-totals: $(WORK_DIR)/dist/deals/daily-totals.json
 
 $(WORK_DIR)/dist/deals/daily-totals.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/aggr_daily/json/date=*/part-*.json)
 	cat $(OUTPUT_DEALS_DIR)/deals/aggr_daily/json/date=*/part-*.json | \
-		jq -s 'sort_by(.window.start)' > \
+		jq -s 'sort_by(.window.start)[-14:]' > \
 		$(WORK_DIR)/dist/deals/daily-totals.json
 
 clean-daily-totals:
@@ -71,7 +71,7 @@ daily-totals-verified: $(WORK_DIR)/dist/deals/daily-totals-verified.json
 
 $(WORK_DIR)/dist/deals/daily-totals-verified.json: $(wildcard $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_daily/json/date=*/part-*.json)
 	cat $(OUTPUT_DEALS_DIR)/deals/by_verified/aggr_daily/json/date=*/part-*.json | \
-		jq -s 'sort_by(.window.start)' > \
+		jq -s 'sort_by(.window.start)[-14:]' > \
 		$(WORK_DIR)/dist/deals/daily-totals-verified.json
 
 clean-daily-totals-verified:
