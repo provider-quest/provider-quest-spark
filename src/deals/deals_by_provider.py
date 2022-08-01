@@ -104,7 +104,6 @@ def process(deals, suffix=""):
         .option("path", outputDir + "/deals/by_provider/by_verified/aggr_daily/csv") \
         .option("checkpointLocation", checkpointDir + "/deals/by_provider/by_verified/aggr_daily/csv") \
         .option("header", True) \
-        .partitionBy("date") \
         .trigger(processingTime='1 minute') \
         .start()
 
