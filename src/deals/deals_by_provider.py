@@ -95,6 +95,19 @@ def process(deals, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    dealsDailyAggrByProviderVerifiedFlat = dealsDailyAggrByProviderVerified.drop('window')
+
+    queryAggrDealsDailyByProviderVerifiedCsv = dealsDailyAggrByProviderVerifiedFlat \
+        .writeStream \
+        .queryName("deals_by_provider_by_verified_aggr_daily_csv") \
+        .format("csv") \
+        .option("path", outputDir + "/deals/by_provider/by_verified/aggr_daily/csv") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_provider/by_verified/aggr_daily/csv") \
+        .option("header", True) \
+        .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+
     # Multiday - By Provider
 
     dealsMultidayAggrByProvider = deals.groupBy(

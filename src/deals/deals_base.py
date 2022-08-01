@@ -159,6 +159,21 @@ def process(deals, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    dealsDailyAggrByVerifiedFlat = dealsDailyAggrByVerified.drop('window')
+
+    """
+    queryAggrDealsDailyByVerifiedCsv = dealsDailyAggrByVerifiedFlat \
+        .writeStream \
+        .queryName("deals_by_verified_aggr_daily_csv") \
+        .format("csv") \
+        .option("path", outputDir + "/deals/by_verified/aggr_daily/csv") \
+        .option("checkpointLocation", checkpointDir + "/deals/by_verified/aggr_daily/csv") \
+        .option("header", True) \
+        .partitionBy("date") \
+        .trigger(processingTime='1 minute') \
+        .start()
+    """
+
     # Aggregate Weekly
 
     dealsWeeklyAggr = deals.groupBy(
