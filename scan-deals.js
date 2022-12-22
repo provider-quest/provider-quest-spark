@@ -25,6 +25,9 @@ async function run () {
     ['deals']
     // { headless: false }
   )
+  // notebook.browser.setDefaultNavigationTimeout(0)
+  //console.log('Jim', notebook.page)
+  notebook.page.setDefaultNavigationTimeout(0)
   // const selectedEpoch = await notebook.value('selectedEpoch')
   // const selectedDate = await notebook.value('selectedDate')
   // console.log('Date:', selectedDate)
