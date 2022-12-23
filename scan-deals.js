@@ -22,12 +22,16 @@ async function run () {
   let lastHeight
   const notebook = await load(
     '@jimpick/miner-report-publish-deal-messages-stream',
-    ['deals']
+    ['deals'],
+    { timeout: 0 }
     // { headless: false }
   )
   // notebook.browser.setDefaultNavigationTimeout(0)
   //console.log('Jim', notebook.page)
   notebook.page.setDefaultNavigationTimeout(0)
+  notebook.page.setDefaultTimeout(0)
+  // console.log('Jim', notebook.page)
+  // process.exit(0)
   // const selectedEpoch = await notebook.value('selectedEpoch')
   // const selectedDate = await notebook.value('selectedDate')
   // console.log('Date:', selectedDate)
