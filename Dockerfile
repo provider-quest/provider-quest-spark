@@ -39,8 +39,8 @@ RUN ./install
 RUN rm -rf /tmp/hub*
 
 WORKDIR /opt/spark
-RUN wget -q https://dlcdn.apache.org/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz
-RUN tar xf spark-3.3.0-bin-hadoop3.tgz
+RUN wget -q https://dlcdn.apache.org/spark/spark-3.3.1/spark-3.3.1-bin-hadoop3.tgz
+RUN tar xf spark-3.3.1-bin-hadoop3.tgz
 
 RUN mkdir /home/ubuntu
 
