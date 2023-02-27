@@ -11,14 +11,3 @@ mkdir -p $WORK_DIR/dist/deals
        	make -f Makefile.deals
 )
 
-#(cd dist/deals; hub bucket push -y; hub bucket pull -y)
-#(
-#  cd dist/deals
-#  hub bucket push -y
-#  if [ $? ]; then
-    #echo Error, trying to pull then push
-    #hub bucket pull -y
-    #hub bucket push -y
-#  fi
-#)
-

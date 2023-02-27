@@ -6,8 +6,6 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
-./setup-textile.sh
-
 TARGET=$WORK_DIR/dist/deals
 if [ ! -d $TARGET ]; then
         mkdir -p $TARGET

@@ -6,15 +6,10 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
-./setup-textile.sh
-
 TARGET=$WORK_DIR/dist/miner-info-subset-latest
 if [ ! -d $TARGET ]; then
         mkdir -p $TARGET
         cd $TARGET
-        hub bucket init \
-                --thread $TEXTILE_BUCKET_THREAD \
-                --key $BUCKET_MINER_INFO_SUBSET_LATEST_KEY
 fi
 
 IFS="$(printf '\n\t')"
@@ -46,12 +41,9 @@ fi
   set -e
 
   cd $TARGET
-  hub bucket pull
 
   mv $TMP/miner-info-subset-latest.json .
   echo "miner-info-subset-latest.json:"
   head miner-info-subset-latest.json
-
-  hub bucket push -y
 )
 

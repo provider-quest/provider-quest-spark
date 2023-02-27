@@ -6,15 +6,10 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
-./setup-textile.sh
-
 TARGET=$WORK_DIR/dist/dht-addrs-latest
 if [ ! -d $TARGET ]; then
         mkdir -p $TARGET
         cd $TARGET
-        hub bucket init \
-                --thread $TEXTILE_BUCKET_THREAD \
-                --key $BUCKET_DHT_ADDRS_LATEST_KEY
 fi
 
 IFS="$(printf '\n\t')"
@@ -76,7 +71,6 @@ cat $LASTMULTIDAY/part-*.json |
   set -e
 
   cd $TARGET
-  hub bucket pull
 
   mv $TMP/dht-addrs-latest.json .
   echo "dht-addrs-latest.json:"
@@ -89,7 +83,5 @@ cat $LASTMULTIDAY/part-*.json |
   mv $TMP/dht-addrs-counts-multiday.json .
   echo "dht-addrs-counts-multiday.json:"
   head dht-addrs-counts-multiday.json
-
-  hub bucket push -y
 )
 

@@ -6,15 +6,10 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
-./setup-textile.sh
-
 TARGET=$WORK_DIR/dist/asks-subset-latest
 if [ ! -d $TARGET ]; then
         mkdir -p $TARGET
         cd $TARGET
-        hub bucket init \
-                --thread $TEXTILE_BUCKET_THREAD \
-                --key $BUCKET_ASKS_SUBSET_LATEST_KEY
 fi
 
 
@@ -49,12 +44,9 @@ fi
   set -e
 
   cd $TARGET
-  hub bucket pull
 
   mv $TMP/asks-subset-latest.json .
   echo "asks-subset-latest.json:"
   head asks-subset-latest.json
-
-  hub bucket push -y
 )
 

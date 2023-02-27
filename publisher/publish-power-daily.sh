@@ -6,15 +6,10 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
-./setup-textile.sh
-
 TARGET=$WORK_DIR/dist/miner-power-daily-average-latest
 if [ ! -d $TARGET ]; then
 	mkdir -p $TARGET
 	cd $TARGET
-	hub bucket init \
-		--thread $TEXTILE_BUCKET_THREAD \
-		--key $BUCKET_MINER_POWER_DAILY_AVERAGE_LATEST_KEY
 fi
 
 # Latest daily power average
@@ -32,8 +27,6 @@ COUNT=0
   done) | jq -s "{ date: \"$DATE\", miners: map({ key: .miner, value: { qualityAdjPower: .qualityAdjPower, rawBytePower: .rawBytePower } }) | from_entries }" > $TMP/miner-power-daily-average-latest.json
 
 cd $TARGET
-hub bucket pull -y
 mv $TMP/miner-power-daily-average-latest.json .
 head miner-power-daily-average-latest.json
-hub bucket push -y
 

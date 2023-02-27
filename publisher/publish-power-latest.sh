@@ -6,15 +6,10 @@ set +x
 TMP=$WORK_DIR/tmp
 mkdir -p $TMP
 
-./setup-textile.sh
-
 TARGET=$WORK_DIR/dist/miner-power-daily-average-latest
 if [ ! -d $TARGET ]; then
 	mkdir -p $TARGET
 	cd $TARGET
-	hub bucket init \
-		--thread $TEXTILE_BUCKET_THREAD \
-		--key $BUCKET_MINER_POWER_DAILY_AVERAGE_LATEST_KEY
 fi
 
 IFS="$(printf '\n\t')"
@@ -41,9 +36,7 @@ if [ -f $OUTPUT_POWER_DIR/json_latest/_SUCCESS ] ; then
 fi
 
 cd $TARGET
-hub bucket pull -y
 mv $TMP/miner-power-latest.json .
 echo "miner-power-latest.json:"
 head miner-power-latest.json
-hub bucket push -y
 

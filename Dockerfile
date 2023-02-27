@@ -31,13 +31,6 @@ RUN echo "deb-src [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DIST
 RUN apt-get update
 RUN apt install -y nodejs
 
-WORKDIR /tmp
-RUN wget -q https://github.com/textileio/textile/releases/download/v2.6.17/hub_v2.6.17_linux-amd64.tar.gz
-RUN tar xf hub_v2.6.17_linux-amd64.tar.gz
-WORKDIR /tmp/hub_v2.6.17_linux-amd64
-RUN ./install
-RUN rm -rf /tmp/hub*
-
 WORKDIR /opt/spark
 RUN wget -q https://dlcdn.apache.org/spark/spark-3.3.1/spark-3.3.1-bin-hadoop3.tgz
 RUN tar xf spark-3.3.1-bin-hadoop3.tgz
