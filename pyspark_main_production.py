@@ -55,17 +55,17 @@ if __name__ == "__main__":
 
 #    names = client_names.get(spark, suffix)
 
-    minerRegions = miner_regions.get_latest(spark, suffix)
-    miner_power_regions.process(minerPower, minerRegions, suffix)
+#    minerRegions = miner_regions.get_latest(spark, suffix)
+#    miner_power_regions.process(minerPower, minerRegions, suffix)
 
-    syntheticRegions = synthetic_regions.get_latest(spark, suffix)
-    miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
+#    syntheticRegions = synthetic_regions.get_latest(spark, suffix)
+#    miner_power_synthetic_regions.process(minerPower, syntheticRegions, suffix)
 
-    providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
-    miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
+#    providerCountryStateProvinces = provider_country_state_province.get_latest(spark, suffix)
+#    miner_power_country_state_province.process(minerPower, providerCountryStateProvinces, suffix)
 
-    syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
-    miner_power_synthetic_csp_regions.process(minerPower, syntheticCSPRegions, suffix)
+#    syntheticCSPRegions = synthetic_csp_regions.get_latest(spark, suffix)
+#    miner_power_synthetic_csp_regions.process(minerPower, syntheticCSPRegions, suffix)
 
 #    deals = deals_source.get(spark, suffix)
 #    deals_base.process(deals, suffix)

@@ -13,11 +13,13 @@ def process(minerPower, suffix=""):
 
     numberOfPowerRecords = minerPower.groupBy().count()
 
+    """
     averagePowerHourly = minerPower.groupBy(
         minerPower.miner,
         minerPower.date,
         window(minerPower.timestamp, '1 hour')
     ).avg("rawBytePower", "qualityAdjPower")
+    """
 
     averagePowerDaily = minerPower.groupBy(
         minerPower.miner,
@@ -28,10 +30,12 @@ def process(minerPower, suffix=""):
     averagePowerDailyFlat = averagePowerDaily \
         .drop('window')
 
+    """
     averagePowerMultiDay = minerPower.groupBy(
         minerPower.miner,
         window(minerPower.timestamp, '7 day', '1 day')
     ).avg("rawBytePower", "qualityAdjPower")
+    """
 
     """
     queryPowerCounter = numberOfPowerRecords \
@@ -87,6 +91,7 @@ def process(minerPower, suffix=""):
         .trigger(processingTime='1 minute') \
         .start()
 
+    """
     queryPowerAvgMultiday = averagePowerMultiDay \
         .writeStream \
         .queryName("miner_power_avg_multiday_json") \
@@ -96,6 +101,7 @@ def process(minerPower, suffix=""):
         .partitionBy("window", "miner") \
         .trigger(processingTime='1 minute') \
         .start()
+    """
 
     latestPower = minerPower \
         .groupBy(
