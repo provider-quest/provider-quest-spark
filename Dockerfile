@@ -32,8 +32,8 @@ RUN apt-get update
 RUN apt install -y nodejs
 
 WORKDIR /opt/spark
-RUN wget -q https://dlcdn.apache.org/spark/spark-3.3.2/spark-3.3.2-bin-hadoop3.tgz
-RUN tar xf spark-3.3.2-bin-hadoop3.tgz
+RUN wget -q https://dlcdn.apache.org/spark/spark-3.3.3/spark-3.3.3-bin-hadoop3.tgz
+RUN tar xf spark-3.3.3-bin-hadoop3.tgz
 
 RUN mkdir /home/ubuntu
 
