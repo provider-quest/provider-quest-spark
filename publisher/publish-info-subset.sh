@@ -17,7 +17,7 @@ DATE=$(node -e 'console.log((new Date()).toISOString())')
 
 if [ -f $OUTPUT_MINER_INFO_DIR/json_latest_subset/_SUCCESS ] ; then
   PART=$(ls $OUTPUT_MINER_INFO_DIR/json_latest_subset/part*.json | head -1)
-  cat $PART | jq -s "{ \
+  cat $PART | grep -v '{}' | jq -s "{ \
     date: \"$DATE\", \
     miners: map({ \
       key: .miner, value: { \
