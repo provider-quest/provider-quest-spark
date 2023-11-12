@@ -20,7 +20,7 @@ export TIMESTAMP=$(date +'%s')
 while true; do
   date
   timeout 6h \
-	  /opt/spark/spark-3.3.0-bin-hadoop3/bin/spark-submit \
+	  /opt/spark/spark-*-bin-hadoop3/bin/spark-submit \
 	  ./pyspark_main_legacy.py 2> ~/tmp/spark-stderr-$TIMESTAMP.log | tee -a ~/tmp/spark-$TIMESTAMP.log
   killall java 2> /dev/null
   echo

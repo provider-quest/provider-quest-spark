@@ -10,7 +10,7 @@ export TIMESTAMP=$(date +'%s')
 while true; do
   date
   timeout 6h \
-	  /opt/spark/spark-3.3.0-bin-hadoop3/bin/spark-submit \
+	  /opt/spark/spark-*-bin-hadoop3/bin/spark-submit \
 	  --driver-memory 10G \
 	  --executor-memory 4G \
 	  ./pyspark_main_deals.py \
